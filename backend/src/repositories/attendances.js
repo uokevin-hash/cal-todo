@@ -8,6 +8,14 @@ export async function countByGroup(db, groupId) {
   return rows[0].n;
 }
 
+export async function isAttending(db, { groupId, memberId }) {
+  const { rowCount } = await db.query(
+    'SELECT 1 FROM attendances WHERE group_id = $1 AND member_id = $2',
+    [groupId, memberId],
+  );
+  return rowCount > 0;
+}
+
 // 같은 날짜 중복은 attendances_member_id_date_key 위반(23505, R-4)
 export async function insertAttendance(db, { memberId, groupId, date }) {
   await db.query('INSERT INTO attendances (member_id, group_id, date) VALUES ($1, $2, $3)', [

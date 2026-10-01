@@ -2,6 +2,7 @@ import { pool, withTx } from '../db.js';
 import { AppError } from '../errors.js';
 import * as attendances from '../repositories/attendances.js';
 import * as groups from '../repositories/groups.js';
+import * as messages from '../repositories/messages.js';
 import { insertAttendance, resolveRange } from './attendance.js';
 import { displayMember } from './display.js';
 
@@ -75,7 +76,69 @@ export function updateGroup(id, { name, capacity }) {
   });
 }
 
-// R-13
-export async function deleteGroup(id) {
-  if (!(await groups.deleteGroup(pool, id))) throw notFound();
+// R-13. 채팅은 보관함으로 옮긴 뒤 그룹과 함께 지운다(관리자만 열람)
+// 그룹 행을 먼저 잠가 보관과 삭제 사이에 새 메시지가 끼지 않게 한다(메시지 INSERT의 FK 확인이 기다린다)
+export function deleteGroup(id) {
+  return withTx(async (client) => {
+    if (!(await groups.lockById(client, id))) throw notFound();
+    await messages.archiveGroupChat(client, id);
+    await groups.deleteGroup(client, id);
+  });
+}
+
+export function listChatArchives() {
+  return messages.findArchives(pool);
+}
+
+export async function getArchivedImage(archiveId, messageId) {
+  const row = await messages.findArchivedImage(pool, { archiveId, messageId });
+  if (!row) throw notFound();
+  return row;
+}
+
+export async function deleteChatArchive(id) {
+  if (!(await messages.deleteArchive(pool, id))) throw notFound();
+}
+
+export async function getArchivedMessages(archiveId) {
+  if (!(await messages.archiveExists(pool, archiveId))) throw notFound();
+  const rows = await messages.findArchivedMessages(pool, archiveId);
+  return rows.map((row) => ({ ...row, author: displayMember(row.author, true) }));
+}
+
+// 그룹 채팅: 그 그룹에 참석 중인 회원만 읽고 쓴다
+const MESSAGE_LIMIT = 100;
+
+async function assertAttendee(groupId, memberId) {
+  if (!(await groups.exists(pool, groupId))) throw notFound();
+  if (!(await attendances.isAttending(pool, { groupId, memberId }))) {
+    throw new AppError(403, 'FORBIDDEN', '그룹 참석자만 채팅할 수 있습니다');
+  }
+}
+
+export async function listMessages(groupId, member) {
+  await assertAttendee(groupId, member.id);
+  const rows = await messages.findByGroup(pool, groupId, MESSAGE_LIMIT);
+  // R-9: 탈퇴 회원이 남긴 메시지도 이름을 가린다(C-10)
+  return rows.map((row) => ({
+    ...row,
+    author: displayMember(row.author, member.role === 'ADMIN'),
+  }));
+}
+
+export async function postMessage(groupId, memberId, body) {
+  await assertAttendee(groupId, memberId);
+  return messages.insertMessage(pool, { groupId, memberId, body });
+}
+
+export async function postImage(groupId, memberId, { image, imageType }) {
+  await assertAttendee(groupId, memberId);
+  return messages.insertImage(pool, { groupId, memberId, image, imageType });
+}
+
+export async function getImage(groupId, messageId, memberId) {
+  await assertAttendee(groupId, memberId);
+  const row = await messages.findImage(pool, { groupId, messageId });
+  if (!row) throw notFound();
+  return row;
 }

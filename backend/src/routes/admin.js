@@ -66,3 +66,24 @@ router.delete('/groups/:id', async (req, res) => {
   await groupsService.deleteGroup(validate.id(req.params.id));
   res.status(204).end();
 });
+
+// 삭제된 그룹의 채팅 보관함
+router.get('/chats', async (req, res) => {
+  res.json(await groupsService.listChatArchives());
+});
+
+router.get('/chats/:id/messages', async (req, res) => {
+  res.json(await groupsService.getArchivedMessages(validate.id(req.params.id)));
+});
+
+router.get('/chats/:id/messages/:messageId/image', async (req, res) => {
+  const archiveId = validate.id(req.params.id);
+  const messageId = validate.id(req.params.messageId);
+  const { image, imageType } = await groupsService.getArchivedImage(archiveId, messageId);
+  res.set({ 'Content-Type': imageType, 'X-Content-Type-Options': 'nosniff' }).send(image);
+});
+
+router.delete('/chats/:id', async (req, res) => {
+  await groupsService.deleteChatArchive(validate.id(req.params.id));
+  res.status(204).end();
+});

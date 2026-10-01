@@ -18,13 +18,19 @@ export async function findMonthRange(db, month) {
   return rows[0];
 }
 
-// 그룹이 있거나 내가 참석한 날짜만
+// 그룹이 있거나 내가 참석한 날짜만. groups는 칸에 보일 그룹명(참여 인원)과 내 참석 여부(채팅 대상)
 export async function findCalendarDays(db, { from, to, memberId }) {
   const { rows } = await db.query(
     `SELECT coalesce(g.date, a.date) AS date, coalesce(g.n, 0) AS "groupCount",
-            a.date IS NOT NULL AS attending
-     FROM (SELECT date, count(*)::int AS n FROM groups
-           WHERE date BETWEEN $1 AND $2 GROUP BY date) g
+            coalesce(g.groups, '[]') AS groups, a.date IS NOT NULL AS attending
+     FROM (SELECT g.date, count(*)::int AS n,
+                  json_agg(json_build_object('id', g.id, 'name', g.name, 'count', g.count, 'mine', g.mine)
+                           ORDER BY g.created_at, g.id) AS groups
+           FROM (SELECT g.*, (SELECT count(*)::int FROM attendances a WHERE a.group_id = g.id) AS count,
+                         EXISTS (SELECT 1 FROM attendances a
+                                 WHERE a.group_id = g.id AND a.member_id = $3) AS mine
+                 FROM groups g WHERE g.date BETWEEN $1 AND $2) g
+           GROUP BY g.date) g
      FULL JOIN (SELECT date FROM attendances
                 WHERE member_id = $3 AND date BETWEEN $1 AND $2) a ON a.date = g.date
      ORDER BY 1`,

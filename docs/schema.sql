@@ -85,3 +85,45 @@ CREATE TABLE refresh_tokens (
 );
 
 CREATE INDEX refresh_tokens_member_id_idx ON refresh_tokens (member_id);
+
+-- 그룹 채팅 메시지(002_group_messages.sql, 이미지 004_chat_images.sql)
+-- 그룹이 삭제되면 보관함으로 복사한 뒤 함께 지운다(R-13)
+CREATE TABLE group_messages (
+    id         INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    group_id   INTEGER     NOT NULL REFERENCES groups (id) ON DELETE CASCADE,
+    member_id  INTEGER     NOT NULL REFERENCES members (id),
+    body       TEXT        NOT NULL,  -- 이미지 메시지는 빈 문자열
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    image      BYTEA,                 -- 붙여넣은 이미지(최대 크기는 CHAT_IMAGE_MAX_BYTES)
+    image_type TEXT,
+
+    -- 글 메시지는 1~500자, 이미지 메시지는 허용 형식 + 빈 본문
+    CONSTRAINT group_messages_body_check CHECK (
+        (image IS NULL AND image_type IS NULL AND char_length(body) BETWEEN 1 AND 500)
+        OR (image IS NOT NULL AND image_type IN ('image/png', 'image/jpeg', 'image/gif', 'image/webp')
+            AND body = '')
+    )
+);
+
+CREATE INDEX group_messages_group_id_idx ON group_messages (group_id, id);
+
+-- 삭제된 그룹의 채팅 보관함(003_chat_archives.sql). 관리자만 열람한다
+CREATE TABLE chat_archives (
+    id         INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    group_id   INTEGER     NOT NULL,  -- 삭제된 그룹의 원래 id
+    date       DATE        NOT NULL,
+    name       TEXT        NOT NULL,
+    deleted_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE archived_messages (
+    id         INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    archive_id INTEGER     NOT NULL REFERENCES chat_archives (id) ON DELETE CASCADE,
+    member_id  INTEGER     NOT NULL REFERENCES members (id),
+    body       TEXT        NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,  -- 원래 메시지를 쓴 시각
+    image      BYTEA,
+    image_type TEXT
+);
+
+CREATE INDEX archived_messages_archive_id_idx ON archived_messages (archive_id, id);

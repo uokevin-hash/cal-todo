@@ -17,6 +17,11 @@ export function errorHandler(err, req, res, next) {
   if (err.type === 'entity.parse.failed') {
     err = new AppError(400, 'VALIDATION_ERROR', '요청 본문이 올바른 JSON이 아닙니다');
   }
+  // 본문 크기 초과. 채팅 이미지면 field: image
+  if (err.type === 'entity.too.large') {
+    const field = req.is('image/*') ? 'image' : undefined;
+    err = new AppError(400, 'VALIDATION_ERROR', '요청 본문이 너무 큽니다', field);
+  }
   if (err instanceof AppError) {
     const error = { code: err.code, message: err.message };
     if (err.field) error.field = err.field;

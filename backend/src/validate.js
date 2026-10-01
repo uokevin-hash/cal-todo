@@ -34,6 +34,23 @@ export function password(value, field = 'password') {
   return value;
 }
 
+// 그룹 채팅 메시지: 앞뒤 공백을 뺀 1~500자
+export function messageBody(value) {
+  const body = typeof value === 'string' ? value.trim() : '';
+  if (!body || body.length > 500) throw invalid('body', '메시지는 1~500자로 입력해 주세요');
+  return body;
+}
+
+// 채팅 이미지. SVG는 스크립트를 담을 수 있어 받지 않는다
+export const CHAT_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+
+export function chatImage(body, type) {
+  if (!Buffer.isBuffer(body) || !body.length || !CHAT_IMAGE_TYPES.includes(type)) {
+    throw invalid('image', 'PNG·JPEG·GIF·WEBP 이미지만 올릴 수 있습니다');
+  }
+  return { image: body, imageType: type };
+}
+
 export function capacity(value) {
   if (value !== 2 && value !== 4) throw invalid('capacity', '정원은 2명 또는 4명입니다');
   return value;

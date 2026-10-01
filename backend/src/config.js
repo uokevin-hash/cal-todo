@@ -25,6 +25,8 @@ export function loadConfig(env = process.env) {
     port: Number(env.PORT || 3000),
     production: env.NODE_ENV === 'production',
     accessTokenTtl: env.ACCESS_TOKEN_TTL || '15m',
+    // 채팅 붙여넣기 이미지 최대 크기(바이트). 기본 2MB
+    chatImageMaxBytes: Number(env.CHAT_IMAGE_MAX_BYTES || 2 * 1024 * 1024),
     // C-18: 쉼표로 구분한 허용 출처. 비우면 CORS 헤더 없음
     corsOrigins: (env.CORS_ORIGINS ?? '')
       .split(',')

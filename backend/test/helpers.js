@@ -14,7 +14,7 @@ export { pool };
 export async function resetDb() {
   await migrate();
   await pool.query(
-    'TRUNCATE members, groups, attendances, refresh_tokens RESTART IDENTITY CASCADE',
+    'TRUNCATE members, groups, attendances, refresh_tokens, chat_archives RESTART IDENTITY CASCADE',
   );
 }
 

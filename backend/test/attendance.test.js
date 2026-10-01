@@ -103,13 +103,22 @@ test('R-2: 이름 `기본`으로 그룹 생성 → 400 field name, 그룹 없음
   assert.equal(await count('SELECT 1 FROM groups'), 0);
 });
 
-test('캘린더: 그룹 수와 내 참석, month 없으면 이번 달, 형식 오류 400', async () => {
+test('캘린더: 그룹 수·그룹명(인원)과 내 참석, month 없으면 이번 달, 형식 오류 400', async () => {
   const minsu = await createMember(url);
-  await minsu.call('POST', `/dates/${DATE}/groups`, { name: 'A', capacity: 4 });
+  const created = await json(
+    await minsu.call('POST', `/dates/${DATE}/groups`, { name: 'A', capacity: 4 }),
+  );
   const { body } = await json(await minsu.call('GET', '/calendar?month=2026-10'));
   assert.deepEqual(body, {
     month: '2026-10',
-    days: [{ date: DATE, groupCount: 1, attending: true }],
+    days: [
+      {
+        date: DATE,
+        groupCount: 1,
+        groups: [{ id: created.body.id, name: 'A', count: 1, mine: true }],
+        attending: true,
+      },
+    ],
   });
 
   const { rows } = await pool.query(
