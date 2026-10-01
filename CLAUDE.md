@@ -19,4 +19,5 @@
 | [docs/6-arch-diagram.md](docs/6-arch-diagram.md)           | 기술 아키텍처 다이어그램 (Mermaid)                                  |
 | [docs/7-erd.md](docs/7-erd.md)                             | ERD (Mermaid)                                                       |
 | [docs/8-plan.md](docs/8-plan.md)                           | 실행 계획 (Task, 일정, 완료 조건)                                   |
+| [docs/9-style-guide.md](docs/9-style-guide.md)             | 프론트엔드 스타일 가이드 (색·글자·간격 토큰, 컴포넌트 모양)         |
 | [docs/schema.sql](docs/schema.sql)                         | DB 스키마 DDL                                                       |

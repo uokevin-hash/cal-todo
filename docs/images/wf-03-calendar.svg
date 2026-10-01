@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1624" height="780" viewBox="0 0 1624 780" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif">
+<title>WF-03 캘린더 · 스타일 가이드 적용</title>
+<rect width="1624" height="780" fill="#f2f2f2"/>
+<text x="40" y="44" font-size="13" font-weight="700" fill="#5c5c5c">데스크톱 (768px 이상) · 회원</text>
+<rect x="39.5" y="55.5" width="1129" height="685" fill="#ffffff" stroke="#a2a3a5"/>
+<rect x="40" y="56" width="1128" height="48" fill="#ffffff"/>
+<line x1="40" y1="104" x2="1168" y2="104" stroke="#f0f1f5" stroke-width="1"/>
+<text x="64" y="86" font-size="15" font-weight="700" fill="#111111">cal-todo</text>
+<text x="160" y="86" font-size="14" font-weight="700" fill="#6d5bef">캘린더</text>
+<rect x="160" y="102" width="42" height="2" fill="#6d5bef"/>
+<text x="230" y="86" font-size="14" fill="#333333">참석 현황</text>
+<text x="328" y="86" font-size="14" fill="#333333">내 정보</text>
+<rect x="1064.5" y="64.5" width="79" height="31" rx="3" fill="#ffffff" stroke="#d0d0d0"/>
+<text x="1104" y="85.04" font-size="14" fill="#333333" text-anchor="middle">로그아웃</text>
+<rect x="64.5" y="128.5" width="31" height="31" rx="3" fill="#ffffff" stroke="#d0d0d0"/>
+<text x="80" y="148.32" font-size="12" fill="#333333" text-anchor="middle">◀</text>
+<text x="108" y="150" font-size="18" font-weight="700" fill="#111111">2026년 10월</text>
+<rect x="232.5" y="128.5" width="31" height="31" rx="3" fill="#ffffff" stroke="#d0d0d0"/>
+<text x="248" y="148.32" font-size="12" fill="#333333" text-anchor="middle">▶</text>
+<rect x="1088.5" y="128.5" width="55" height="31" rx="3" fill="#ffffff" stroke="#d0d0d0"/>
+<text x="1116" y="149.04" font-size="14" fill="#333333" text-anchor="middle">오늘</text>
+<rect x="64" y="176" width="1080" height="28" fill="#f8f8f8"/>
+<text x="72" y="194" font-size="12" fill="#ba5753">일</text>
+<text x="226.28571428571428" y="194" font-size="12" fill="#8d8d8d">월</text>
+<text x="380.57142857142856" y="194" font-size="12" fill="#8d8d8d">화</text>
+<text x="534.8571428571429" y="194" font-size="12" fill="#8d8d8d">수</text>
+<text x="689.1428571428571" y="194" font-size="12" fill="#8d8d8d">목</text>
+<text x="843.4285714285713" y="194" font-size="12" fill="#8d8d8d">금</text>
+<text x="997.7142857142857" y="194" font-size="12" fill="#344fcb">토</text>
+<rect x="681.1428571428571" y="204" width="154.28571428571428" height="96" fill="#f5fafd"/>
+<rect x="681.6428571428571" y="204.5" width="153.28571428571428" height="95" fill="none" stroke="#a2a3a5"/>
+<text x="689.1428571428571" y="222" font-size="12" fill="#333333">1</text>
+<text x="843.4285714285713" y="222" font-size="12" fill="#333333">2</text>
+<text x="997.7142857142857" y="222" font-size="12" fill="#344fcb">3</text>
+<text x="997.7142857142857" y="244" font-size="12" fill="#6d5bef">●2</text>
+<text x="1023.7142857142857" y="244" font-size="12" fill="#6d5bef" font-weight="700">✔</text>
+<text x="72" y="318" font-size="12" fill="#ba5753">4</text>
+<text x="226.28571428571428" y="318" font-size="12" fill="#333333">5</text>
+<text x="226.28571428571428" y="340" font-size="12" fill="#6d5bef">●1</text>
+<text x="380.57142857142856" y="318" font-size="12" fill="#333333">6</text>
+<text x="534.8571428571429" y="318" font-size="12" fill="#333333">7</text>
+<text x="689.1428571428571" y="318" font-size="12" fill="#333333">8</text>
+<text x="843.4285714285713" y="318" font-size="12" fill="#333333">9</text>
+<text x="997.7142857142857" y="318" font-size="12" fill="#344fcb">10</text>
+<text x="997.7142857142857" y="340" font-size="12" fill="#6d5bef">●2</text>
+<text x="72" y="414" font-size="12" fill="#ba5753">11</text>
+<text x="226.28571428571428" y="414" font-size="12" fill="#333333">12</text>
+<text x="380.57142857142856" y="414" font-size="12" fill="#333333">13</text>
+<text x="534.8571428571429" y="414" font-size="12" fill="#333333">14</text>
+<text x="689.1428571428571" y="414" font-size="12" fill="#333333">15</text>
+<text x="843.4285714285713" y="414" font-size="12" fill="#333333">16</text>
+<text x="997.7142857142857" y="414" font-size="12" fill="#344fcb">17</text>
+<text x="72" y="510" font-size="12" fill="#ba5753">18</text>
+<text x="226.28571428571428" y="510" font-size="12" fill="#333333">19</text>
+<text x="380.57142857142856" y="510" font-size="12" fill="#333333">20</text>
+<text x="534.8571428571429" y="510" font-size="12" fill="#333333">21</text>
+<text x="689.1428571428571" y="510" font-size="12" fill="#333333">22</text>
+<text x="843.4285714285713" y="510" font-size="12" fill="#333333">23</text>
+<text x="997.7142857142857" y="510" font-size="12" fill="#344fcb">24</text>
+<text x="72" y="606" font-size="12" fill="#ba5753">25</text>
+<text x="226.28571428571428" y="606" font-size="12" fill="#333333">26</text>
+<text x="380.57142857142856" y="606" font-size="12" fill="#333333">27</text>
+<text x="534.8571428571429" y="606" font-size="12" fill="#333333">28</text>
+<text x="689.1428571428571" y="606" font-size="12" fill="#333333">29</text>
+<text x="843.4285714285713" y="606" font-size="12" fill="#333333">30</text>
+<text x="997.7142857142857" y="606" font-size="12" fill="#344fcb">31</text>
+<line x1="64" y1="176" x2="64" y2="684" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="218.28571428571428" y1="176" x2="218.28571428571428" y2="684" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="372.57142857142856" y1="176" x2="372.57142857142856" y2="684" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="526.8571428571429" y1="176" x2="526.8571428571429" y2="684" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="681.1428571428571" y1="176" x2="681.1428571428571" y2="684" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="835.4285714285713" y1="176" x2="835.4285714285713" y2="684" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="989.7142857142857" y1="176" x2="989.7142857142857" y2="684" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1144" y1="176" x2="1144" y2="684" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="64" y1="176" x2="1144" y2="176" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="64" y1="204" x2="1144" y2="204" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="64" y1="300" x2="1144" y2="300" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="64" y1="396" x2="1144" y2="396" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="64" y1="492" x2="1144" y2="492" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="64" y1="588" x2="1144" y2="588" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="64" y1="684" x2="1144" y2="684" stroke="#e5e5e5" stroke-width="1"/>
+<text x="64" y="712" font-size="12" fill="#8d8d8d">●n = 그날 그룹 수 · ✔ = 내가 참석한 날 · 오늘 = 배경 + 테두리 강조 · 날짜 칸 전체가 눌리는 영역(지난 날짜 포함, R-6)</text>
+<text x="1224" y="44" font-size="13" font-weight="700" fill="#5c5c5c">모바일 (360px)</text>
+<rect x="1223.5" y="55.5" width="361" height="521" fill="#ffffff" stroke="#a2a3a5"/>
+<rect x="1224" y="56" width="360" height="48" fill="#ffffff"/>
+<line x1="1224" y1="104" x2="1584" y2="104" stroke="#f0f1f5" stroke-width="1"/>
+<rect x="1232.5" y="60.5" width="39" height="39" rx="3" fill="#ffffff" stroke="#d0d0d0"/>
+<text x="1252" y="86.48" font-size="18" fill="#333333" text-anchor="middle">≡</text>
+<text x="1284" y="86" font-size="15" font-weight="700" fill="#111111">캘린더</text>
+<rect x="1240.5" y="120.5" width="43" height="43" rx="3" fill="#ffffff" stroke="#d0d0d0"/>
+<text x="1262" y="146.32" font-size="12" fill="#333333" text-anchor="middle">◀</text>
+<text x="1296" y="148" font-size="18" font-weight="700" fill="#111111">2026년 10월</text>
+<rect x="1420.5" y="120.5" width="43" height="43" rx="3" fill="#ffffff" stroke="#d0d0d0"/>
+<text x="1442" y="146.32" font-size="12" fill="#333333" text-anchor="middle">▶</text>
+<rect x="1500.5" y="120.5" width="67" height="43" rx="3" fill="#ffffff" stroke="#d0d0d0"/>
+<text x="1534" y="147.04" font-size="14" fill="#333333" text-anchor="middle">오늘</text>
+<rect x="1240" y="180" width="328" height="28" fill="#f8f8f8"/>
+<text x="1248" y="198" font-size="12" fill="#ba5753">일</text>
+<text x="1294.857142857143" y="198" font-size="12" fill="#8d8d8d">월</text>
+<text x="1341.7142857142858" y="198" font-size="12" fill="#8d8d8d">화</text>
+<text x="1388.5714285714284" y="198" font-size="12" fill="#8d8d8d">수</text>
+<text x="1435.4285714285713" y="198" font-size="12" fill="#8d8d8d">목</text>
+<text x="1482.2857142857142" y="198" font-size="12" fill="#8d8d8d">금</text>
+<text x="1529.142857142857" y="198" font-size="12" fill="#344fcb">토</text>
+<rect x="1427.4285714285713" y="208" width="46.857142857142854" height="64" fill="#f5fafd"/>
+<rect x="1427.9285714285713" y="208.5" width="45.857142857142854" height="63" fill="none" stroke="#a2a3a5"/>
+<text x="1435.4285714285713" y="226" font-size="12" fill="#333333">1</text>
+<text x="1482.2857142857142" y="226" font-size="12" fill="#333333">2</text>
+<text x="1529.142857142857" y="226" font-size="12" fill="#344fcb">3</text>
+<text x="1529.142857142857" y="244" font-size="12" fill="#6d5bef">●2</text>
+<text x="1529.142857142857" y="260" font-size="12" fill="#6d5bef" font-weight="700">✔</text>
+<text x="1248" y="290" font-size="12" fill="#ba5753">4</text>
+<text x="1294.857142857143" y="290" font-size="12" fill="#333333">5</text>
+<text x="1294.857142857143" y="308" font-size="12" fill="#6d5bef">●1</text>
+<text x="1341.7142857142858" y="290" font-size="12" fill="#333333">6</text>
+<text x="1388.5714285714284" y="290" font-size="12" fill="#333333">7</text>
+<text x="1435.4285714285713" y="290" font-size="12" fill="#333333">8</text>
+<text x="1482.2857142857142" y="290" font-size="12" fill="#333333">9</text>
+<text x="1529.142857142857" y="290" font-size="12" fill="#344fcb">10</text>
+<text x="1529.142857142857" y="308" font-size="12" fill="#6d5bef">●2</text>
+<text x="1248" y="354" font-size="12" fill="#ba5753">11</text>
+<text x="1294.857142857143" y="354" font-size="12" fill="#333333">12</text>
+<text x="1341.7142857142858" y="354" font-size="12" fill="#333333">13</text>
+<text x="1388.5714285714284" y="354" font-size="12" fill="#333333">14</text>
+<text x="1435.4285714285713" y="354" font-size="12" fill="#333333">15</text>
+<text x="1482.2857142857142" y="354" font-size="12" fill="#333333">16</text>
+<text x="1529.142857142857" y="354" font-size="12" fill="#344fcb">17</text>
+<text x="1248" y="418" font-size="12" fill="#ba5753">18</text>
+<text x="1294.857142857143" y="418" font-size="12" fill="#333333">19</text>
+<text x="1341.7142857142858" y="418" font-size="12" fill="#333333">20</text>
+<text x="1388.5714285714284" y="418" font-size="12" fill="#333333">21</text>
+<text x="1435.4285714285713" y="418" font-size="12" fill="#333333">22</text>
+<text x="1482.2857142857142" y="418" font-size="12" fill="#333333">23</text>
+<text x="1529.142857142857" y="418" font-size="12" fill="#344fcb">24</text>
+<text x="1248" y="482" font-size="12" fill="#ba5753">25</text>
+<text x="1294.857142857143" y="482" font-size="12" fill="#333333">26</text>
+<text x="1341.7142857142858" y="482" font-size="12" fill="#333333">27</text>
+<text x="1388.5714285714284" y="482" font-size="12" fill="#333333">28</text>
+<text x="1435.4285714285713" y="482" font-size="12" fill="#333333">29</text>
+<text x="1482.2857142857142" y="482" font-size="12" fill="#333333">30</text>
+<text x="1529.142857142857" y="482" font-size="12" fill="#344fcb">31</text>
+<line x1="1240" y1="180" x2="1240" y2="528" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1286.857142857143" y1="180" x2="1286.857142857143" y2="528" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1333.7142857142858" y1="180" x2="1333.7142857142858" y2="528" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1380.5714285714284" y1="180" x2="1380.5714285714284" y2="528" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1427.4285714285713" y1="180" x2="1427.4285714285713" y2="528" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1474.2857142857142" y1="180" x2="1474.2857142857142" y2="528" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1521.142857142857" y1="180" x2="1521.142857142857" y2="528" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1568" y1="180" x2="1568" y2="528" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1240" y1="180" x2="1568" y2="180" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1240" y1="208" x2="1568" y2="208" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1240" y1="272" x2="1568" y2="272" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1240" y1="336" x2="1568" y2="336" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1240" y1="400" x2="1568" y2="400" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1240" y1="464" x2="1568" y2="464" stroke="#e5e5e5" stroke-width="1"/>
+<line x1="1240" y1="528" x2="1568" y2="528" stroke="#e5e5e5" stroke-width="1"/>
+<text x="1240" y="552" font-size="12" fill="#8d8d8d">칸 폭 약 47px · 표시는 두 줄</text>
+</svg>
