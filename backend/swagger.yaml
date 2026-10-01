@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
   title: cal-todo API
-  version: 0.2.0
-  description: '배드민턴 동호회 일별 참석 관리 웹앱 API. 근거: docs/2-PRD.md v0.12 9장(API 개요·핵심 응답 형식, 계약의 단일 출처 L-14), 6.1(인증), 8장 D-4, NFR-10; docs/5-project-principle.md v0.8 C-8(오류 형식·HTTP 상태↔code), N-8~N-11; docs/1-definition.md v0.14 4장·R-n. JSON 필드는 camelCase, 날짜는 "YYYY-MM-DD". 경로 id가 정수가 아니면 404 NOT_FOUND(없는 대상과 같게 취급). PATCH는 부분 갱신(보낸 필드만 변경, 빈 본문 {}은 200 변경 없음). 성공 상태 코드(201/200/204) 중 PRD 9장에 없는 것은 docs/8-plan.md 완료 조건을 따랐다.'
+  version: 0.3.0
+  description: '배드민턴 동호회 일별 참석 관리 웹앱 API. 근거: docs/2-PRD.md v0.13 9장(API 개요·핵심 응답 형식, 계약의 단일 출처 L-14), 6.1(인증), 8장 D-4, NFR-10; docs/5-project-principle.md v0.10 C-8(오류 형식·HTTP 상태↔code), N-8~N-11; docs/1-definition.md v0.14 4장·R-n. JSON 필드는 camelCase, 날짜는 "YYYY-MM-DD". 경로 id가 정수가 아니면 404 NOT_FOUND(없는 대상과 같게 취급). PATCH는 부분 갱신(보낸 필드만 변경, 빈 본문 {}은 200 변경 없음). 성공 상태 코드(201/200/204) 중 PRD 9장에 없는 것은 docs/8-plan.md 완료 조건을 따랐다. 경로 날짜(:date)가 YYYY-MM-DD 형식의 실제 날짜가 아니면 400 VALIDATION_ERROR(field: date). /groups/*·/admin/* 아래 없는 경로는 인증·권한 확인이 먼저라 401·403, 그 밖의 /api 아래 없는 경로는 404 NOT_FOUND. 개발 환경(NODE_ENV≠production)에서는 /api-docs에 이 명세의 Swagger UI를 띄운다. CORS는 기본 꺼짐이며 환경 변수 CORS_ORIGINS에 적은 출처만 쿠키 포함으로 허용한다(C-18).'
 servers:
   - url: /api
 tags:
@@ -48,7 +48,7 @@ paths:
         - auth
       summary: 로그인
       operationId: login
-      description: "UC-2, FR-2, R-1, 6.1 흐름 1·9. 본문에 Access Token, 쿠키로 Refresh Token 발급. 400 code: VALIDATION_ERROR(field: email|password — 누락·형식 오류), INVALID_CREDENTIALS(형식은 맞는데 인증 실패: 없는 이메일·틀린 비밀번호·삭제된 회원 모두 동일, D-4). 429 code: TOO_MANY_ATTEMPTS(FR-18, P2)."
+      description: "UC-2, FR-2, R-1, 6.1 흐름 1·9. 본문에 Access Token, 쿠키로 Refresh Token 발급. 400 code: VALIDATION_ERROR(field: email|password — 누락·형식 오류), INVALID_CREDENTIALS(형식은 맞는데 인증 실패: 없는 이메일·틀린 비밀번호·삭제된 회원 모두 동일, D-4). 429 code: TOO_MANY_ATTEMPTS(FR-18, P2). 잠금 확인은 비밀번호 확인 전에 하고, 로그인에 성공하면 그 이메일의 실패 기록을 지운다."
       security: []
       requestBody:
         required: true
@@ -142,7 +142,7 @@ paths:
         - me
       summary: 내 정보 수정
       operationId: updateMe
-      description: "UC-3, FR-8, R-8, R-10(role·isPermanent는 본문에서 읽지 않음, C-9), R-11, 6.1 흐름 8. 부분 갱신(보낸 필드만 변경, 빈 본문 {}은 200 변경 없음). 비밀번호 변경은 newPassword + currentPassword 필수. 비밀번호를 바꾸면 다른 기기의 Refresh Token은 폐기(FORCED)하고 현재 세션에는 새 토큰을 발급한다. 400 code: VALIDATION_ERROR, WRONG_PASSWORD(field: currentPassword). 409 code: EMAIL_TAKEN."
+      description: "UC-3, FR-8, R-8, R-10(role·isPermanent는 본문에서 읽지 않음, C-9), R-11, 6.1 흐름 8. 부분 갱신(보낸 필드만 변경, 빈 본문 {}은 200 변경 없음). 비밀번호 변경은 newPassword + currentPassword 필수. 비밀번호를 바꾸면 다른 기기의 Refresh Token은 폐기(FORCED)하고 현재 세션에는 새 토큰을 발급한다. 400 code: VALIDATION_ERROR(field: currentPassword — newPassword만 있고 currentPassword 없음, 그 밖의 형식 오류), WRONG_PASSWORD(field: currentPassword — 현재 비밀번호 틀림). 409 code: EMAIL_TAKEN."
       security:
         - bearerAuth: []
       requestBody:
@@ -218,7 +218,7 @@ paths:
       - name: date
         in: path
         required: true
-        description: 날짜 "YYYY-MM-DD"
+        description: '날짜 "YYYY-MM-DD". 형식이 틀리거나 없는 날짜면 400 VALIDATION_ERROR(field: date)'
         schema:
           type: string
           format: date
@@ -227,7 +227,7 @@ paths:
         - groups
       summary: 날짜별 그룹 조회
       operationId: listGroupsOfDate
-      description: UC-4, FR-5, R-5, R-9·FR-15(탈퇴 회원 표시), NFR-2.
+      description: "UC-4, FR-5, R-5, R-9·FR-15(탈퇴 회원 표시), NFR-2. 400 code: VALIDATION_ERROR(field: date)."
       security:
         - bearerAuth: []
       responses:
@@ -281,7 +281,7 @@ paths:
         - groups
       summary: 그룹 생성
       operationId: createGroup
-      description: "UC-6, FR-7, R-2, R-4, REQ-12, NFR-3~5(AD-6). 한 트랜잭션. attend=true인데 그날 이미 참석 중이면 그룹도 만들지 않고 409. attend는 선택, 기본값 true(SCR-05). 성공 201 {id}. 400 code: VALIDATION_ERROR(field: name — 이름 `기본` 불가(R-2), field: capacity). 409 code: DUPLICATE_GROUP_NAME, ALREADY_ATTENDING."
+      description: "UC-6, FR-7, R-2, R-4, REQ-12, NFR-3~5(AD-6). 한 트랜잭션. attend=true인데 그날 이미 참석 중이면 그룹도 만들지 않고 409. attend는 선택, 기본값 true(SCR-05). 성공 201 {id}. 400 code: VALIDATION_ERROR(field: name — 이름 `기본` 불가(R-2), field: capacity, field: date). 409 code: DUPLICATE_GROUP_NAME, ALREADY_ATTENDING."
       security:
         - bearerAuth: []
       requestBody:
@@ -310,7 +310,7 @@ paths:
       - name: date
         in: path
         required: true
-        description: 날짜 "YYYY-MM-DD"
+        description: '날짜 "YYYY-MM-DD". 형식이 틀리거나 없는 날짜면 400 VALIDATION_ERROR(field: date)'
         schema:
           type: string
           format: date
@@ -319,7 +319,7 @@ paths:
         - attendance
       summary: 그룹 없이 참석
       operationId: attendDefaultGroup
-      description: "UC-4, FR-6, R-2, R-3, R-4, NFR-5(AD-6). `기본` 그룹이 있으면 참석, 없으면 capacity로 생성 후 참석(ON CONFLICT DO NOTHING). `기본` 그룹 생성은 이 API로만 한다. 성공 201 {groupId}(들어간 `기본` 그룹 id). 400 code: VALIDATION_ERROR(field: capacity — `기본` 그룹이 없는데 capacity 없음). 409 code: CAPACITY_FULL, ALREADY_ATTENDING."
+      description: "UC-4, FR-6, R-2, R-3, R-4, NFR-5(AD-6). `기본` 그룹이 있으면 참석, 없으면 capacity로 생성 후 참석(ON CONFLICT DO NOTHING). `기본` 그룹 생성은 이 API로만 한다. 성공 201 {groupId}(들어간 `기본` 그룹 id). 400 code: VALIDATION_ERROR(field: capacity — `기본` 그룹이 없는데 capacity 없음, field: date). 409 code: CAPACITY_FULL, ALREADY_ATTENDING."
       security:
         - bearerAuth: []
       requestBody:
@@ -397,7 +397,7 @@ paths:
         - attendance
       summary: 참석 현황 조회
       operationId: listAttendance
-      description: "UC-5, FR-14, FR-15, R-5, R-7, R-9(비관리자의 이름 검색에 탈퇴 회원 실명이 걸리지 않음), REQ-7. 그룹 단위 행 배열. from·to가 없으면 이번 달(Asia/Seoul) 1일~말일, 기간 최대 93일, 페이지네이션 없음. 400 code: VALIDATION_ERROR(field: to — 93일 초과, 그 밖의 형식 오류)."
+      description: "UC-5, FR-14, FR-15, R-5, R-7, R-9(비관리자의 이름 검색에 탈퇴 회원 실명이 걸리지 않음), REQ-7. 그룹 단위 행 배열. from·to가 없으면 이번 달(Asia/Seoul) 1일~말일, 기간 최대 93일, 페이지네이션 없음. from·to 중 하나만 보내면 나머지는 이번 달 1일·말일로 채운다. 값이 빈 문자열인 필터는 보내지 않은 것으로 본다. 400 code: VALIDATION_ERROR(field: to — 93일 초과·to가 from보다 앞섬, field: from|status|capacity — 형식·허용 값 오류)."
       security:
         - bearerAuth: []
       parameters:
@@ -566,7 +566,7 @@ paths:
         - admin
       summary: 그룹 목록
       operationId: listAdminGroups
-      description: "관리자(ADMIN)만. UC-9, FR-17(P1). from·to는 GET /attendance와 같은 규칙: 없으면 이번 달(Asia/Seoul) 1일~말일, 기간 최대 93일. 만든 사람이 탈퇴 회원이면 실명 + isDeleted: true. 400 code: VALIDATION_ERROR(field: to — 93일 초과, 그 밖의 형식 오류)."
+      description: "관리자(ADMIN)만. UC-9, FR-17(P1). from·to는 GET /attendance와 같은 규칙: 없으면 이번 달(Asia/Seoul) 1일~말일, 기간 최대 93일. from·to 중 하나만 보내면 나머지는 이번 달 1일·말일로 채우고, 빈 문자열은 보내지 않은 것으로 본다. 만든 사람이 탈퇴 회원이면 실명 + isDeleted: true. 400 code: VALIDATION_ERROR(field: to — 93일 초과·to가 from보다 앞섬, field: from — 형식 오류)."
       security:
         - bearerAuth: []
       parameters:

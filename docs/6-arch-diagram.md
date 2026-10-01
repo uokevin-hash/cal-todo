@@ -1,6 +1,6 @@
 # cal-todo 기술 아키텍처 다이어그램
 
-> 근거: [1-definition.md](1-definition.md) **v0.14**, [2-user-scenarios.md](2-user-scenarios.md) **v0.17**, [2-PRD.md](2-PRD.md) **v0.11**, [3-screen-design.md](3-screen-design.md) **v0.15**, [4-wireframes.md](4-wireframes.md) **v0.7**, [5-project-principle.md](5-project-principle.md) **v0.8**. `R-n`·`UC-n`은 정의서, `S-n`은 시나리오, `M-n`·`FR-n`·`NFR-n`·`D-n`과 "6.1 흐름 n"은 PRD, `SCR-n`은 화면 설계서, `WF-n`은 와이어프레임, `L-n`·`C-n`·`T-n`·`ST-n`은 프로젝트 원칙 번호다. 이 문서가 정의하는 ID는 `AD-n`(다이어그램)이다. 다이어그램은 다른 문서의 내용을 그림으로 옮길 뿐이며 규칙을 새로 정하지 않는다. 문서와 그림이 다르면 문서가 맞다.
+> 근거: [1-definition.md](1-definition.md) **v0.14**, [2-user-scenarios.md](2-user-scenarios.md) **v0.17**, [2-PRD.md](2-PRD.md) **v0.13**, [3-screen-design.md](3-screen-design.md) **v0.16**, [4-wireframes.md](4-wireframes.md) **v0.7**, [5-project-principle.md](5-project-principle.md) **v0.10**. `R-n`·`UC-n`은 정의서, `S-n`은 시나리오, `M-n`·`FR-n`·`NFR-n`·`D-n`과 "6.1 흐름 n"은 PRD, `SCR-n`은 화면 설계서, `WF-n`은 와이어프레임, `L-n`·`C-n`·`T-n`·`ST-n`은 프로젝트 원칙 번호다. 이 문서가 정의하는 ID는 `AD-n`(다이어그램)이다. 다이어그램은 다른 문서의 내용을 그림으로 옮길 뿐이며 규칙을 새로 정하지 않는다. 문서와 그림이 다르면 문서가 맞다.
 
 ## 변경 이력
 
@@ -16,6 +16,7 @@
 | 0.6 | 2026-09-30 | uokevin | 머리말 기준 버전 갱신 |
 | 0.7 | 2026-09-30 | uokevin | 정합성 점검 반영: 머리말 기준 버전 갱신 |
 | 0.8 | 2026-09-30 | uokevin | 머리말 기준 버전 갱신 |
+| 0.9 | 2026-10-01 | uokevin | 백엔드 구현 반영: AD-2를 CORS 허용 목록(`CORS_ORIGINS`, 기본 비어 있음)과 개발용 Swagger UI(`/api-docs`)에 맞춤, 머리말 기준 버전 갱신 |
 
 ## 번호 정책
 
@@ -66,12 +67,14 @@ flowchart LR
 
 ## AD-2. 개발 환경
 
-개발 중에는 Vite 개발 서버가 `/api`를 Express로 넘겨 운영과 같은 출처로 동작한다. CORS 미들웨어는 없다. 근거: NFR-14, C-18.
+개발 중에는 Vite 개발 서버가 `/api`를 Express로 넘겨 운영과 같은 출처로 동작하므로 CORS가 필요 없다. 다른 출처에서 API를 직접 부를 때만 `CORS_ORIGINS`에 적은 출처를 허용한다(기본은 비어 있어 CORS 헤더 없음). 개발 환경에서는 Express가 `/api-docs`에 Swagger UI도 띄운다. 근거: NFR-14, C-18, PRD 9장.
 
 ```mermaid
 flowchart LR
     B["브라우저"] --> V["Vite 개발 서버"]
     V -->|"server.proxy /api"| E["Express<br/>localhost:3000"]
+    B -.->|"/api-docs (개발 전용 Swagger UI)"| E
+    O["다른 출처의 클라이언트"] -.->|"/api, CORS_ORIGINS에 있을 때만"| E
     E --> P[("PostgreSQL 17")]
 ```
 

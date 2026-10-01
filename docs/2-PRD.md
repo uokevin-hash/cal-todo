@@ -1,9 +1,9 @@
 # cal-todo PRD
 
 - **상태**: 검토 중
-- **버전**: 0.12
+- **버전**: 0.13
 
-> 근거: [1-definition.md](1-definition.md) **v0.14**, [2-user-scenarios.md](2-user-scenarios.md) **v0.17**, [3-screen-design.md](3-screen-design.md) **v0.15**, [prompts/PRD생성.md](../prompts/PRD생성.md). `REQ-n`·`R-n`·`UC-n`은 정의서, `S-n`은 시나리오, `SCR-n`은 화면 설계서 번호다. 도메인 규칙은 이 문서에서 다시 정의하지 않고 ID로 참조한다.
+> 근거: [1-definition.md](1-definition.md) **v0.14**, [2-user-scenarios.md](2-user-scenarios.md) **v0.17**, [3-screen-design.md](3-screen-design.md) **v0.16**, [prompts/PRD생성.md](../prompts/PRD생성.md). `REQ-n`·`R-n`·`UC-n`은 정의서, `S-n`은 시나리오, `SCR-n`은 화면 설계서 번호다. 도메인 규칙은 이 문서에서 다시 정의하지 않고 ID로 참조한다.
 
 ## 변경 이력
 
@@ -23,6 +23,7 @@
 | 0.10 | 2026-09-30 | uokevin | 정합성 점검 반영: 머리말 기준 버전 갱신 |
 | 0.11 | 2026-09-30 | uokevin | 정합성 점검 후속: 9장 핵심 응답 형식에 `PATCH /me` 추가(비밀번호 변경 시 `{accessToken}` + 새 Refresh 쿠키), 머리말 기준 버전 갱신 |
 | 0.12 | 2026-09-30 | uokevin | API 빈틈 결정 반영: 9장 핵심 응답 형식에 `GET /calendar`·`GET /admin/members`·`GET /admin/groups` 본문, 가입 201 본문 없음, 그룹 생성 201 `{id}`, 참석 201 `{groupId}`, 관리자 PATCH 200 행 객체 추가, 새 비밀번호 필드 `newPassword`, `month` 선택·기본값, `GET /admin/groups` 기간 규칙, `GET /attendance`의 `group` 부분 일치·`status` 값, 참석 취소 멱등 204, 로그인 입력 400 `VALIDATION_ERROR`, 숫자가 아닌 경로 id 404, PATCH 부분 갱신, 그룹 생성 `attend` 기본값 `true` |
+| 0.13 | 2026-10-01 | uokevin | 백엔드 구현(BE-1 ~ BE-11) 반영: 9장에 구현 중 정한 세부 동작(경로 날짜 형식 400, 기간 필터 한쪽만 보낸 경우·`to`가 `from`보다 앞선 경우, 빈 필터 값, `currentPassword` 누락 400, `/groups/*`·`/admin/*` 아래 없는 경로의 401·403, 개발용 Swagger UI `/api-docs`, CORS 허용 목록), FR-18에 로그인 성공 시 실패 기록 초기화, 머리말 기준 버전 갱신 |
 
 ## 번호 정책
 
@@ -91,7 +92,7 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 | FR-15 | 탈퇴 회원 표시(비관리자 `탈퇴 회원`, 관리자 실명+`(탈퇴)`, 비관리자 이름 검색에서 제외) | P0       | REQ-9                | UC-5, UC-7 | SCR-04, SCR-06, SCR-08, SCR-09 |
 | FR-16 | [삭제된 회원 보기] 토글 (v0.2까지는 검색 포함, 검색은 FR-19로 분리)                     | P0       | REQ-9, REQ-10        | UC-7       | SCR-08                         |
 | FR-17 | 그룹 관리 기간 조회 목록                                                                | P1       | REQ-6                | UC-9       | SCR-09                         |
-| FR-18 | 로그인 시도 횟수 제한 (정의서에 없는 PRD 추가 보안 요구). 같은 이메일로 15분 안에 5회 실패하면 15분 동안 로그인 거부, 429 `TOO_MANY_ATTEMPTS`. 실패 기록은 서버 메모리(`Map`)에 둔다(서버 1대, 재시작 시 초기화 허용) | P2       | -                    | UC-2       | SCR-01                         |
+| FR-18 | 로그인 시도 횟수 제한 (정의서에 없는 PRD 추가 보안 요구). 같은 이메일로 15분 안에 5회 실패하면 15분 동안 로그인 거부, 429 `TOO_MANY_ATTEMPTS`. 실패 기록은 서버 메모리(`Map`)에 둔다(서버 1대, 재시작 시 초기화 허용). 잠금 확인은 비밀번호 확인 전에 하고, 로그인에 성공하면 그 이메일의 실패 기록을 지운다 | P2       | -                    | UC-2       | SCR-01                         |
 | FR-19 | 회원 관리 검색(이름·이메일 부분 일치)                                                  | P1       | REQ-10               | UC-7       | SCR-08                         |
 
 - FR-17이 P1인 이유: P0 기간에는 SCR-04의 관리자 버튼(D-7)으로 FR-12·FR-13을 먼저 제공한다.
@@ -225,6 +226,12 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 - 탈퇴 회원 이름 가림(FR-15)은 서버가 요청자 역할에 따라 응답에서 처리한다. 클라이언트에 실명을 보내지 않는다.
 - 경로 id(`:id`, `:memberId`)가 숫자가 아니면(정수로 해석 불가) 존재하지 않는 대상과 같게 404 `NOT_FOUND`로 응답한다.
 - `PATCH /me`, `PATCH /admin/members/:id`, `PATCH /admin/groups/:id`는 부분 갱신이다. 보낸 필드만 바꾸고 없는 필드는 그대로 둔다. 빈 본문 `{}`은 200(변경 없음).
+- 경로 날짜(`:date`)가 `YYYY-MM-DD` 형식의 실제 날짜가 아니면 400 `VALIDATION_ERROR`(`field: date`).
+- 기간 필터(`GET /attendance`, `GET /admin/groups`): `from`·`to` 중 하나만 보내면 나머지는 이번 달 1일·말일로 채운다. `to`가 `from`보다 앞서면 400 `VALIDATION_ERROR`(`field: to`). 값이 빈 문자열인 필터는 보내지 않은 것으로 본다. `status`·`capacity`가 허용 값 밖이면 400 `VALIDATION_ERROR`(`field`는 그 파라미터 이름).
+- `PATCH /me`에 `newPassword`만 있고 `currentPassword`가 없으면 400 `VALIDATION_ERROR`(`field: currentPassword`). 틀리면 400 `WRONG_PASSWORD`.
+- `/groups/*`, `/admin/*` 아래의 없는 경로는 인증·권한 확인이 먼저라 404가 아니라 401(토큰 없음)·403(비관리자)으로 응답한다. 그 밖의 `/api` 아래 없는 경로는 404 `NOT_FOUND`.
+- 개발 환경(`NODE_ENV`가 `production`이 아님)에서는 `/api-docs`에 Swagger UI를 띄운다. `backend/swagger.yaml`을 읽으며 운영에서는 열지 않는다.
+- CORS: 기본은 같은 출처(D-5, 개발은 Vite 프록시)라 CORS 헤더를 보내지 않는다. 다른 출처에서 직접 호출할 때만 환경 변수 `CORS_ORIGINS`에 적은 출처를 쿠키 포함으로 허용한다([5-project-principle.md](5-project-principle.md) C-18).
 
 **핵심 응답 형식** (JSON 필드는 camelCase, 날짜는 `"YYYY-MM-DD"`)
 

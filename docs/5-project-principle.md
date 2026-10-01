@@ -1,6 +1,6 @@
 # cal-todo 프로젝트 구조 설계 원칙
 
-> 근거: [1-definition.md](1-definition.md) **v0.14**, [2-user-scenarios.md](2-user-scenarios.md) **v0.17**, [2-PRD.md](2-PRD.md) **v0.11**, [3-screen-design.md](3-screen-design.md) **v0.15**, [4-wireframes.md](4-wireframes.md) **v0.7**, [CLAUDE.md](../CLAUDE.md). `REQ-n`·`R-n`·`UC-n`은 정의서, `S-n`은 시나리오, `M-n`·`FR-n`·`NFR-n`·`D-n`과 "6.1 흐름 n"은 PRD, `SCR-n`은 화면 설계서, `WF-n`은 와이어프레임 번호다. 이 문서가 정의하는 ID는 `P-n`(공통), `L-n`(의존성·레이어), `N-n`(코드·네이밍), `T-n`(테스트·품질), `C-n`(설정·보안·운영), `ST-n`(디렉토리 구조)이다. 도메인 규칙은 다시 정의하지 않고 ID로 참조한다. **(결정)** 표시는 다른 문서에 없던 것을 이 문서에서 새로 정한 사항이다.
+> 근거: [1-definition.md](1-definition.md) **v0.14**, [2-user-scenarios.md](2-user-scenarios.md) **v0.17**, [2-PRD.md](2-PRD.md) **v0.13**, [3-screen-design.md](3-screen-design.md) **v0.16**, [4-wireframes.md](4-wireframes.md) **v0.7**, [CLAUDE.md](../CLAUDE.md). `REQ-n`·`R-n`·`UC-n`은 정의서, `S-n`은 시나리오, `M-n`·`FR-n`·`NFR-n`·`D-n`과 "6.1 흐름 n"은 PRD, `SCR-n`은 화면 설계서, `WF-n`은 와이어프레임 번호다. 이 문서가 정의하는 ID는 `P-n`(공통), `L-n`(의존성·레이어), `N-n`(코드·네이밍), `T-n`(테스트·품질), `C-n`(설정·보안·운영), `ST-n`(디렉토리 구조)이다. 도메인 규칙은 다시 정의하지 않고 ID로 참조한다. **(결정)** 표시는 다른 문서에 없던 것을 이 문서에서 새로 정한 사항이다.
 
 ## 변경 이력
 
@@ -16,6 +16,8 @@
 | 0.6 | 2026-09-30 | uokevin | 잔여 빈틈 결정 반영: C-9 생년월일 미래 판정을 service(`TODAY_SQL`)로 이동, T-6에 일정 지연 시 모바일 확인 축소 조건, 머리말 기준 버전 갱신 |
 | 0.7 | 2026-09-30 | uokevin | 정합성 점검 반영: 머리말 기준 버전 갱신 |
 | 0.8 | 2026-09-30 | uokevin | 머리말 기준 버전 갱신 |
+| 0.9 | 2026-10-01 | uokevin | C-18에 CORS 허용 목록 추가(`CORS_ORIGINS`, 비우면 CORS 헤더 없음), 5.1 환경 변수 표에 `CORS_ORIGINS` 추가 |
+| 0.10 | 2026-10-01 | uokevin | 백엔드 구현 반영: 6.2 트리에 `swagger.yaml`, `src/cors.js`(C-18), `src/docs.js`(개발용 Swagger UI), `test/cors.test.js` 추가, `services/groups.js`에 관리자 그룹 목록, 2.4 "쓰지 않는 것"에 `cors`·`swagger-ui-express`, 머리말 기준 버전 갱신 |
 
 ## 번호 정책
 
@@ -93,7 +95,7 @@ pages/컴포넌트 (features/*) ──▶ api 훅 (features/*/api.ts, TanStack Q
 | frontend | `react`, `react-dom`, `react-router-dom` **(결정: URL 라우팅·딥링크 `/dates/:date`·뒤로 가기 WF-04)**, `zustand`, `@tanstack/react-query` | `vite`, `@vitejs/plugin-react`, `typescript`, `eslint`(Vite 템플릿 구성), `prettier` |
 | backend | `express`(**결정: v5**, async 오류 자동 전달로 래퍼 불필요), `pg`, `bcrypt`, `jsonwebtoken`, `cookie-parser` | `eslint`, `@eslint/js`, `globals`, `prettier` |
 
-- 쓰지 않는 것(대체 수단): `dotenv`(`node --env-file`), `nodemon`(`node --watch`), `axios`(`fetch`), `zod`·`joi`(`validate.js` 손 검증), `supertest`(`app.listen(0)` + `fetch`), `dayjs`·`moment`(SQL + `Intl`), 캘린더·날짜 선택 라이브러리(손 그리드 + `<input type="date">`), UI 키트·Tailwind(CSS 파일 하나), `helmet`(`app.disable('x-powered-by')`로 충분, 필요해지면 추가), `concurrently`(터미널 두 개).
+- 쓰지 않는 것(대체 수단): `dotenv`(`node --env-file`), `nodemon`(`node --watch`), `axios`(`fetch`), `zod`·`joi`(`validate.js` 손 검증), `supertest`(`app.listen(0)` + `fetch`), `dayjs`·`moment`(SQL + `Intl`), 캘린더·날짜 선택 라이브러리(손 그리드 + `<input type="date">`), UI 키트·Tailwind(CSS 파일 하나), `helmet`(`app.disable('x-powered-by')`로 충분, 필요해지면 추가), `concurrently`(터미널 두 개), `cors`(허용 목록만 보는 `src/cors.js`, C-18), `swagger-ui-express`(CDN의 `swagger-ui-dist`를 불러오는 고정 HTML `src/docs.js`, 개발 환경 전용).
 
 ## 3. 코드·네이밍 원칙
 
@@ -196,6 +198,7 @@ Day2 오후에 배포 환경(또는 운영 빌드를 서빙하는 로컬)에서 
 | `PORT` | 아니오 | 기본 `3000` |
 | `NODE_ENV` | 아니오 | `production`이면 쿠키 `Secure`, SPA 정적 파일 서빙 |
 | `ACCESS_TOKEN_TTL` | 아니오 | 기본 `15m`. S-14 수동 확인용으로 개발에서만 줄인다 |
+| `CORS_ORIGINS` | 아니오 | 쉼표로 구분한 허용 출처(예: `http://localhost:5173`). 비우면 CORS 헤더를 보내지 않는다(C-18) |
 
 - 비밀키 생성: `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`.
 
@@ -245,7 +248,7 @@ Day2 오후에 배포 환경(또는 운영 빌드를 서빙하는 로컬)에서 
 
 | ID | 원칙 | 근거 |
 |----|------|------|
-| C-18 | **개발**: 터미널 두 개. `backend`에서 `node --watch --env-file=.env src/server.js`, `frontend`에서 `vite`. Vite `server.proxy`로 `/api` → `http://localhost:3000`. CORS 미들웨어는 두지 않는다 | NFR-14 |
+| C-18 | **개발**: 터미널 두 개. `backend`에서 `node --watch --env-file=.env src/server.js`, `frontend`에서 `vite`. Vite `server.proxy`로 `/api` → `http://localhost:3000`. 같은 출처로 쓰므로 기본은 CORS 없음. 다른 출처에서 API를 직접 부를 때만 `CORS_ORIGINS`에 적은 출처를 `/api`에 허용한다(쿠키 포함, 패키지 없이 `src/cors.js`) | NFR-14 |
 | C-19 | **(결정) 배포**: VM 1대에 Node 22 LTS + PostgreSQL 17. `frontend`에서 `npm ci && npm run build` → `frontend/dist`. `backend`에서 `npm ci --omit=dev` 후 `NODE_ENV=production node --env-file=.env src/server.js`를 PM2(fork 1개)로 띄운다. cluster는 M-1 미달 때만(NFR-1) | D-5, NFR-1 |
 | C-20 | Express는 `/api` 라우터 → `frontend/dist` 정적 파일 → 나머지 `GET`은 `index.html`(SPA 폴백) 순서로 붙인다. `/api` 아래 없는 경로는 JSON 404 | D-5 |
 | C-21 | HTTPS는 앞단(호스팅 기본 TLS 또는 Caddy/nginx 리버스 프록시)에서 끝낸다. 프록시 뒤라면 `app.set('trust proxy', 1)`. 호스팅 선택은 PRD 12장 미결 사항을 따른다 | PRD 12장 |
@@ -279,6 +282,7 @@ backend/
 ├─ .env.example            C-3 변수 목록
 ├─ .env.test.example       테스트용 변수 목록(C-3, T-2). 실제 값은 .env.test(git 제외)
 ├─ eslint.config.js
+├─ swagger.yaml            API 명세(OpenAPI 3.0.3). PRD 9장과 일치시킨다
 ├─ db/
 │  └─ migrations/
 │     └─ 001_init.sql      members, groups, attendances, refresh_tokens + 제약·인덱스(PRD 7장)
@@ -291,6 +295,8 @@ backend/
 │  ├─ errors.js            AppError, 오류 미들웨어(C-8, C-12)
 │  ├─ validate.js          형식 검증 함수(C-9)
 │  ├─ middleware.js        requireAuth(토큰 검증 + 회원 재조회), requireAdmin(L-6, C-7)
+│  ├─ cors.js              CORS_ORIGINS 허용 목록만 CORS 헤더(C-18)
+│  ├─ docs.js              /api-docs Swagger UI(개발 환경 전용, swagger.yaml을 읽음)
 │  ├─ routes/
 │  │  ├─ auth.js           /auth/signup, login, refresh, logout
 │  │  ├─ me.js             /me
@@ -301,7 +307,7 @@ backend/
 │  ├─ services/
 │  │  ├─ auth.js           로그인, 토큰 발급·교체·재사용 감지·폐기(6.1)
 │  │  ├─ members.js        가입, 내 정보, 관리자 편집·삭제·역할, 영구 관리자 확인
-│  │  ├─ groups.js         그룹 생성·편집·삭제, 캘린더·날짜 상세
+│  │  ├─ groups.js         그룹 생성·편집·삭제, 캘린더·날짜 상세, 관리자 그룹 목록
 │  │  ├─ attendance.js     참석 등록·취소·빼기, 기본 그룹, 현황 조회
 │  │  └─ display.js        탈퇴 회원 이름 가림(C-10)
 │  └─ repositories/
@@ -314,7 +320,8 @@ backend/
 │  ├─ auth.test.js         T-5 인증
 │  ├─ attendance.test.js   T-5 정원·중복·기본 그룹·동시성
 │  ├─ admin.test.js        T-5 권한·영구 관리자·회원 삭제·그룹 삭제·탈퇴 회원 가림
-│  └─ config.test.js       T-5 기동 실패
+│  ├─ config.test.js       T-5 기동 실패
+│  └─ cors.test.js         CORS 허용 목록(C-18)
 └─ load/                   (P1) k6.js, seed.sql(T-7)
 ```
 
