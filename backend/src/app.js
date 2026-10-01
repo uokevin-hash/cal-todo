@@ -1,5 +1,8 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import { config } from './config.js';
+import { cors } from './cors.js';
+import { router as docsRouter } from './docs.js';
 import { errorHandler, notFound } from './errors.js';
 import { router as adminRouter } from './routes/admin.js';
 import { router as attendanceRouter } from './routes/attendance.js';
@@ -22,6 +25,9 @@ api.use(datesRouter); // /calendar, /dates/*
 api.use('/groups', groupsRouter);
 api.use('/attendance', attendanceRouter);
 api.use('/admin', adminRouter);
-app.use('/api', api, notFound);
+app.use('/api', cors(config.corsOrigins), api, notFound);
+
+// 개발용 API 문서. 운영에서는 열지 않는다
+if (!config.production) app.use('/api-docs', docsRouter);
 
 app.use(errorHandler);

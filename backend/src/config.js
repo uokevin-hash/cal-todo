@@ -25,6 +25,11 @@ export function loadConfig(env = process.env) {
     port: Number(env.PORT || 3000),
     production: env.NODE_ENV === 'production',
     accessTokenTtl: env.ACCESS_TOKEN_TTL || '15m',
+    // C-18: 쉼표로 구분한 허용 출처. 비우면 CORS 헤더 없음
+    corsOrigins: (env.CORS_ORIGINS ?? '')
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean),
   };
 }
 
