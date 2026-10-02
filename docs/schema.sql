@@ -1,5 +1,5 @@
 -- cal-todo 데이터베이스 스키마 (PostgreSQL 17)
--- 근거: 7-erd.md v0.6, 2-PRD.md v0.11 7장, 5-project-principle.md v0.8 (N-7 제약 이름, C-15 ID 타입)
+-- 근거: 7-erd.md v0.7, 2-PRD.md v0.14 7장, 5-project-principle.md v0.11 (N-7 제약 이름, C-15 ID 타입)
 -- 적용의 기준은 backend/db/migrations/*.sql이고, 이 파일은 모든 마이그레이션을 적용한 누적 결과의 참조본이다(C-14).
 -- 테이블 정의의 기준은 PRD 7장이다. 이 파일과 문서가 다르면 문서가 맞다.
 -- 나이(R-12)와 그룹 상태(R-5)는 저장하지 않고 조회 때 계산한다.

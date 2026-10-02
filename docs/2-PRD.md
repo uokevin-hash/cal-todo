@@ -1,9 +1,9 @@
 # cal-todo PRD
 
 - **상태**: 검토 중
-- **버전**: 0.13
+- **버전**: 0.14
 
-> 근거: [1-definition.md](1-definition.md) **v0.14**, [2-user-scenarios.md](2-user-scenarios.md) **v0.17**, [3-screen-design.md](3-screen-design.md) **v0.16**, [prompts/PRD생성.md](../prompts/PRD생성.md). `REQ-n`·`R-n`·`UC-n`은 정의서, `S-n`은 시나리오, `SCR-n`은 화면 설계서 번호다. 도메인 규칙은 이 문서에서 다시 정의하지 않고 ID로 참조한다.
+> 근거: [1-definition.md](1-definition.md) **v0.15**, [2-user-scenarios.md](2-user-scenarios.md) **v0.18**, [3-screen-design.md](3-screen-design.md) **v0.17**, [prompts/PRD생성.md](../prompts/PRD생성.md). `REQ-n`·`R-n`·`UC-n`은 정의서, `S-n`은 시나리오, `SCR-n`은 화면 설계서 번호다. 도메인 규칙은 이 문서에서 다시 정의하지 않고 ID로 참조한다.
 
 ## 변경 이력
 
@@ -24,6 +24,7 @@
 | 0.11 | 2026-09-30 | uokevin | 정합성 점검 후속: 9장 핵심 응답 형식에 `PATCH /me` 추가(비밀번호 변경 시 `{accessToken}` + 새 Refresh 쿠키), 머리말 기준 버전 갱신 |
 | 0.12 | 2026-09-30 | uokevin | API 빈틈 결정 반영: 9장 핵심 응답 형식에 `GET /calendar`·`GET /admin/members`·`GET /admin/groups` 본문, 가입 201 본문 없음, 그룹 생성 201 `{id}`, 참석 201 `{groupId}`, 관리자 PATCH 200 행 객체 추가, 새 비밀번호 필드 `newPassword`, `month` 선택·기본값, `GET /admin/groups` 기간 규칙, `GET /attendance`의 `group` 부분 일치·`status` 값, 참석 취소 멱등 204, 로그인 입력 400 `VALIDATION_ERROR`, 숫자가 아닌 경로 id 404, PATCH 부분 갱신, 그룹 생성 `attend` 기본값 `true` |
 | 0.13 | 2026-10-01 | uokevin | 백엔드 구현(BE-1 ~ BE-11) 반영: 9장에 구현 중 정한 세부 동작(경로 날짜 형식 400, 기간 필터 한쪽만 보낸 경우·`to`가 `from`보다 앞선 경우, 빈 필터 값, `currentPassword` 누락 400, `/groups/*`·`/admin/*` 아래 없는 경로의 401·403, 개발용 Swagger UI `/api-docs`, CORS 허용 목록), FR-18에 로그인 성공 시 실패 기록 초기화, 머리말 기준 버전 갱신 |
+| 0.14 | 2026-10-02 | uokevin | 현재 코드 반영: 그룹 채팅·이미지·보관함·다국어·빈 그룹 삭제(FR-20 ~ FR-24, 9장 API, 7장 테이블 3개), FR-17·FR-19 구현됨, 3장 다국어 포함·화면 주기 갱신, 지난 날짜 참석·그룹 생성 409 `PAST_DATE`(R-6), 토큰 `iatMs`(6.1 흐름 2), 동시 교체 패배 `REFRESH_RACE`, refresh·logout 출처 확인 403, `COOKIE_SAME_SITE`(NFR-8), Vite 프록시 없이 `VITE_API_URL` 직접 호출 + CORS(NFR-14), Express 정적 파일 서빙 미구현(6장·D-5), `GET /calendar` `groups`, 머리말 기준 버전 갱신 |
 
 ## 번호 정책
 
@@ -34,7 +35,7 @@
 
 | 항목          | 내용                                                                                                   |
 | ------------- | ------------------------------------------------------------------------------------------------------ |
-| 제품          | 배드민턴 동호회 일별 참석 관리 웹앱 (cal-todo)                                                         |
+| 제품          | 배드민턴 동호회 일별 참석 관리 웹앱 `Badminatics` (저장소 이름 cal-todo)                            |
 | 문제          | 인증된 회원이 날짜별 참석 여부와 조(그룹) 편성을 등록·조회할 수단이 없다 (정의서 1장)                  |
 | 목표          | 회원이 캘린더에서 날짜·그룹을 골라 참석을 등록하고, 정원(2/4) 안에서 조를 짜며, 지난 기록까지 조회한다 |
 | 목표 사용자   | 학생 및 일반인, 나이 제한 없음. 액터는 비회원·회원·관리자·영구 관리자 (정의서 3장)                     |
@@ -62,12 +63,12 @@
 
 | 구분 | 항목                                                                                     |
 | ---- | ---------------------------------------------------------------------------------------- |
-| 포함 | 정의서 REQ-1 ~ REQ-17 전부, 반응형 웹 UI(데스크톱·모바일 브라우저)                       |
+| 포함 | 정의서 REQ-1 ~ REQ-21 전부, 반응형 웹 UI(데스크톱·모바일 브라우저), 다국어(한국어/English/中文, FR-23) |
 | 제외 | 접근성(WCAG, 스크린 리더 대응 등) — 이 앱에서는 고려하지 않음                            |
 | 제외 | 네이티브 앱(iOS/Android), PWA 오프라인                                                   |
 | 제외 | 알림(푸시·이메일·SMS), 비밀번호 찾기 메일 (관리자 비밀번호 변경 REQ-16으로 대체)         |
-| 제외 | 소셜 로그인, 다국어, 결제, 페르소나별 상세 시나리오                                      |
-| 제외 | 다중 서버·오토스케일링, 실시간 푸시(WebSocket). 화면 갱신은 TanStack Query 재조회로 처리 |
+| 제외 | 소셜 로그인, 결제, 페르소나별 상세 시나리오                                              |
+| 제외 | 다중 서버·오토스케일링, 실시간 푸시(WebSocket). 화면 갱신은 TanStack Query 재조회로 처리(캘린더·그룹 채팅 3초, `GET /me` 30초·창 복귀 시) |
 
 ## 4. 기능 요구사항
 
@@ -78,7 +79,7 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 | FR-1  | 회원가입(항목 검증, 나이 자동 표시, 삭제된 회원 이메일 재사용)                          | P0       | REQ-1, REQ-4, REQ-9, REQ-11 | UC-1       | SCR-02                         |
 | FR-2  | 로그인·로그아웃, 미로그인 접근 차단, 삭제된 회원 로그인 차단                            | P0       | REQ-1, REQ-9         | UC-2       | SCR-01                         |
 | FR-3  | 영구 관리자 시작 시 생성(환경 변수, 없으면 기동 실패)                                   | P0       | REQ-15               | UC-10      | -                              |
-| FR-4  | 월 캘린더: 날짜별 그룹 수(●n), 내 참석(✔), 월 이동, 지난 날짜 선택                      | P0       | REQ-5, REQ-13        | UC-4       | SCR-03                         |
+| FR-4  | 월 캘린더: 날짜별 그룹 `그룹명(인원)`, 내 참석(✔), 월 이동, 지난 날짜 선택                      | P0       | REQ-5, REQ-13        | UC-4       | SCR-03                         |
 | FR-5  | 날짜 상세: 그룹 목록, 상태 배지, 참석자 이름, 참석·참석 취소                            | P0       | REQ-2, REQ-5, REQ-13 | UC-4       | SCR-04                         |
 | FR-6  | 그룹 없이 참석(`기본` 그룹 자동 사용·생성, 정원 지정)                                   | P0       | REQ-2                | UC-4       | SCR-04, SCR-05                 |
 | FR-7  | 그룹 만들기(이름, 정원 2/4, "만든 뒤 바로 참석")                                        | P0       | REQ-5, REQ-12        | UC-6       | SCR-05                         |
@@ -94,8 +95,14 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 | FR-17 | 그룹 관리 기간 조회 목록                                                                | P1       | REQ-6                | UC-9       | SCR-09                         |
 | FR-18 | 로그인 시도 횟수 제한 (정의서에 없는 PRD 추가 보안 요구). 같은 이메일로 15분 안에 5회 실패하면 15분 동안 로그인 거부, 429 `TOO_MANY_ATTEMPTS`. 실패 기록은 서버 메모리(`Map`)에 둔다(서버 1대, 재시작 시 초기화 허용). 잠금 확인은 비밀번호 확인 전에 하고, 로그인에 성공하면 그 이메일의 실패 기록을 지운다 | P2       | -                    | UC-2       | SCR-01                         |
 | FR-19 | 회원 관리 검색(이름·이메일 부분 일치)                                                  | P1       | REQ-10               | UC-7       | SCR-08                         |
+| FR-20 | 그룹 채팅(글): 그 그룹에 지금 참석 중인 회원만 읽고 쓴다(관리자도 참석하지 않으면 403). 글은 앞뒤 공백 제외 1~500자, 목록은 최근 100개, 화면은 3초마다 갱신(R-14) | P1       | REQ-18               | UC-12      | SCR-03                         |
+| FR-21 | 채팅 이미지: 붙여넣기로만 보낸다. PNG·JPEG·GIF·WEBP, 최대 `CHAT_IMAGE_MAX_BYTES`(기본 2MB). 더블클릭 크게 보기, 오른쪽 클릭 내려받기(R-14) | P1       | REQ-18               | UC-12      | SCR-03                         |
+| FR-22 | 채팅 보관함: 그룹이 삭제되면 같은 트랜잭션에서 메시지를 보관함으로 옮긴다(메시지 없던 그룹은 제외). 관리자만 목록·대화를 보고(탈퇴 회원도 실명) 삭제한다. 삭제는 되돌릴 수 없다(R-15) | P1       | REQ-19               | UC-13      | SCR-10                         |
+| FR-23 | 다국어(한국어/English/中文). 처음 값은 `localStorage` `lang` 저장값 → 브라우저 언어 → 영어. 고르면 `localStorage`에 저장. 상단 바와 로그인·가입 화면에서 고른다 | P1       | REQ-20               | -          | 전체                           |
+| FR-24 | 마지막 참석자가 [참석 취소]하면 확인 창에서 그룹 [삭제]/[남기기]를 고른다. [삭제]면 만든 사람·관리자가 아니어도 그룹을 삭제한다(R-16). 관리자 [빼기]로 비는 경우는 자동 삭제하지 않는다 | P1       | REQ-21               | UC-4       | SCR-04                         |
 
 - FR-17이 P1인 이유: P0 기간에는 SCR-04의 관리자 버튼(D-7)으로 FR-12·FR-13을 먼저 제공한다.
+- 현재 구현 상태: P1인 FR-17(그룹 관리, 관리자 메뉴에 표시)·FR-19(회원 검색)와 FR-20 ~ FR-24는 모두 구현되어 있다. P2인 FR-18도 구현되어 있다.
 
 ## 5. 비기능 요구사항
 
@@ -108,13 +115,13 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 | NFR-5  | 무결성      | `기본` 그룹 동시 생성(R-2)은 `UNIQUE(date, name)` + `INSERT ... ON CONFLICT DO NOTHING` 후 재조회로 하나만 생긴다. 회원 삭제(R-9)·그룹 삭제(R-13)는 단일 트랜잭션                     |
 | NFR-6  | 보안        | 비밀번호는 bcrypt(cost 10)로 해시 저장. 해시는 어떤 API 응답에도 내보내지 않는다(R-8)                                                                                                 |
 | NFR-7  | 보안        | 모든 SQL은 pg 파라미터 쿼리(`$1, $2`)만 사용. 문자열 연결로 SQL을 만들지 않는다. 동적 필터(FR-14)도 조건 조각 + 파라미터 배열로 조립                                                  |
-| NFR-8  | 보안        | 인증은 JWT Access Token(15분, `Authorization: Bearer` 헤더)과 Refresh Token(14일, `HttpOnly; Secure(운영); SameSite=Strict` 쿠키, 교체·재사용 감지)으로 한다(6.1, 결정 D-1). 매 요청 회원 행을 PK로 다시 읽어 `deleted_at`·`role`·`password_changed_at`을 확인한다                                      |
+| NFR-8  | 보안        | 인증은 JWT Access Token(15분, `Authorization: Bearer` 헤더)과 Refresh Token(14일, `HttpOnly; Secure(운영); SameSite=COOKIE_SAME_SITE`(기본 `strict`) 쿠키, 교체·재사용 감지)으로 한다(6.1, 결정 D-1). 매 요청 회원 행을 PK로 다시 읽어 `deleted_at`·`role`·`password_changed_at`을 확인한다                                      |
 | NFR-9  | 보안        | 권한 검사는 서버에서 한다(R-8, R-10, R-11). 화면의 버튼 숨김은 편의일 뿐이다. 영구 관리자 이메일·초기 비밀번호·JWT 비밀키는 환경 변수로만 받는다. `JWT_ACCESS_SECRET`·`JWT_REFRESH_SECRET`이 없거나 32바이트보다 짧으면 서버가 시작되지 않는다. `jwt.verify`는 `algorithms: ['HS256']`로 고정하고 페이로드 `type`이 용도와 맞는지 검사한다 |
 | NFR-10 | 입력 검증   | 서버에서 이메일·전화번호 형식(정의서 4.1), 정원 2/4, 날짜 형식, 비밀번호 길이(8자 이상, 최대 72바이트 — bcrypt 한계)를 검증한다. 클라이언트 검증은 보조                           |
 | NFR-11 | 시간대      | "오늘"·나이 계산은 Asia/Seoul 기준(R-12). DB에서 `(now() AT TIME ZONE 'Asia/Seoul')::date`로 계산하고, 날짜는 `DATE`, 시각은 `TIMESTAMPTZ`로 저장. 서버 로컬 시간대에 의존하지 않는다 |
 | NFR-12 | UI          | 반응형: 360px 모바일 ~ 데스크톱. 모바일에서 캘린더는 칸을 줄이고 표(SCR-06, SCR-08, SCR-09)는 가로 스크롤 또는 카드형으로 바꾼다                                                      |
 | NFR-13 | 운영        | 서버 기동 시 스키마 SQL 파일 적용과 영구 관리자 확인(UC-10)을 수행. 에러는 콘솔 로그로 남긴다                                                                                         |
-| NFR-14 | 개발 환경   | 개발 중에는 Vite `server.proxy`로 `/api`를 Express에 전달해 운영과 같은 출처로 동작시킨다. Refresh Token 쿠키(`SameSite=Strict`, `Path=/api/auth`)와 CORS 문제를 피하기 위해서다 |
+| NFR-14 | 개발 환경   | Vite 프록시는 쓰지 않는다. 프론트는 `VITE_API_URL`(개발 `http://localhost:3000/api`, 비면 같은 출처 `/api`)로 Express를 직접 부르고 모든 요청에 `credentials: 'include'`를 붙인다. 백엔드 `CORS_ORIGINS`에 프론트 출처(개발 `http://localhost:5173`)를 넣는다. localhost의 포트만 다른 출처는 같은 사이트라 `SameSite=Strict` 쿠키도 전송된다 |
 
 ## 6. 기술 스택과 아키텍처
 
@@ -123,14 +130,14 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 | 프론트엔드 | React 19 + TypeScript + Vite, Zustand(로그인 사용자·UI 상태), TanStack Query(서버 데이터 조회·캐시, 쓰기 후 무효화) |
 | 백엔드     | Node.js + JavaScript + Express, `pg`(Prisma 사용 금지), `bcrypt`, `jsonwebtoken`, `cookie-parser`, `crypto`(내장) |
 | DB         | PostgreSQL 17                                                                                                       |
-| 배포       | VM 1대(또는 저가 PaaS)에 Express + PostgreSQL. Express가 빌드된 SPA 정적 파일과 `/api`를 함께 서빙                  |
+| 배포       | VM 1대(또는 저가 PaaS)에 Express + PostgreSQL. Express가 빌드된 SPA 정적 파일까지 서빙하는 기능은 아직 구현하지 않았다. 지금은 프론트(Vite 빌드)와 백엔드(`/api`)를 따로 배포하는 전제다(NFR-14, D-5) |
 
 ```
 [브라우저: React SPA (반응형)]
       │  HTTPS, JSON, Authorization: Bearer <Access Token>, Refresh Token 쿠키(/api/auth만)
       ▼
 [Express 서버 (Node)]
-  ├─ 정적 파일 (Vite 빌드 결과)
+  ├─ CORS(CORS_ORIGINS 허용 목록, 쿠키 포함). 정적 파일 서빙은 미구현
   ├─ /api 라우터 → 인증 미들웨어(Access Token 검증 + 회원 행 재조회) → 권한 검사 → 핸들러
   └─ pg.Pool ──(파라미터 쿼리, 트랜잭션)──▶ [PostgreSQL 17]
 ```
@@ -143,17 +150,17 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 | ---- | ------------ | ------------- |
 | 용도 | API 요청 인증 | Access Token 재발급 |
 | 만료 | 15분 | 14일 |
-| 페이로드 | `sub`(회원 id), `type: "access"`. 역할은 넣지 않는다. 서버는 DB의 역할을, 화면은 `GET /me` 응답의 역할을 쓴다 | `sub`, `jti`(무작위 UUID), `type: "refresh"` |
-| 전달 | 응답 본문 → 요청 헤더 `Authorization: Bearer <token>` | `Set-Cookie: refresh_token`, `HttpOnly; Secure(운영); SameSite=Strict; Path=/api/auth` |
+| 페이로드 | `sub`(회원 id), `type: "access"`, `iatMs`(밀리초 발급 시각). 역할은 넣지 않는다. 서버는 DB의 역할을, 화면은 `GET /me` 응답의 역할을 쓴다 | `sub`, `jti`(무작위 UUID), `type: "refresh"`, `iatMs` |
+| 전달 | 응답 본문 → 요청 헤더 `Authorization: Bearer <token>` | `Set-Cookie: refresh_token`, `HttpOnly; Secure; SameSite=<COOKIE_SAME_SITE>; Path=/api/auth`. `COOKIE_SAME_SITE`는 `strict`(기본)·`lax`·`none`. `Secure`는 운영(`NODE_ENV=production`)이거나 `none`일 때 붙는다 |
 | 클라이언트 보관 | 메모리(Zustand 스토어)만. `localStorage`·`sessionStorage`에 저장하지 않는다 | 브라우저 쿠키(자바스크립트에서 읽을 수 없음) |
 | 서버 보관 | 저장하지 않음 | `refresh_tokens` 테이블에 `jti`의 SHA-256 해시 저장(7장) |
 
 **흐름**
 
 1. **로그인** (`POST /auth/login`): 비밀번호를 확인하고 Access Token을 응답 본문에, Refresh Token을 쿠키로 준다. `refresh_tokens`에 행을 하나 추가한다. 기기(브라우저)마다 행이 따로 생긴다.
-2. **API 요청**: 인증 미들웨어가 `Authorization` 헤더의 Access Token 서명과 만료를 검증한다. 이어서 회원 행을 PK로 다시 읽어 `deleted_at`·`role`을 확인한다. `password_changed_at`이 있으면 토큰 발급 시각(`iat`, 초)이 그 시각(초 단위 내림)보다 이전인 토큰은 거부하고 401 `UNAUTHENTICATED`로 응답한다. 이렇게 하면 역할 변경(S-10), 회원 삭제(R-9), 비밀번호 변경(S-15)이 Access Token 만료를 기다리지 않고 바로 반영된다.
+2. **API 요청**: 인증 미들웨어가 `Authorization` 헤더의 Access Token 서명과 만료를 검증한다. 이어서 회원 행을 PK로 다시 읽어 `deleted_at`·`role`을 확인한다. `password_changed_at`이 있으면 토큰 발급 시각이 그 시각보다 이전인 토큰, 즉 밀리초로 `(iatMs ?? iat*1000) < password_changed_at`인 토큰은 거부하고 401 `UNAUTHENTICATED`로 응답한다. 이렇게 하면 역할 변경(S-10), 회원 삭제(R-9), 비밀번호 변경(S-15)이 Access Token 만료를 기다리지 않고 바로 반영된다.
 3. **만료**: Access Token이 만료되면 401 + `TOKEN_EXPIRED`로 응답한다. 클라이언트의 API 호출 래퍼(TanStack Query가 쓰는 `fetch` 함수)가 `POST /auth/refresh`를 한 번 호출하고 원래 요청을 다시 보낸다. 동시에 여러 요청이 만료되더라도 재발급 요청은 하나만 보낸다(single-flight).
-4. **재발급과 교체** (`POST /auth/refresh`): 쿠키의 Refresh Token을 검증하고 `jti` 해시가 `refresh_tokens`에 유효한 상태로 있는지 확인한다. 이어서 회원 행을 다시 읽어 삭제된 회원(`deleted_at`)이면 그 회원의 토큰을 모두 폐기(`FORCED`)하고 401 `UNAUTHENTICATED`로 응답한다. Refresh Token에도 흐름 2와 같은 `password_changed_at` 비교를 적용한다. 통과하면 기존 행을 폐기(`revoked_at`, `revoked_reason = 'ROTATED'`)하고 새 Access Token과 새 Refresh Token을 발급한다(rotation).
+4. **재발급과 교체** (`POST /auth/refresh`): 쿠키의 Refresh Token을 검증하고 `jti` 해시가 `refresh_tokens`에 유효한 상태로 있는지 확인한다. 이어서 회원 행을 다시 읽어 삭제된 회원(`deleted_at`)이면 그 회원의 토큰을 모두 폐기(`FORCED`)하고 401 `UNAUTHENTICATED`로 응답한다. Refresh Token에도 흐름 2와 같은 `password_changed_at` 비교를 적용한다. 통과하면 기존 행을 폐기(`revoked_at`, `revoked_reason = 'ROTATED'`)하고 새 Access Token과 새 Refresh Token을 발급한다(rotation). 폐기는 `revoked_at IS NULL`인 행에만 걸어서, 같은 토큰으로 동시에 교체를 시도해 진 요청은 401 `REFRESH_RACE`를 받는다(흐름 5와 같이 재시도).
 5. **재사용 감지**: 이미 폐기된 Refresh Token이 들어오면 `revoked_reason`과 `revoked_at`을 본다. 폐기 사유는 `ROTATED`(흐름 4 교체), `LOGOUT`(흐름 7), `FORCED`(흐름 4·5·8의 강제 폐기) 셋이며, 30초 유예는 `ROTATED`에만 적용한다.
    - `LOGOUT`·`FORCED`: 경과 시간과 관계없이 즉시 401 `UNAUTHENTICATED`. 다른 토큰은 추가로 폐기하지 않는다(로그아웃한 쿠키는 이미 지워졌고, 강제 폐기는 이미 전부 폐기된 상태다).
    - `ROTATED`, 폐기된 지 30초 이내: 여러 탭의 동시 새로고침이나 응답 유실로 보고, 전체 폐기 없이 401 `REFRESH_RACE`만 반환한다. 클라이언트는 한 번 더 `/auth/refresh`를 호출한다. 그 사이 다른 탭이 받은 새 쿠키가 브라우저에 공유되어 있으므로 재시도는 성공한다. 재시도에서도 `REFRESH_RACE`나 다른 401이 오면 더 재시도하지 않고 SCR-01로 보낸다.
@@ -166,7 +173,7 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
    - 역할 변경(R-10)은 폐기하지 않는다. 흐름 2에서 매 요청 역할을 DB에서 읽으므로 바로 반영되고, S-10 2단계처럼 새로고침만 하면 메뉴가 바뀐다.
 9. **정리**: 로그인할 때 그 회원의 행 중 만료(`expires_at` 경과)된 것을 지운다. 폐기된 행은 흐름 5의 재사용 판정에 필요하므로 만료될 때까지 남긴다. 별도 배치 작업은 두지 않는다.
 
-- CSRF: 일반 API는 쿠키가 아니라 `Authorization` 헤더로 인증하므로 CSRF 대상이 아니다. Refresh Token 쿠키는 `SameSite=Strict`이고 `Path=/api/auth`로 좁혀 다른 경로에는 전송되지 않는다.
+- CSRF: 일반 API는 쿠키가 아니라 `Authorization` 헤더로 인증하므로 CSRF 대상이 아니다. Refresh Token 쿠키는 `SameSite=COOKIE_SAME_SITE`(기본 Strict)이고 `Path=/api/auth`로 좁혀 다른 경로에는 전송되지 않는다. 쿠키를 쓰는 `/auth/refresh`·`/auth/logout`은 `Origin`이 없거나 `CORS_ORIGINS`에 있거나 같은 출처일 때만 받고, 그 밖은 403 `FORBIDDEN`("허용하지 않은 출처입니다")이다.
 - XSS: Access Token은 메모리에만 있고 만료가 15분이라 노출 범위가 작다. Refresh Token은 `HttpOnly`라 스크립트로 읽을 수 없다.
 
 ## 7. 데이터 모델 요약
@@ -179,9 +186,14 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 | `groups`      | id, date `DATE`, name, capacity, created_by → members, created_at                                                  | `UNIQUE(date, name)`; `CHECK(capacity IN (2,4))`; 인덱스 `(date)`                                                                                                                                                                                               |
 | `refresh_tokens` | id, member_id → members, token_hash(`jti`의 SHA-256), expires_at `TIMESTAMPTZ`, revoked_at `TIMESTAMPTZ`, revoked_reason `TEXT`(`ROTATED`·`LOGOUT`·`FORCED`, 6.1 흐름 5), created_at | `UNIQUE(token_hash)`; `CHECK`: revoked_reason은 세 값 중 하나이고 revoked_at과 함께 NULL이거나 함께 NOT NULL; 인덱스 `(member_id)`. 6.1 흐름 4·5·7·8·9에서 사용 |
 | `attendances` | id, member_id → members, group_id → groups `ON DELETE CASCADE`, date `DATE`, created_at                            | `UNIQUE(member_id, date)`(R-4); 인덱스 `(group_id)`. `date`는 그룹 날짜를 복제한 컬럼으로, 그룹 날짜는 수정하지 않으므로(SCR-09) 어긋나지 않는다                                                                                                                |
+| `group_messages` | id, group_id → groups `ON DELETE CASCADE`, member_id → members, body `TEXT`, image `BYTEA`, image_type `TEXT`, created_at (FR-20, FR-21) | `CHECK`: 글 메시지는 이미지 없음 + body 1~500자, 이미지 메시지는 image_type이 PNG·JPEG·GIF·WEBP 중 하나 + body `''`; 인덱스 `(group_id, id)` |
+| `chat_archives` | id, group_id(삭제된 그룹의 원래 id, FK 없음), date `DATE`, name, deleted_at `TIMESTAMPTZ` 기본 `now()` (FR-22) | 그룹 행은 지워지므로 그룹 정보를 삭제 시점 값으로 복사해 둔다 |
+| `archived_messages` | id, archive_id → chat_archives `ON DELETE CASCADE`, member_id → members, body, image `BYTEA`, image_type, created_at(원래 작성 시각, 기본값 없음) (FR-22) | 인덱스 `(archive_id, id)`. `CHECK` 없음(검증된 메시지를 복사만 한다) |
 
 - 회원은 물리 삭제하지 않으므로(R-9) `members` 참조 FK는 기본(RESTRICT)이다.
 - 정원 초과 방지(R-3)는 DB 제약으로 표현할 수 없어 NFR-3의 행 잠금으로 보장한다.
+- 그룹 삭제(관리자 삭제, R-16 빈 그룹 삭제)는 한 트랜잭션에서 그룹 행을 잠그고 메시지를 `chat_archives`·`archived_messages`로 복사한 뒤 그룹을 지운다(R-15). `group_messages`·`attendances`는 CASCADE로 함께 지워진다. 메시지가 없던 그룹은 보관하지 않는다.
+- 스키마는 `backend/db/migrations/001_init.sql` ~ `004_chat_images.sql`로 적용한다. 누적 결과는 [schema.sql](schema.sql)과 같다.
 
 ## 8. 주요 결정 (정의서에 없는 사항)
 
@@ -190,8 +202,8 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 | D-1 | 인증: JWT Access Token(15분, 메모리 보관, Bearer 헤더) + Refresh Token(14일, HttpOnly 쿠키, DB에 해시 저장, 교체·재사용 감지), 매 요청 회원 행 재조회(6.1) | Access Token을 짧게 두고 스크립트에서 읽을 수 없는 쿠키로 재발급해 탈취 피해를 줄인다. DB에 저장한 Refresh Token으로 로그아웃·강제 폐기가 가능하고, 재조회로 역할 변경(S-10)·회원 삭제(R-9)가 바로 반영된다 |
 | D-2 | 정원은 그룹 행 `FOR UPDATE`, 중복 참석은 `UNIQUE(member_id, date)`                                                                | 가장 적은 코드로 동시 요청에서도 R-3·R-4를 보장                                                      |
 | D-3 | `attendances.date` 비정규화 컬럼                                                                                                  | R-4를 DB 유니크 제약으로 걸기 위해                                                                   |
-| D-4 | 업무 규칙 거부는 HTTP 409 + 오류 코드(`CAPACITY_FULL`, `ALREADY_ATTENDING`, `DUPLICATE_GROUP_NAME` 등), 권한 없음 403, 미인증 401. 401 코드는 `TOKEN_EXPIRED`(Access Token 만료 → 재발급 시도), `REFRESH_RACE`(재발급 재시도, 6.1 흐름 5), `UNAUTHENTICATED`(토큰 없음·무효·탈퇴 → SCR-01로 이동) 세 가지. 로그인 실패(없는 이메일·틀린 비밀번호·삭제된 회원)는 강제 로그아웃과 구분하려고 401이 아닌 400 `INVALID_CREDENTIALS`로 응답한다. 그 밖의 코드: 400 `VALIDATION_ERROR`·`WRONG_PASSWORD`, 403 `FORBIDDEN`, 404 `NOT_FOUND`, 409 `EMAIL_TAKEN`·`CAPACITY_BELOW_COUNT`·`PERMANENT_ADMIN_LOCKED`·`MEMBER_DELETED`, 429 `TOO_MANY_ATTEMPTS`(FR-18, P2), 500 `INTERNAL`. 응답 형식은 `{error:{code,message,field?}}`([5-project-principle.md](5-project-principle.md) 5장) | 화면 문구(SCR-n)와 1:1로 매핑                                                                        |
-| D-5 | 프론트 빌드는 Vite, 정적 파일은 Express가 서빙                                                                                    | 서버 1대로 배포 단순화                                                                               |
+| D-4 | 업무 규칙 거부는 HTTP 409 + 오류 코드(`CAPACITY_FULL`, `ALREADY_ATTENDING`, `DUPLICATE_GROUP_NAME` 등), 권한 없음 403, 미인증 401. 401 코드는 `TOKEN_EXPIRED`(Access Token 만료 → 재발급 시도), `REFRESH_RACE`(재발급 재시도, 6.1 흐름 5), `UNAUTHENTICATED`(토큰 없음·무효·탈퇴 → SCR-01로 이동) 세 가지. 로그인 실패(없는 이메일·틀린 비밀번호·삭제된 회원)는 강제 로그아웃과 구분하려고 401이 아닌 400 `INVALID_CREDENTIALS`로 응답한다. 그 밖의 코드: 400 `VALIDATION_ERROR`·`WRONG_PASSWORD`, 403 `FORBIDDEN`(권한 없음, 그룹 참석자가 아닌 채팅 요청, `/auth/refresh`·`/auth/logout`의 허용하지 않은 출처), 404 `NOT_FOUND`, 409 `EMAIL_TAKEN`·`CAPACITY_BELOW_COUNT`·`PERMANENT_ADMIN_LOCKED`·`MEMBER_DELETED`·`PAST_DATE`(지난 날짜 참석·그룹 생성, R-6), 429 `TOO_MANY_ATTEMPTS`(FR-18, P2), 500 `INTERNAL`. 응답 형식은 `{error:{code,message,field?}}`([5-project-principle.md](5-project-principle.md) 5장) | 화면 문구(SCR-n)와 1:1로 매핑                                                                        |
+| D-5 | 프론트 빌드는 Vite, 정적 파일은 Express가 서빙. 아직 미구현이며 지금은 프론트·백엔드 분리 배포(`VITE_API_URL` + `CORS_ORIGINS`, NFR-14) | 서버 1대로 배포 단순화                                                                               |
 | D-6 | 부하 기준을 "가상 사용자 1000명, 5~10초 간격 요청"으로 정의                                                                       | "1000명 동시 접속"을 측정 가능한 값으로 바꾸기 위해                                                  |
 | D-7 | P0에서는 SCR-04 날짜 상세의 각 그룹 행에 관리자에게만 [편집]·[삭제] 버튼을 보여 준다. [편집]은 SCR-09의 편집 패널과 같은 내용을 연다. 화면 설계서 SCR-04에 반영(v0.7) | 그룹 관리 목록(FR-17, SCR-09)을 P1로 미뤄도 FR-12·FR-13과 S-8·S-13을 2일 안에 제공하기 위해 |
 
@@ -203,35 +215,43 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 | ------ | ------------------------------------------------ | ------ | ------------------------------------------------------- | ---------- |
 | POST   | `/auth/signup`                                   | 공개   | 회원가입                                                | UC-1       |
 | POST   | `/auth/login`                                    | 공개   | 로그인. 본문에 Access Token, 쿠키로 Refresh Token 발급. `email`·`password` 누락·형식 오류는 400 `VALIDATION_ERROR`(`field`), 형식은 맞는데 인증 실패면 400 `INVALID_CREDENTIALS` | UC-2       |
-| POST   | `/auth/refresh`                                  | 공개(Refresh Token 쿠키 필요) | Refresh Token 검증·교체, 새 Access Token 발급 | UC-2       |
-| POST   | `/auth/logout`                                   | 공개(Refresh Token 쿠키, 없거나 무효여도 204) | Refresh Token 폐기, 쿠키 삭제      | UC-2       |
+| POST   | `/auth/refresh`                                  | 공개(Refresh Token 쿠키 필요) | Refresh Token 검증·교체, 새 Access Token 발급. 허용하지 않은 `Origin`이면 403 `FORBIDDEN`(6.1 CSRF) | UC-2       |
+| POST   | `/auth/logout`                                   | 공개(Refresh Token 쿠키, 없거나 무효여도 204) | Refresh Token 폐기, 쿠키 삭제. 허용하지 않은 `Origin`이면 403 `FORBIDDEN` | UC-2       |
 | GET    | `/me`                                            | 회원   | 내 정보(나이 포함)                                      | UC-3       |
 | PATCH  | `/me`                                            | 회원   | 내 정보 수정, 비밀번호 변경 시 현재 비밀번호 필요(`currentPassword` + `newPassword`) | UC-3       |
-| GET    | `/calendar?month=YYYY-MM`                        | 회원   | 날짜별 그룹 수, 내 참석 날짜. `month`는 선택이며 없으면 이번 달(Asia/Seoul). 형식이 틀리면 400 `VALIDATION_ERROR`(`field: month`) | UC-4       |
+| GET    | `/calendar?month=YYYY-MM`                        | 회원   | 날짜별 그룹(이름·인원), 내 참석 날짜. `month`는 선택이며 없으면 이번 달(Asia/Seoul). 형식이 틀리면 400 `VALIDATION_ERROR`(`field: month`) | UC-4       |
 | GET    | `/dates/:date/groups`                            | 회원   | 그날 그룹·상태·참석자                                   | UC-4       |
-| POST   | `/dates/:date/groups`                            | 회원   | 그룹 생성 `{name, capacity, attend?}`. `name`·`capacity` 필수, `attend`는 선택이며 기본값 `true`(SCR-05 "만든 뒤 바로 참석" 기본 선택). 한 트랜잭션으로 처리하며, `attend=true`인데 그날 이미 참석 중(R-4)이면 그룹도 만들지 않고 409. 이름이 `기본`이면 400 `VALIDATION_ERROR`(`field: name`, R-2) | UC-6       |
-| POST   | `/dates/:date/attendance`                        | 회원   | 그룹 없이 참석. `기본` 그룹이 있으면 참석, 없으면 `{capacity}`로 생성 후 참석(`ON CONFLICT DO NOTHING`, NFR-5). `기본` 그룹 생성은 반드시 이 API로 한다(그룹 생성 API는 이름 `기본`을 400으로 거부한다, R-2). `기본` 그룹이 없는데 `capacity`가 없으면 400 `VALIDATION_ERROR`(`field: capacity`) | UC-4       |
-| POST   | `/groups/:id/attendance`                         | 회원   | 해당 그룹 참석                                          | UC-4       |
-| DELETE | `/groups/:id/attendance`                         | 회원   | 내 참석 취소. 멱등: 참석하지 않은 그룹이어도 204. 그룹 자체가 없으면 404 `NOT_FOUND` | UC-4       |
-| GET    | `/attendance?from&to&group&name&status&capacity` | 회원   | 참석 현황 조회·필터. `from`·`to`가 없으면 이번 달(Asia/Seoul) 1일~말일. 기간은 최대 93일이며 넘으면 400 `VALIDATION_ERROR`(`field: to`). `group`은 그룹명 부분 일치(대소문자 무시, `name`과 같은 방식), `status`는 `AVAILABLE`/`FULL`. 페이지네이션 없음 | UC-5       |
+| POST   | `/dates/:date/groups`                            | 회원   | 그룹 생성 `{name, capacity, attend?}`. `name`·`capacity` 필수, `attend`는 선택이며 기본값 `true`(SCR-05 "만든 뒤 바로 참석" 기본 선택). 한 트랜잭션으로 처리하며, `attend=true`인데 그날 이미 참석 중(R-4)이면 그룹도 만들지 않고 409. 이름이 `기본`이면 400 `VALIDATION_ERROR`(`field: name`, R-2). 지난 날짜면 `attend`와 관계없이 409 `PAST_DATE`(R-6) | UC-6       |
+| POST   | `/dates/:date/attendance`                        | 회원   | 그룹 없이 참석. `기본` 그룹이 있으면 참석, 없으면 `{capacity}`로 생성 후 참석(`ON CONFLICT DO NOTHING`, NFR-5). `기본` 그룹 생성은 반드시 이 API로 한다(그룹 생성 API는 이름 `기본`을 400으로 거부한다, R-2). `기본` 그룹이 없는데 `capacity`가 없으면 400 `VALIDATION_ERROR`(`field: capacity`). 지난 날짜면 409 `PAST_DATE`(새로 만들려던 `기본` 그룹도 남기지 않는다, R-6) | UC-4       |
+| POST   | `/groups/:id/attendance`                         | 회원   | 해당 그룹 참석. 정원 참 409 `CAPACITY_FULL`, 지난 날짜 409 `PAST_DATE`(R-6) | UC-4       |
+| DELETE | `/groups/:id/attendance`                         | 회원   | 내 참석 취소(지난 날짜도 가능). 멱등: 참석하지 않은 그룹이어도 204. 그룹 자체가 없으면 404 `NOT_FOUND`. `?deleteIfEmpty=true`면 취소 뒤 남은 참석자가 없을 때 그룹도 삭제하고(채팅 보관, R-15·R-16) 200 `{groupDeleted}`를 준다. 참석하지 않은 사람의 요청은 `{groupDeleted: false}` | UC-4       |
+| GET    | `/groups/:id/messages`                           | 회원(그 그룹 참석자) | 채팅 메시지 최근 100개(오래된 순). 참석자가 아니면 관리자도 403 `FORBIDDEN`(R-14) | UC-12      |
+| POST   | `/groups/:id/messages`                           | 회원(그 그룹 참석자) | 글 메시지 `{body}`. 앞뒤 공백 제외 1~500자, 아니면 400 `VALIDATION_ERROR`(`field: body`). 201 `{id}` | UC-12      |
+| POST   | `/groups/:id/images`                             | 회원(그 그룹 참석자) | 이미지 메시지. 본문은 원시 바이트, `Content-Type`은 `image/png`·`image/jpeg`·`image/gif`·`image/webp`. 형식·크기(`CHAT_IMAGE_MAX_BYTES`)가 틀리면 400 `VALIDATION_ERROR`(`field: image`). 201 `{id}` | UC-12      |
+| GET    | `/groups/:id/messages/:messageId/image`          | 회원(그 그룹 참석자) | 이미지 바이트(`Content-Type`, `X-Content-Type-Options: nosniff`) | UC-12      |
+| GET    | `/attendance?from&to&group&name&status&capacity` | 회원   | 참석 현황 조회·필터. `from`·`to`가 없으면 이번 달(Asia/Seoul) 1일~말일. 기간은 최대 93일이며 넘으면 400 `VALIDATION_ERROR`(`field: to`). `group`은 그룹명 부분 일치(대소문자 무시, `name`과 같은 방식), `status`는 `AVAILABLE`/`FULL`이며 `AVAILABLE`은 지난 날짜 그룹을 뺀다(`FULL`은 지난 날짜 포함). 페이지네이션 없음 | UC-5       |
 | GET    | `/admin/members?q&includeDeleted`                | 관리자 | 회원 목록                                               | UC-7       |
 | PATCH  | `/admin/members/:id`                             | 관리자 | 회원 정보·새 비밀번호(`newPassword`)·역할 수정. 대상이 자기 자신인데 새 비밀번호가 있으면 403 `FORBIDDEN`(본인 비밀번호는 `PATCH /me`, 6.1 흐름 8) | UC-7, UC-8 |
 | DELETE | `/admin/members/:id`                             | 관리자 | 회원 비활성화. 성공 204. 자기 자신은 403 `FORBIDDEN`(R-9), 영구 관리자 409 `PERMANENT_ADMIN_LOCKED`, 이미 삭제됨 409 `MEMBER_DELETED` | UC-7       |
 | GET    | `/admin/groups?from&to`                          | 관리자 | 그룹 목록. `from`·`to`는 `GET /attendance`와 같은 규칙(없으면 이번 달 1일~말일, 최대 93일, 넘으면 400 `VALIDATION_ERROR` `field: to`) | UC-9       |
 | PATCH  | `/admin/groups/:id`                              | 관리자 | 그룹명·정원 수정. 새 이름이 `기본`이거나 `기본` 그룹의 이름을 바꾸면 400 `VALIDATION_ERROR`(`field: name`, R-2) | UC-9       |
-| DELETE | `/admin/groups/:id/attendance/:memberId`         | 관리자 | 참석자 빼기                                             | UC-9       |
-| DELETE | `/admin/groups/:id`                              | 관리자 | 그룹 삭제와 참석 초기화                                 | UC-11      |
+| DELETE | `/admin/groups/:id/attendance/:memberId`         | 관리자 | 참석자 빼기(날짜 제한 없음). 그 그룹에 참석하지 않은 회원이면 404 `NOT_FOUND`(멱등 아님). 그룹이 비어도 자동 삭제하지 않는다 | UC-9       |
+| DELETE | `/admin/groups/:id`                              | 관리자 | 그룹 삭제와 참석 초기화. 같은 트랜잭션에서 채팅을 보관함으로 옮긴다(R-15) | UC-11      |
+| GET    | `/admin/chats`                                   | 관리자 | 채팅 보관함 목록(메시지 1개 이상, 삭제 시각 내림차순) | UC-13      |
+| GET    | `/admin/chats/:id/messages`                      | 관리자 | 보관된 메시지(탈퇴 회원도 실명 + `isDeleted`) | UC-13      |
+| GET    | `/admin/chats/:id/messages/:messageId/image`     | 관리자 | 보관된 이미지 바이트(`nosniff`) | UC-13      |
+| DELETE | `/admin/chats/:id`                               | 관리자 | 보관된 채팅 삭제(메시지 CASCADE, 되돌릴 수 없음). 204 | UC-13      |
 
 - UC-10(영구 관리자 생성)은 API가 아니라 서버 기동 절차다.
 - 탈퇴 회원 이름 가림(FR-15)은 서버가 요청자 역할에 따라 응답에서 처리한다. 클라이언트에 실명을 보내지 않는다.
 - 경로 id(`:id`, `:memberId`)가 숫자가 아니면(정수로 해석 불가) 존재하지 않는 대상과 같게 404 `NOT_FOUND`로 응답한다.
 - `PATCH /me`, `PATCH /admin/members/:id`, `PATCH /admin/groups/:id`는 부분 갱신이다. 보낸 필드만 바꾸고 없는 필드는 그대로 둔다. 빈 본문 `{}`은 200(변경 없음).
 - 경로 날짜(`:date`)가 `YYYY-MM-DD` 형식의 실제 날짜가 아니면 400 `VALIDATION_ERROR`(`field: date`).
-- 기간 필터(`GET /attendance`, `GET /admin/groups`): `from`·`to` 중 하나만 보내면 나머지는 이번 달 1일·말일로 채운다. `to`가 `from`보다 앞서면 400 `VALIDATION_ERROR`(`field: to`). 값이 빈 문자열인 필터는 보내지 않은 것으로 본다. `status`·`capacity`가 허용 값 밖이면 400 `VALIDATION_ERROR`(`field`는 그 파라미터 이름).
+- 기간 필터(`GET /attendance`, `GET /admin/groups`): `from`·`to` 중 하나만 보내면 나머지는 이번 달 1일·말일로 채운다. `to`가 `from`보다 앞서면 400 `VALIDATION_ERROR`(`field: to`, "올바른 날짜가 아닙니다"), 93일을 넘으면 같은 코드·필드로 "조회 기간은 최대 93일입니다". 값이 빈 문자열인 필터는 보내지 않은 것으로 본다. `status`·`capacity`가 허용 값 밖이면 400 `VALIDATION_ERROR`(`field`는 그 파라미터 이름).
 - `PATCH /me`에 `newPassword`만 있고 `currentPassword`가 없으면 400 `VALIDATION_ERROR`(`field: currentPassword`). 틀리면 400 `WRONG_PASSWORD`.
-- `/groups/*`, `/admin/*` 아래의 없는 경로는 인증·권한 확인이 먼저라 404가 아니라 401(토큰 없음)·403(비관리자)으로 응답한다. 그 밖의 `/api` 아래 없는 경로는 404 `NOT_FOUND`.
+- `/groups/*`, `/attendance`, `/me`, `/admin/*` 아래의 없는 경로는 인증·권한 확인이 먼저라 404가 아니라 401(토큰 없음)·403(비관리자)으로 응답한다. 그 밖의 `/api` 아래 없는 경로는 404 `NOT_FOUND`.
 - 개발 환경(`NODE_ENV`가 `production`이 아님)에서는 `/api-docs`에 Swagger UI를 띄운다. `backend/swagger.yaml`을 읽으며 운영에서는 열지 않는다.
-- CORS: 기본은 같은 출처(D-5, 개발은 Vite 프록시)라 CORS 헤더를 보내지 않는다. 다른 출처에서 직접 호출할 때만 환경 변수 `CORS_ORIGINS`에 적은 출처를 쿠키 포함으로 허용한다([5-project-principle.md](5-project-principle.md) C-18).
+- CORS: 프론트는 다른 출처에서 직접 호출한다(NFR-14). 환경 변수 `CORS_ORIGINS`(쉼표 구분)에 적은 출처만 쿠키 포함으로 허용하고, 목록에 없는 출처에는 CORS 헤더를 보내지 않는다. 같은 목록을 `/auth/refresh`·`/auth/logout`의 출처 확인에도 쓴다([5-project-principle.md](5-project-principle.md) C-18).
 
 **핵심 응답 형식** (JSON 필드는 camelCase, 날짜는 `"YYYY-MM-DD"`)
 
@@ -241,7 +261,7 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 | `POST /auth/login`, `POST /auth/refresh` | `{accessToken}` + Refresh Token 쿠키(6.1) |
 | `GET /me` | `{id, name, email, phone, birthDate, age, role, isPermanent}` |
 | `PATCH /me` | 비밀번호를 바꾸지 않으면 `GET /me`와 같은 본문. 비밀번호를 바꾸면 로그인과 같은 `{accessToken}` + 새 Refresh Token 쿠키(현재 세션 유지, 6.1 흐름 8). 이때 화면은 새 Access Token을 저장한 뒤 `GET /me`로 다시 읽는다 |
-| `GET /calendar` | `{month, days: [{date, groupCount, attending}]}`. 그룹이 있거나 내가 참석한 날짜만 담는다. `attending`은 그날 내가 참석 중인지(boolean) |
+| `GET /calendar` | `{month, days: [{date, groupCount, groups: [{id, name, count, mine}], attending}]}`. 그룹이 있거나 내가 참석한 날짜만 담는다. `attending`은 그날 내가 참석 중인지(boolean) |
 | `GET /dates/:date/groups` | `[{id, name, capacity, count, status, createdBy: {memberId, name}, attendees: [{memberId, name}], mine}]` |
 | `POST /dates/:date/groups` | 201 `{id}`(만든 그룹 id) |
 | `POST /dates/:date/attendance` | 201 `{groupId}`(들어간 `기본` 그룹 id) |
@@ -251,8 +271,12 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 | `PATCH /admin/members/:id` | 200, `GET /admin/members`의 한 행과 같은 객체 |
 | `GET /admin/groups` | `[{id, date, name, capacity, count, status, createdBy: {memberId, name, isDeleted?}}]` |
 | `PATCH /admin/groups/:id` | 200, `GET /admin/groups`의 한 행과 같은 객체 |
+| `DELETE /groups/:id/attendance?deleteIfEmpty=true` | 200 `{groupDeleted: boolean}` |
+| `GET /groups/:id/messages`, `GET /admin/chats/:id/messages` | `[{id, body, hasImage, createdAt, author: {memberId, name, isDeleted?}}]`. 이미지 메시지는 `body`가 `""`이고 바이트는 이미지 API로 따로 받는다 |
+| `POST /groups/:id/messages`, `POST /groups/:id/images` | 201 `{id}` |
+| `GET /admin/chats` | `[{id, groupId, date, name, deletedAt, messageCount}]` |
 
-- `status`는 `"AVAILABLE"`(참석가능) 또는 `"FULL"`(참석완료)이다(R-5). `count`는 현재 참석 인원, `mine`은 요청자가 그 그룹에 참석했는지 여부다.
+- `status`는 `"AVAILABLE"`(참석가능) 또는 `"FULL"`(참석완료)이다(R-5). 지난 날짜의 정원 미만 그룹을 `참석불가`로 보이는 것은 화면 표시다. `count`는 현재 참석 인원, `mine`은 요청자가 그 그룹에 참석했는지 여부다.
 - 회원 표시 객체 `{memberId, name}`(참석자, 만든 사람): 비관리자에게 탈퇴 회원은 `name: "탈퇴 회원"`으로 가리고 `memberId`는 그대로 보낸다(숫자 ID만으로는 실명이 드러나지 않는다). 관리자에게 탈퇴 회원은 `name`에 실명을 넣고 `isDeleted: true`를 붙인다(R-9, FR-15).
 
 ## 10. 2일 일정
@@ -260,7 +284,7 @@ P0 = 2일 내 필수, P1 = 시간 남으면 2일 내, P2 = 이후.
 | 시점      | 마일스톤                                                                              | 예상(h) | 완료 기준                            |
 | --------- | ------------------------------------------------------------------------------------- | ------- | ------------------------------------ |
 | Day1 오전 | 프로젝트 골격, 스키마 마이그레이션, 영구 관리자 시드, 인증 API(가입·로그인·재발급·로그아웃) | 4.5     | FR-1 ~ FR-3, curl로 가입·로그인·토큰 재발급 확인 |
-| Day1 오후 | 앱 골격과 인증 fetch 래퍼(재발급 single-flight, 앱 시작 시 재발급), Vite 프록시(NFR-14), 로그인·가입 화면(SCR-01, SCR-02). 이어서 참석 도메인 API(그룹 생성, 참석·취소, 기본 그룹, 동시성 제어) + 캘린더 화면 | 5.5     | FR-1·FR-2 화면, FR-4, API 수준 FR-5 ~ FR-7(T-5 동시성), S-1·S-2 통과 |
+| Day1 오후 | 앱 골격과 인증 fetch 래퍼(재발급 single-flight, 앱 시작 시 재발급), API 주소(`VITE_API_URL`)·CORS 설정(NFR-14), 로그인·가입 화면(SCR-01, SCR-02). 이어서 참석 도메인 API(그룹 생성, 참석·취소, 기본 그룹, 동시성 제어) + 캘린더 화면 | 5.5     | FR-1·FR-2 화면, FR-4, API 수준 FR-5 ~ FR-7(T-5 동시성), S-1·S-2 통과 |
 | Day2 오전 | 날짜 상세·그룹 만들기 화면(SCR-04, SCR-05), 내 정보, 관리자 회원 API와 화면(삭제된 회원 보기 포함), 관리자 그룹 API | 5       | FR-5 ~ FR-11·FR-16 화면, S-3 ~ S-6·S-9 ~ S-12·S-15 통과 |
 | Day2 오후 | SCR-04 관리자 버튼(D-7), 참석 현황 조회, 탈퇴 회원 표시, 배포, 시나리오 전체 점검(반응형 수정 포함) | 4.5     | FR-12 ~ FR-15, S-7·S-8·S-13 통과(S-8·S-13은 SCR-04 경로), M-4·M-5 |
 | 여유 시   | P1 기능, 간단한 부하 테스트                                                           | -       | FR-17·FR-19, M-1 ~ M-3 측정          |

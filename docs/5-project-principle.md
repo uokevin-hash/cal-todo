@@ -1,6 +1,6 @@
 # cal-todo 프로젝트 구조 설계 원칙
 
-> 근거: [1-definition.md](1-definition.md) **v0.14**, [2-user-scenarios.md](2-user-scenarios.md) **v0.17**, [2-PRD.md](2-PRD.md) **v0.13**, [3-screen-design.md](3-screen-design.md) **v0.16**, [4-wireframes.md](4-wireframes.md) **v0.7**, [CLAUDE.md](../CLAUDE.md). `REQ-n`·`R-n`·`UC-n`은 정의서, `S-n`은 시나리오, `M-n`·`FR-n`·`NFR-n`·`D-n`과 "6.1 흐름 n"은 PRD, `SCR-n`은 화면 설계서, `WF-n`은 와이어프레임 번호다. 이 문서가 정의하는 ID는 `P-n`(공통), `L-n`(의존성·레이어), `N-n`(코드·네이밍), `T-n`(테스트·품질), `C-n`(설정·보안·운영), `ST-n`(디렉토리 구조)이다. 도메인 규칙은 다시 정의하지 않고 ID로 참조한다. **(결정)** 표시는 다른 문서에 없던 것을 이 문서에서 새로 정한 사항이다.
+> 근거: [1-definition.md](1-definition.md) **v0.15**, [2-user-scenarios.md](2-user-scenarios.md) **v0.18**, [2-PRD.md](2-PRD.md) **v0.14**, [3-screen-design.md](3-screen-design.md) **v0.17**, [4-wireframes.md](4-wireframes.md) **v0.8**, [CLAUDE.md](../CLAUDE.md). `REQ-n`·`R-n`·`UC-n`은 정의서, `S-n`은 시나리오, `M-n`·`FR-n`·`NFR-n`·`D-n`과 "6.1 흐름 n"은 PRD, `SCR-n`은 화면 설계서, `WF-n`은 와이어프레임 번호다. 이 문서가 정의하는 ID는 `P-n`(공통), `L-n`(의존성·레이어), `N-n`(코드·네이밍), `T-n`(테스트·품질), `C-n`(설정·보안·운영), `ST-n`(디렉토리 구조)이다. 도메인 규칙은 다시 정의하지 않고 ID로 참조한다. **(결정)** 표시는 다른 문서에 없던 것을 이 문서에서 새로 정한 사항이다.
 
 ## 변경 이력
 
@@ -18,6 +18,7 @@
 | 0.8 | 2026-09-30 | uokevin | 머리말 기준 버전 갱신 |
 | 0.9 | 2026-10-01 | uokevin | C-18에 CORS 허용 목록 추가(`CORS_ORIGINS`, 비우면 CORS 헤더 없음), 5.1 환경 변수 표에 `CORS_ORIGINS` 추가 |
 | 0.10 | 2026-10-01 | uokevin | 백엔드 구현 반영: 6.2 트리에 `swagger.yaml`, `src/cors.js`(C-18), `src/docs.js`(개발용 Swagger UI), `test/cors.test.js` 추가, `services/groups.js`에 관리자 그룹 목록, 2.4 "쓰지 않는 것"에 `cors`·`swagger-ui-express`, 머리말 기준 버전 갱신 |
+| 0.11 | 2026-10-02 | uokevin | 코드 기준 최신화: C-7 `iatMs` 밀리초 비교·`COOKIE_SAME_SITE`, C-8 표에 409 `PAST_DATE`·쿠키 경로 출처 403, C-9 채팅 글·이미지 검증, 5.1 환경 변수 표에 `COOKIE_SAME_SITE`·`CHAT_IMAGE_MAX_BYTES`·프론트 `VITE_API_URL`, `NODE_ENV`·`CORS_ORIGINS` 설명, C-3 실제 `.env.example` 현황, C-18 Vite 프록시 없이 직접 호출, C-20 미구현 표시, L-5 빈 그룹 삭제·채팅 보관, L-9 스토어 필드, N-15 i18n 키(ko/en/zh), 6.1 ~ 6.3 트리를 실제 파일에 맞춤(채팅·보관함·다국어), ST-4 라우트, T-5 채팅·보관·지난 날짜 테스트, 머리말 기준 버전 갱신 |
 
 ## 번호 정책
 
@@ -55,7 +56,7 @@ routes (HTTP) ──▶ services (규칙·트랜잭션) ──▶ repositories (
 | L-2 | **routes**: URL·메서드 매핑, 입력 형식 검증(`validate.js`, NFR-10), `req.member`에서 요청자 꺼내기, 응답 상태 코드 결정만 한다. 업무 규칙을 판단하지 않는다 |
 | L-3 | **services**: R-n 판단, 트랜잭션 경계, 오류 코드 결정(`AppError`), 탈퇴 회원 이름 가림(FR-15). 도메인당 파일 하나. 로직이 거의 없는 service(단순 조회)도 거치게 하되 한두 줄이면 충분하다 |
 | L-4 | **repositories**: SQL과 컬럼 별칭(N-9)만 있다. 규칙 판단·HTTP 지식이 없다. 모든 함수는 첫 인자로 `db`(pool 또는 트랜잭션 client)를 받는다 |
-| L-5 | **트랜잭션 경계는 service에 있다.** 여러 쓰기가 원자적이어야 하면 service가 `withTx(async (client) => { ... })`로 감싸고 같은 `client`를 repository에 넘긴다. 대상: 참석 등록(`FOR UPDATE`, NFR-3), 그룹 생성+참석(PRD 9장), 기본 그룹 생성+참석(NFR-5), 정원 변경, 회원 삭제(R-9), 그룹 삭제(R-13), 비밀번호 변경+토큰 폐기(6.1 흐름 8), 토큰 교체(6.1 흐름 4) |
+| L-5 | **트랜잭션 경계는 service에 있다.** 여러 쓰기가 원자적이어야 하면 service가 `withTx(async (client) => { ... })`로 감싸고 같은 `client`를 repository에 넘긴다. 대상: 참석 등록(`FOR UPDATE`, NFR-3), 그룹 생성+참석(PRD 9장), 기본 그룹 생성+참석(NFR-5), 정원 변경, 회원 삭제(R-9), 그룹 삭제(R-13, 그룹 행 잠금 → 채팅 보관 R-15 → 삭제), 마지막 참석자 취소+빈 그룹 삭제(R-16, `leaveAndDeleteIfEmpty`), 비밀번호 변경+토큰 폐기(6.1 흐름 8), 토큰 교체(6.1 흐름 4) |
 | L-6 | 권한은 두 단계다. 라우터 단위 `requireAuth`·`requireAdmin` 미들웨어(R-1, R-8)가 먼저 막고, 대상에 따라 달라지는 규칙(영구 관리자 잠금 R-11, 삭제된 회원 보기 전용 FR-16)은 service가 판단한다 |
 | L-7 | 도메인 간 호출은 service → 다른 service 허용(예: 회원 삭제가 참석 정리를 호출). 순환 import는 금지이며, 생기면 함수를 호출하는 쪽 service로 옮긴다 |
 
@@ -64,13 +65,13 @@ routes (HTTP) ──▶ services (규칙·트랜잭션) ──▶ repositories (
 ```
 pages/컴포넌트 (features/*) ──▶ api 훅 (features/*/api.ts, TanStack Query) ──▶ api 클라이언트 (lib/client.ts, fetch)
           │
-          └── store.ts (Zustand: accessToken, me, 토스트)
+          └── store.ts (Zustand: accessToken, me, isForcedOut, lang, 토스트)
 ```
 
 | ID | 원칙 |
 |----|------|
 | L-8 | 컴포넌트는 `fetch`를 직접 부르지 않는다. 서버 호출은 반드시 `features/*/api.ts`의 훅 → `lib/client.ts`를 거친다 |
-| L-9 | **서버 상태는 TanStack Query**, 클라이언트 상태만 Zustand. Zustand에는 `accessToken`(6.1 메모리 보관), 로그인 사용자 `me`(PRD 6장), 토스트만 둔다. 그룹·참석·회원 목록을 Zustand에 복사하지 않는다 |
+| L-9 | **서버 상태는 TanStack Query**, 클라이언트 상태만 Zustand. Zustand에는 `accessToken`(6.1 메모리 보관), 로그인 사용자 `me`(PRD 6장), 강제 로그아웃 안내 여부 `isForcedOut`(WF-01), 화면 언어 `lang`(FR-23), 토스트(`toast`)만 둔다. 그룹·참석·회원 목록을 Zustand에 복사하지 않는다 |
 | L-10 | 쓰기 뒤에는 관련 쿼리를 **접두 키로 넓게 무효화**한다(예: 참석 쓰기 → `['calendar']`, `['dateGroups', date]`, `['attendance']`). 낙관적 업데이트는 쓰지 않는다. 정원·중복 판단은 서버 응답(409)을 따른다(P-5) |
 | L-11 | `lib/client.ts`만 인증을 안다: Bearer 헤더 부착, 401 `TOKEN_EXPIRED` 시 `/auth/refresh` single-flight 후 재시도, `REFRESH_RACE` 시 한 번 더 재발급, `UNAUTHENTICATED` 시 스토어 비우고 SCR-01로 이동(6.1 흐름 3·5·6, D-4). `/auth/*` 요청 자체의 실패에는 이 처리를 하지 않는다. 예외는 `/auth/refresh`의 `REFRESH_RACE`에 대한 1회 재시도뿐이며(앱 시작 시 복원 포함), 재시도에서도 401이면 SCR-01로 보낸다 |
 | L-12 | 폼 상태는 컴포넌트 `useState`로 충분하다. 폼 라이브러리·전역 폼 상태 금지 |
@@ -115,7 +116,7 @@ pages/컴포넌트 (features/*) ──▶ api 훅 (features/*/api.ts, TanStack Q
 | N-12 | 주석 | "왜"만 쓴다. 규칙을 판단하는 줄에는 `// R-n: 한 줄 요약`(필요하면 `NFR-n`·`D-n`·"6.1 흐름 n" 병기). 규칙을 주석으로 다시 풀어 쓰지 않는다. 한계를 알고 택한 단순화에는 `// 단순화: 한계, 넘어서면 할 일` | `// R-3: 정원 초과 거부 (NFR-3, 그룹 행 FOR UPDATE)` |
 | N-13 | 포맷터 | Prettier 기본값, 저장소 루트 `.prettierrc` 하나를 양쪽이 같이 쓴다. 설정 항목은 `{ "singleQuote": true, "printWidth": 100 }`만 **(결정)** | |
 | N-14 | 린터 | ESLint flat config 최소: 프론트는 Vite React-TS 템플릿 기본(typescript-eslint, react-hooks), 백엔드는 `@eslint/js` recommended + Node globals. 규칙 추가는 실제로 버그를 막은 경우만. TypeScript는 `strict: true` | |
-| N-15 | 화면 문구 | 사용자에게 보이는 오류 문구는 프론트 `lib/errors.ts`에서 오류 코드로 찾는다(SCR-n 문구 그대로). 서버 `message`는 로그·디버깅용이며 화면에 그대로 쓰지 않는다 | `CAPACITY_FULL → "정원이 가득 찼습니다"` |
+| N-15 | 화면 문구 | 화면에 보이는 문구는 모두 `lib/i18n.ts`의 키로 쓴다(한국어 `ko`가 기준, `en`·`zh`는 같은 키를 모두 가진다, FR-23). 오류 문구는 `lib/errors.ts`가 오류 코드(`VALIDATION_ERROR`는 `field`)로 i18n 키를 찾는다(SCR-n 문구 그대로). 서버 `message`는 로그·디버깅용이며 화면에 그대로 쓰지 않는다 | `CAPACITY_FULL → "정원이 가득 찼습니다"` |
 
 ## 4. 테스트·품질 원칙
 
@@ -145,7 +146,12 @@ pages/컴포넌트 (features/*) ──▶ api 훅 (features/*/api.ts, TanStack Q
 | 탈퇴 회원 | 비관리자 응답에 탈퇴 회원 실명이 없음(`name: "탈퇴 회원"`), 관리자 응답은 실명 + `isDeleted: true`(PRD 9장), 비관리자 이름 검색에 걸리지 않음 | R-9, FR-15 |
 | 회원 삭제 | 오늘(Asia/Seoul) 포함 이후 참석 삭제, 어제 기록·만든 그룹 유지 | R-9, R-12 |
 | 그룹 삭제 | 참석 기록 삭제 후 참석자가 같은 날짜 다른 그룹에 참석 가능 | R-13 |
-| 기동 | JWT 비밀키 없음·32바이트 미만, 영구 관리자 없음 + `ADMIN_EMAIL` 없음 → `loadConfig`/기동 함수가 예외 | NFR-9, R-11 |
+| 지난 날짜 | 지난 날짜 참석 등록·그룹 생성(`attend` 무관) → 409 `PAST_DATE`, 참석 취소는 204 | R-6 |
+| 그룹 채팅 | 참석자만 읽고 쓰기(그 밖 403), 오래된 순, 빈 메시지 400, 비관리자에게 탈퇴 회원 이름 가림, 이미지 형식·크기 400 | R-14, FR-20, FR-21 |
+| 채팅 보관 | 그룹 삭제 시 채팅이 보관함으로(메시지 없던 그룹은 보관 안 함), 보관함 삭제는 관리자만·메시지도 함께 | R-15, FR-22 |
+| 빈 그룹 삭제 | 마지막 참석자가 `deleteIfEmpty=true`로 취소하면 누구나 그룹 삭제, 남은 참석자가 있으면 그룹 유지 | R-16, FR-24 |
+| 쿠키 경로 출처 | `/auth/refresh`·`/auth/logout`은 허용 목록·같은 출처·Origin 없음만 통과, 그 밖 403 | C-7, C-18 |
+| 기동 | JWT 비밀키 없음·32바이트 미만, 영구 관리자 없음 + `ADMIN_EMAIL` 없음, `COOKIE_SAME_SITE`가 strict·lax·none 밖 → `loadConfig`/기동 함수가 예외 | NFR-9, R-11 |
 | 응답 | 어떤 응답에도 `passwordHash`·`password_hash` 없음(회원 관련 응답 확인) | NFR-6 |
 
 ### 4.3 수동 시나리오 체크리스트 (T-6, M-5)
@@ -186,7 +192,7 @@ Day2 오후에 배포 환경(또는 운영 빌드를 서빙하는 로컬)에서 
 |----|------|
 | C-1 | 환경 변수는 `backend/src/config.js` 한 곳에서만 읽고 검증해 객체로 내보낸다. 다른 파일은 `process.env`를 직접 읽지 않는다 |
 | C-2 | 필수값이 없거나 형식이 틀리면 **서버는 listen 전에 오류 메시지를 찍고 종료**한다(NFR-9, R-11). 기본값이 있는 값만 생략 가능 |
-| C-3 | **(결정)** `.env` 로딩은 Node 내장 `node --env-file=.env`로 한다. `backend/.env`는 git에 넣지 않고, 같은 키를 빈 값·주석으로 적은 `backend/.env.example`만 커밋한다. 테스트는 `backend/.env.test`(git 제외)를 `node --env-file=.env.test --test`로 읽고, 같은 방식으로 `backend/.env.test.example`을 커밋한다(`DATABASE_URL`은 `cal_todo_test`, T-2) |
+| C-3 | **(결정)** `.env` 로딩은 Node 내장 `node --env-file=.env`로 한다. `backend/.env`는 git에 넣지 않고, 같은 키를 빈 값·주석으로 적은 `backend/.env.example`만 커밋한다. 테스트는 `backend/.env.test`(git 제외)를 `node --env-file=.env.test --test`로 읽고, 같은 방식으로 `backend/.env.test.example`을 커밋한다(`DATABASE_URL`은 `cal_todo_test`, T-2). **현재 `backend/.env.example`은 있고, `.env.test.example`은 아직 없다(미작성). `.env.test`는 `.env.example`을 복사해 `DATABASE_URL`만 테스트 DB로 바꾼다.** 프론트는 `frontend/.env.example`(커밋)을 복사해 `frontend/.env.development`(git 제외)에 `VITE_API_URL`을 적는다 |
 
 | 변수 | 필수 | 설명 |
 |------|------|------|
@@ -196,9 +202,12 @@ Day2 오후에 배포 환경(또는 운영 빌드를 서빙하는 로컬)에서 
 | `ADMIN_EMAIL` | 조건부 | 영구 관리자가 DB에 없을 때만 필수. 없으면 기동 실패(R-11) |
 | `ADMIN_PASSWORD` | 조건부 | 위와 같음. 영구 관리자 생성 뒤에는 쓰지 않는다(이후 변경은 SCR-07) |
 | `PORT` | 아니오 | 기본 `3000` |
-| `NODE_ENV` | 아니오 | `production`이면 쿠키 `Secure`, SPA 정적 파일 서빙 |
+| `NODE_ENV` | 아니오 | `production`이면 쿠키 `Secure`, Swagger UI `/api-docs`를 열지 않음. SPA 정적 파일 서빙(C-20)은 아직 구현되지 않았다 |
 | `ACCESS_TOKEN_TTL` | 아니오 | 기본 `15m`. S-14 수동 확인용으로 개발에서만 줄인다 |
-| `CORS_ORIGINS` | 아니오 | 쉼표로 구분한 허용 출처(예: `http://localhost:5173`). 비우면 CORS 헤더를 보내지 않는다(C-18) |
+| `CORS_ORIGINS` | 아니오 | 쉼표로 구분한 허용 출처(예: `http://localhost:5173`). 비우면 CORS 헤더를 보내지 않는다(C-18). `/auth/refresh`·`/auth/logout`의 출처 확인에도 쓴다(C-7) |
+| `COOKIE_SAME_SITE` | 아니오 | Refresh 쿠키 `SameSite`. `strict`(기본)·`lax`·`none`, 그 밖의 값은 기동 실패. `none`이면 `Secure`를 자동으로 붙인다(C-7) |
+| `CHAT_IMAGE_MAX_BYTES` | 아니오 | 채팅 이미지 최대 크기(바이트). 기본 `2097152`(2MB, R-14) |
+| `VITE_API_URL` (frontend) | 아니오 | 백엔드 API 주소(경로 포함, 끝에 `/` 없이, 예: `http://localhost:3000/api`). 비우면 같은 출처 `/api`. 빌드 때 들어가며 `frontend/.env.development`·`.env.production`에 둔다(C-18) |
 
 - 비밀키 생성: `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`.
 
@@ -209,9 +218,9 @@ Day2 오후에 배포 환경(또는 운영 빌드를 서빙하는 로컬)에서 
 | C-4 | 비밀(비밀키·DB 비밀번호·관리자 초기 비밀번호)은 소스·로그·응답·git 어디에도 두지 않는다. 운영 서버의 `.env`는 소유자만 읽기 권한 | NFR-9, R-11 |
 | C-5 | 모든 SQL은 `$1, $2` 파라미터 쿼리. 동적 필터(FR-14)는 값을 `params` 배열에 넣고 그 길이로 `$n` 자리표시자를 만든 조건 조각(예: `g.name ILIKE $3`)을 `conditions` 배열에 함께 쌓는다. 값은 절대 SQL 문자열에 넣지 않는다. 정렬 컬럼 같은 식별자가 필요하면 허용 목록에서 고른다 | NFR-7 |
 | C-6 | 비밀번호는 `bcrypt` 비동기 API(`hash`, `compare`), cost `10` 상수. 해시 컬럼은 로그인·비밀번호 확인 쿼리에서만 SELECT하고, 회원 조회 쿼리는 해시를 아예 고르지 않는다 | NFR-6, PRD 11장 |
-| C-7 | 토큰: `jsonwebtoken` HS256, `verify`는 `{ algorithms: ['HS256'] }` 고정 + 페이로드 `type` 확인. Refresh `jti`는 `crypto.randomUUID()`, DB에는 SHA-256 hex만. 쿠키는 `HttpOnly; SameSite=Strict; Path=/api/auth; Secure(운영)`. 매 요청 회원 행 재조회와 `iat` < `password_changed_at`(초 내림) 거부는 `requireAuth` 한 곳에서 | 6.1, NFR-8, NFR-9 |
+| C-7 | 토큰: `jsonwebtoken` HS256, `verify`는 `{ algorithms: ['HS256'] }` 고정 + 페이로드 `type` 확인. Refresh `jti`는 `crypto.randomUUID()`, DB에는 SHA-256 hex만. 쿠키는 `HttpOnly; SameSite=<COOKIE_SAME_SITE, 기본 Strict>; Path=/api/auth; Secure(운영 또는 SameSite=None)`. 쿠키로 인증하는 `/auth/refresh`·`/auth/logout`은 `Origin`이 없거나 `CORS_ORIGINS`·같은 출처일 때만 받고 아니면 403(CSRF). 토큰 페이로드에 밀리초 발급 시각 `iatMs`를 넣고, 매 요청 회원 행 재조회와 `(iatMs ?? iat*1000) < password_changed_at`(밀리초) 거부는 `requireAuth` 한 곳에서 | 6.1, NFR-8, NFR-9 |
 | C-8 | 오류 응답 형식은 `{ "error": { "code": "…", "message": "…", "field"?: "email" } }` 하나 **(결정)**. HTTP 상태와 코드는 아래 표가 기준이다(D-4를 구체화) | D-4 |
-| C-9 | 입력 검증은 route에서 `validate.js`로 형식(이메일, 전화번호 정의서 4.1, 정원 2/4, `YYYY-MM-DD` 날짜, 비밀번호 8자 이상·최대 72바이트 — PRD NFR-10, 이름 비어 있지 않음, 생년월일 `YYYY-MM-DD`)을 본다. DB가 필요한 규칙은 service. 생년월일이 미래인지는 "오늘"이 필요하므로 route가 아니라 service가 `TODAY_SQL`(C-11)로 판단한다. 알 수 없는 필드는 무시하고 읽지 않는다(역할·`isPermanent`를 본문에서 받는 곳은 `PATCH /admin/members/:id`의 `role`뿐) | NFR-10, R-10 |
+| C-9 | 입력 검증은 route에서 `validate.js`로 형식(이메일, 전화번호 정의서 4.1, 정원 2/4, `YYYY-MM-DD` 날짜, 비밀번호 8자 이상·최대 72바이트 — PRD NFR-10, 이름 비어 있지 않음, 생년월일 `YYYY-MM-DD`, 채팅 글은 앞뒤 공백 제외 1~500자, 채팅 이미지는 `Content-Type` PNG·JPEG·GIF·WEBP와 `CHAT_IMAGE_MAX_BYTES` 이하 — R-14)을 본다. DB가 필요한 규칙은 service. 생년월일이 미래인지는 "오늘"이 필요하므로 route가 아니라 service가 `TODAY_SQL`(C-11)로 판단한다. 알 수 없는 필드는 무시하고 읽지 않는다(역할·`isPermanent`를 본문에서 받는 곳은 `PATCH /admin/members/:id`의 `role`뿐) | NFR-10, R-10, R-14 |
 | C-10 | 비관리자 응답에 탈퇴 회원 실명을 넣지 않는다. 가림은 `services/display.js`의 함수 하나로 하고 모든 조회 service가 거친다. 이름 검색 제외는 repository SQL 조건(`m.deleted_at IS NULL OR $isAdmin`)으로 한다 | R-9, FR-15, PRD 11장 |
 
 | 상황 | HTTP | `code` |
@@ -220,9 +229,10 @@ Day2 오후에 배포 환경(또는 운영 빌드를 서빙하는 로컬)에서 
 | 로그인 실패(없는 이메일·틀린 비밀번호·삭제된 회원 모두 동일) **(결정)** | 400 | `INVALID_CREDENTIALS` |
 | 내 정보 수정 시 현재 비밀번호 틀림 **(결정)** | 400 | `WRONG_PASSWORD` (`field: currentPassword`) |
 | Access 만료 / 재발급 경합 / 미인증·무효·탈퇴 | 401 | `TOKEN_EXPIRED` / `REFRESH_RACE` / `UNAUTHENTICATED` (D-4) |
-| 권한 없음 | 403 | `FORBIDDEN` |
+| 권한 없음 / 허용하지 않은 출처의 `/auth/refresh`·`/auth/logout` | 403 | `FORBIDDEN` |
 | 대상 없음 | 404 | `NOT_FOUND` |
 | 정원 초과 / 같은 날짜 중복 참석 / 같은 날짜 그룹명 중복 | 409 | `CAPACITY_FULL` / `ALREADY_ATTENDING` / `DUPLICATE_GROUP_NAME` (D-4) |
+| 지난 날짜에 참석 등록·그룹 생성 | 409 | `PAST_DATE` (R-6) |
 | 활성 회원 이메일 중복 **(결정)** | 409 | `EMAIL_TAKEN` |
 | 정원을 현재 인원보다 작게 **(결정)** | 409 | `CAPACITY_BELOW_COUNT` |
 | 영구 관리자 보호 위반 **(결정)** | 409 | `PERMANENT_ADMIN_LOCKED` (R-11) |
@@ -248,9 +258,9 @@ Day2 오후에 배포 환경(또는 운영 빌드를 서빙하는 로컬)에서 
 
 | ID | 원칙 | 근거 |
 |----|------|------|
-| C-18 | **개발**: 터미널 두 개. `backend`에서 `node --watch --env-file=.env src/server.js`, `frontend`에서 `vite`. Vite `server.proxy`로 `/api` → `http://localhost:3000`. 같은 출처로 쓰므로 기본은 CORS 없음. 다른 출처에서 API를 직접 부를 때만 `CORS_ORIGINS`에 적은 출처를 `/api`에 허용한다(쿠키 포함, 패키지 없이 `src/cors.js`) | NFR-14 |
+| C-18 | **개발**: 터미널 두 개. `backend`에서 `node --watch --env-file=.env src/server.js`, `frontend`에서 `vite`. Vite 프록시는 쓰지 않는다. 브라우저(`localhost:5173`)가 `VITE_API_URL`(`http://localhost:3000/api`)로 Express를 직접 부르고(`credentials: 'include'`), 백엔드 `CORS_ORIGINS`에 프론트 출처를 넣어 `/api`에 허용한다(쿠키 포함, 패키지 없이 `src/cors.js`). 배포도 같은 방식(다른 출처 + CORS)이다 | NFR-14 |
 | C-19 | **(결정) 배포**: VM 1대에 Node 22 LTS + PostgreSQL 17. `frontend`에서 `npm ci && npm run build` → `frontend/dist`. `backend`에서 `npm ci --omit=dev` 후 `NODE_ENV=production node --env-file=.env src/server.js`를 PM2(fork 1개)로 띄운다. cluster는 M-1 미달 때만(NFR-1) | D-5, NFR-1 |
-| C-20 | Express는 `/api` 라우터 → `frontend/dist` 정적 파일 → 나머지 `GET`은 `index.html`(SPA 폴백) 순서로 붙인다. `/api` 아래 없는 경로는 JSON 404 | D-5 |
+| C-20 | Express는 `/api` 라우터 → `frontend/dist` 정적 파일 → 나머지 `GET`은 `index.html`(SPA 폴백) 순서로 붙인다. `/api` 아래 없는 경로는 JSON 404. **(미구현)** 현재 `app.js`에는 정적 파일 서빙이 없고, 프론트·백엔드를 따로 배포하는 것을 전제로 한다(OPS-2) | D-5 |
 | C-21 | HTTPS는 앞단(호스팅 기본 TLS 또는 Caddy/nginx 리버스 프록시)에서 끝낸다. 프록시 뒤라면 `app.set('trust proxy', 1)`. 호스팅 선택은 PRD 12장 미결 사항을 따른다 | PRD 12장 |
 
 ## 6. 디렉토리 구조
@@ -266,12 +276,12 @@ Day2 오후에 배포 환경(또는 운영 빌드를 서빙하는 로컬)에서 
 ```
 cal-todo/
 ├─ CLAUDE.md          작업 지침
-├─ .prettierrc        프론트·백 공용 포맷 설정(N-13)
+├─ .prettierrc        프론트·백 공용 포맷 설정(N-13). (미작성)
 ├─ .gitignore         node_modules, dist, .env, .env.test
 ├─ docs/              정의서·시나리오·PRD·화면·와이어프레임·이 문서·아키텍처 다이어그램·ERD·DDL 참조본(schema.sql)·실행 계획
 ├─ prompts/           문서 생성에 쓴 원문 프롬프트
 ├─ frontend/          React SPA (Vite)
-└─ backend/           Express API + SPA 서빙
+└─ backend/           Express API (SPA 서빙은 미구현, C-20)
 ```
 
 ### 6.2 백엔드
@@ -279,49 +289,55 @@ cal-todo/
 ```
 backend/
 ├─ package.json            "type": "module", scripts: dev, start, test, lint
-├─ .env.example            C-3 변수 목록
-├─ .env.test.example       테스트용 변수 목록(C-3, T-2). 실제 값은 .env.test(git 제외)
-├─ eslint.config.js
+├─ CLAUDE.md               백엔드 작업 지침
+├─ .env.example            C-3 변수 목록(커밋)
+├─ .env.test.example       테스트용 변수 목록(C-3, T-2). 실제 값은 .env.test(git 제외) (미작성)
+├─ eslint.config.js        (미작성. 그래서 npm run lint가 아직 동작하지 않는다)
 ├─ swagger.yaml            API 명세(OpenAPI 3.0.3). PRD 9장과 일치시킨다
 ├─ db/
 │  └─ migrations/
-│     └─ 001_init.sql      members, groups, attendances, refresh_tokens + 제약·인덱스(PRD 7장)
+│     ├─ 001_init.sql      members, groups, attendances, refresh_tokens + 제약·인덱스(PRD 7장)
+│     ├─ 002_group_messages.sql  group_messages(R-14)
+│     ├─ 003_chat_archives.sql   chat_archives, archived_messages(R-15)
+│     └─ 004_chat_images.sql     두 메시지 테이블에 image, image_type(R-14)
 ├─ src/
 │  ├─ server.js            기동 순서: config 검증 → 마이그레이션 → 영구 관리자 확인 → listen
-│  ├─ app.js               Express 조립(cookie-parser, JSON, /api 라우터, 정적 파일, 오류 미들웨어). 테스트가 import
+│  ├─ app.js               Express 조립(cookie-parser, JSON, /api 라우터, 오류 미들웨어). 정적 파일 서빙은 아직 없음(C-20). 테스트가 import
 │  ├─ config.js            환경 변수 읽기·검증(C-1, C-2)
 │  ├─ db.js                pg.Pool, withTx, DATE 타입 파서, TODAY_SQL(C-11, C-17)
 │  ├─ migrate.js           마이그레이션 적용(C-14)
 │  ├─ errors.js            AppError, 오류 미들웨어(C-8, C-12)
 │  ├─ validate.js          형식 검증 함수(C-9)
 │  ├─ middleware.js        requireAuth(토큰 검증 + 회원 재조회), requireAdmin(L-6, C-7)
-│  ├─ cors.js              CORS_ORIGINS 허용 목록만 CORS 헤더(C-18)
+│  ├─ cors.js              CORS_ORIGINS 허용 목록만 CORS 헤더(C-18), /auth/refresh·logout 출처 확인(C-7)
 │  ├─ docs.js              /api-docs Swagger UI(개발 환경 전용, swagger.yaml을 읽음)
 │  ├─ routes/
 │  │  ├─ auth.js           /auth/signup, login, refresh, logout
 │  │  ├─ me.js             /me
 │  │  ├─ dates.js          /calendar, /dates/:date/groups, /dates/:date/attendance
-│  │  ├─ groups.js         /groups/:id/attendance
+│  │  ├─ groups.js         /groups/:id/attendance(deleteIfEmpty), /groups/:id/messages, /groups/:id/images
 │  │  ├─ attendance.js     /attendance (조회·필터)
-│  │  └─ admin.js          /admin/members/*, /admin/groups/* (requireAdmin)
+│  │  └─ admin.js          /admin/members/*, /admin/groups/*, /admin/chats/* (requireAdmin)
 │  ├─ services/
 │  │  ├─ auth.js           로그인, 토큰 발급·교체·재사용 감지·폐기(6.1)
 │  │  ├─ members.js        가입, 내 정보, 관리자 편집·삭제·역할, 영구 관리자 확인
-│  │  ├─ groups.js         그룹 생성·편집·삭제, 캘린더·날짜 상세, 관리자 그룹 목록
+│  │  ├─ groups.js         그룹 생성·편집·삭제(채팅 보관), 빈 그룹 삭제(leaveAndDeleteIfEmpty), 캘린더·날짜 상세, 관리자 그룹 목록, 그룹 채팅·이미지, 채팅 보관함
 │  │  ├─ attendance.js     참석 등록·취소·빼기, 기본 그룹, 현황 조회
 │  │  └─ display.js        탈퇴 회원 이름 가림(C-10)
 │  └─ repositories/
 │     ├─ members.js
 │     ├─ groups.js
 │     ├─ attendances.js
+│     ├─ messages.js       group_messages, chat_archives, archived_messages
 │     └─ refreshTokens.js
 ├─ test/
 │  ├─ helpers.js           앱 기동(listen 0), DB 비우기, 가입·로그인 헬퍼
 │  ├─ auth.test.js         T-5 인증
 │  ├─ attendance.test.js   T-5 정원·중복·기본 그룹·동시성
 │  ├─ admin.test.js        T-5 권한·영구 관리자·회원 삭제·그룹 삭제·탈퇴 회원 가림
-│  ├─ config.test.js       T-5 기동 실패
-│  └─ cors.test.js         CORS 허용 목록(C-18)
+│  ├─ config.test.js       T-5 기동 실패, COOKIE_SAME_SITE
+│  ├─ cors.test.js         CORS 허용 목록(C-18), 쿠키 경로 출처 확인
+│  └─ messages.test.js     T-5 그룹 채팅·이미지·채팅 보관·빈 그룹 삭제
 └─ load/                   (P1) k6.js, seed.sql(T-7)
 ```
 
@@ -332,8 +348,11 @@ backend/
 ```
 frontend/
 ├─ package.json            scripts: dev, build, lint, typecheck
+├─ CLAUDE.md               프론트엔드 작업 지침
+├─ .env.example            VITE_API_URL 설명(커밋)
+├─ .env.development        개발 값 VITE_API_URL=http://localhost:3000/api (git 제외)
 ├─ index.html
-├─ vite.config.ts          react 플러그인, server.proxy /api(C-18)
+├─ vite.config.ts          react 플러그인만. 프록시 없음(C-18)
 ├─ tsconfig.json           strict
 ├─ eslint.config.js
 └─ src/
@@ -341,10 +360,11 @@ frontend/
    ├─ App.tsx              라우트 표, 앱 시작 시 로그인 복원(6.1 흐름 6), 로그인·관리자 가드
    ├─ styles.css           전역 스타일 하나, 768px 미디어 쿼리(L-13)
    ├─ types.ts             API 요청·응답 타입(L-14)
-   ├─ store.ts             Zustand: auth(accessToken, me), toast(L-9)
+   ├─ store.ts             Zustand: accessToken, me, isForcedOut, lang, toast(L-9)
    ├─ lib/
    │  ├─ client.ts         fetch 래퍼: Bearer, 재발급 single-flight, 401 처리(L-11)
-   │  ├─ errors.ts         오류 코드 → SCR 문구(N-15)
+   │  ├─ i18n.ts           화면 문구 사전 ko/en/zh와 번역 함수(N-15, FR-23)
+   │  ├─ errors.ts         오류 코드 → i18n 키(N-15)
    │  ├─ date.ts           생년월일(나이) 표시, 서울 기준 오늘(표시용, C-11)
    │  └─ validate.ts       이메일·전화번호·비밀번호 형식(보조, L-15)
    ├─ components/          여러 화면 공용, 서버 호출 없음
@@ -352,18 +372,24 @@ frontend/
    │  ├─ StatusBadge.tsx   상태 배지(R-5)
    │  ├─ Modal.tsx         가운데 모달 / 모바일 하단 시트
    │  ├─ ConfirmDialog.tsx WF-11
+   │  ├─ Field.tsx         라벨 + 입력 칸 + 칸 오류
+   │  ├─ Segment.tsx       세그먼트 선택(정원·상태·역할)
+   │  ├─ LangSelect.tsx    언어 선택(FR-23)
+   │  ├─ Loading.tsx       목록 조회 중 회색 줄(WF 2.4)
+   │  ├─ MemberName.tsx    회원 이름 표시(탈퇴 회원 이름을 화면 언어로, (탈퇴) 표시)
    │  └─ Toast.tsx
    └─ features/            화면 단위. 각 폴더의 api.ts가 TanStack Query 훅(L-8)
       ├─ auth/             LoginPage.tsx, SignupPage.tsx, api.ts
       ├─ calendar/         CalendarPage.tsx, api.ts
       ├─ dates/            DateDetailPage.tsx, GroupCreateModal.tsx, GroupEditModal.tsx, api.ts
       ├─ attendance/       AttendancePage.tsx, api.ts
+      ├─ chat/             GroupChat.tsx(캘린더 아래 그룹 채팅), ChatImage.tsx, api.ts
       ├─ me/               MePage.tsx, api.ts
-      └─ admin/            MembersPage.tsx, MemberEditModal.tsx, GroupsPage.tsx(P1), api.ts
+      └─ admin/            MembersPage.tsx, MemberEditModal.tsx, GroupsPage.tsx, ChatArchivesPage.tsx, api.ts
 ```
 
 | ID | 원칙 |
 |----|------|
-| ST-4 | **(결정) 라우트**: `/login`, `/signup`, `/`(캘린더, `?month=YYYY-MM`), `/dates/:date`, `/attendance`, `/me`, `/admin/members`, `/admin/groups`(P1). URL이 화면 상태(월, 날짜, 필터)를 담아 새로고침·뒤로 가기가 그대로 동작하게 한다 |
-| ST-5 | `GroupEditModal`(WF-10)은 P0에서 SCR-04가 쓰므로 `features/dates/`에 두고, P1의 `admin/GroupsPage`가 그대로 import한다. 기능 간 import는 허용하되 순환은 금지. `index.ts` 재수출(barrel) 파일은 만들지 않는다 |
+| ST-4 | **(결정) 라우트**: `/login`, `/signup`, `/`(캘린더, `?month=YYYY-MM`), `/dates/:date`(형식이 틀리면 `/`), `/attendance`(`?from&to&group&name&status&capacity`), `/me`, `/admin/members`, `/admin/groups`(`?from&to`), `/admin/chats`(채팅 보관함), 그 밖의 경로 `*` → `/`. URL이 화면 상태(월, 날짜, 필터)를 담아 새로고침·뒤로 가기가 그대로 동작하게 한다 |
+| ST-5 | `GroupEditModal`(WF-10)은 P0에서 SCR-04가 쓰므로 `features/dates/`에 두고, `admin/GroupsPage`가 그대로 import한다. 기능 간 import는 허용하되 순환은 금지. `index.ts` 재수출(barrel) 파일은 만들지 않는다 |
 | ST-6 | `components/`는 서버 호출·도메인 규칙이 없는 표시용만 둔다. 두 화면 이상에서 쓰이기 전에는 `components/`로 옮기지 않는다 |
