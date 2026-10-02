@@ -6,16 +6,18 @@ import { displayMember } from './display.js';
 
 const notFound = () => new AppError(404, 'NOT_FOUND', '요청한 대상을 찾을 수 없습니다');
 
-// R-4: 같은 날짜 중복은 DB 제약 위반으로 알린다(NFR-4)
+// R-4: 같은 날짜 중복은 DB 제약 위반으로 알린다(NFR-4). R-6: 지난 날짜는 참석 불가
 export async function insertAttendance(client, { memberId, groupId, date }) {
+  let inserted;
   try {
-    await attendances.insertAttendance(client, { memberId, groupId, date });
+    inserted = await attendances.insertAttendance(client, { memberId, groupId, date });
   } catch (err) {
     if (err.code === '23505' && err.constraint === 'attendances_member_id_date_key') {
       throw new AppError(409, 'ALREADY_ATTENDING', '이미 같은 날짜에 참석 중입니다');
     }
     throw err;
   }
+  if (!inserted) throw new AppError(409, 'PAST_DATE', '지난 날짜에는 참석할 수 없습니다');
 }
 
 // AD-6: 그룹 행을 잠근 뒤 인원과 정원을 비교한다
@@ -30,7 +32,7 @@ async function attendLocked(client, memberId, groupId) {
   return { groupId };
 }
 
-// R-6: 날짜 제한 없음
+// R-6: 오늘 포함 이후 날짜만
 export const attendGroup = (memberId, groupId) =>
   withTx((client) => attendLocked(client, memberId, groupId));
 

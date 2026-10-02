@@ -10,7 +10,7 @@ export function useDateGroups(date: string) {
 }
 
 // L-10: 참석·그룹 쓰기 뒤 접두 키로 넓게 무효화한다. 낙관적 업데이트는 쓰지 않는다
-function useWrite<T>(mutationFn: (input: T) => Promise<unknown>) {
+function useWrite<T, R>(mutationFn: (input: T) => Promise<R>) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn,
@@ -56,6 +56,15 @@ export function useUpdateGroup() {
 export function useRemoveAttendee() {
   return useWrite(({ groupId, memberId }: { groupId: number; memberId: number }) =>
     api(`/admin/groups/${groupId}/attendance/${memberId}`, { method: 'DELETE' }),
+  );
+}
+
+// 참석 취소 + 마지막 참석자였으면 그룹 삭제(채팅은 보관)
+export function useLeaveAndDeleteIfEmpty() {
+  return useWrite((groupId: number) =>
+    api<{ groupDeleted: boolean }>(`/groups/${groupId}/attendance?deleteIfEmpty=true`, {
+      method: 'DELETE',
+    }),
   );
 }
 

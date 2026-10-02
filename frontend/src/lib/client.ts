@@ -3,6 +3,15 @@ import type { ApiErrorBody, TokenResponse } from '../types';
 
 // L-11: 인증을 아는 곳은 이 파일 하나다
 
+// 백엔드 API 주소(경로 포함). 환경 변수 VITE_API_URL(예: https://api.example.com/api, .env.example)
+// 백엔드 CORS_ORIGINS에 이 프론트엔드의 출처를 넣어 짝을 맞춘다. 없으면 같은 출처의 /api
+const API_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '');
+
+// Refresh Token 쿠키가 다른 출처의 백엔드로도 오가도록 항상 credentials를 실어 보낸다
+function apiFetch(path: string, init: RequestInit) {
+  return fetch(`${API_URL}${path}`, { ...init, credentials: 'include' });
+}
+
 export class ApiError extends Error {
   status: number;
   code: string;
@@ -27,7 +36,7 @@ async function readError(res: Response): Promise<ApiErrorBody['error']> {
 async function refreshOnce(): Promise<string | null> {
   // 6.1 흐름 5: REFRESH_RACE면 다른 탭이 받은 새 쿠키로 한 번만 더 시도한다
   for (let attempt = 0; attempt < 2; attempt++) {
-    const res = await fetch('/api/auth/refresh', { method: 'POST' });
+    const res = await apiFetch('/auth/refresh', { method: 'POST' });
     if (res.ok) {
       const { accessToken } = (await res.json()) as TokenResponse;
       useStore.getState().setAccessToken(accessToken);
@@ -61,7 +70,7 @@ function send(path: string, { method = 'GET', body, file }: Options, token: stri
   if (token) headers.Authorization = `Bearer ${token}`;
   if (file) headers['Content-Type'] = file.type;
   else if (body !== undefined) headers['Content-Type'] = 'application/json';
-  return fetch(`/api${path}`, {
+  return apiFetch(path, {
     method,
     headers,
     body: file ?? (body === undefined ? undefined : JSON.stringify(body)),

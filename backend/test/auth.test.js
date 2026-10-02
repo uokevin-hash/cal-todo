@@ -226,7 +226,6 @@ test('PATCH /me 비밀번호 변경: 현재 세션은 새 토큰으로 유지, �
   const user = await signup(url);
   const a = await login(url, user);
   const b = await login(url, user);
-  await new Promise((r) => setTimeout(r, 1000)); // iat와 password_changed_at이 다른 초가 되도록
 
   const res = await caller(url, a.accessToken)('PATCH', '/me', {
     currentPassword: user.password,
@@ -292,4 +291,20 @@ test('로그인 시도 제한: 5회 실패 뒤 맞는 비밀번호도 429, 다�
 
   loginAttempts.get(user.email).lockedUntil = Date.now() - 1; // 15분 경과 흉내
   assert.equal((await post(`${url}/auth/login`, user)).status, 200);
+});
+
+test('재발급·로그아웃: 허용하지 않은 출처에서 쿠키로 부르면 403(CSRF), 허용 목록 밖이라 CORS 헤더도 없음', async () => {
+  const user = await signup(url);
+  const cookie = refreshCookie(await post(`${url}/auth/login`, user));
+  for (const path of ['/auth/refresh', '/auth/logout']) {
+    const res = await post(
+      `${url}${path}`,
+      {},
+      { Cookie: cookie, Origin: 'https://evil.example.com' },
+    );
+    assert.equal(res.status, 403);
+    assert.equal(res.headers.get('access-control-allow-origin'), null);
+  }
+  // 막힌 요청은 토큰을 바꾸지 않았으므로 원래 쿠키로 재발급된다
+  assert.equal((await post(`${url}/auth/refresh`, {}, { Cookie: cookie })).status, 200);
 });

@@ -10,6 +10,7 @@ import { useStore } from '../../store';
 import type { DateGroup } from '../../types';
 import { useDateGroups, useRemoveAttendee, useUpdateGroup } from './api';
 import { CAPACITY_OPTIONS } from './GroupCreateModal';
+import { groupLabel, useT } from '../../lib/i18n';
 
 type Props = { date: string; groupId: number; onClose: () => void };
 
@@ -30,6 +31,7 @@ type FormProps = {
 };
 
 function EditForm({ date, group, onClose }: FormProps) {
+  const t = useT();
   const updateGroup = useUpdateGroup();
   const removeAttendee = useRemoveAttendee();
   const [name, setName] = useState(group.name);
@@ -47,9 +49,7 @@ function EditForm({ date, group, onClose }: FormProps) {
     e.preventDefault();
     const message =
       checkName(name) ??
-      (!isDefault && name.trim() === DEFAULT_NAME
-        ? "'기본'은 그룹 이름으로 쓸 수 없습니다"
-        : undefined); // R-2
+      (!isDefault && name.trim() === DEFAULT_NAME ? t('errReservedName') : undefined); // R-2
     if (message) return setErrors({ name: message });
     setErrors({});
     const body: { id: number; name?: string; capacity?: number } = { id: group.id };
@@ -60,39 +60,42 @@ function EditForm({ date, group, onClose }: FormProps) {
 
   return (
     <Modal
-      title={`그룹 편집 · ${formatMonthDay(date)}`}
+      title={t('editGroupTitle', { date: formatMonthDay(date) })}
       onClose={onClose}
       footer={
         <>
           <button className="btn primary" form="group-edit" disabled={updateGroup.isPending}>
-            {updateGroup.isPending ? '저장 중…' : '저장'}
+            {updateGroup.isPending ? t('saving') : t('save')}
           </button>
           <button className="btn" onClick={onClose}>
-            취소
+            {t('cancel')}
           </button>
         </>
       }
     >
       <form id="group-edit" className="stack" onSubmit={submit} noValidate>
-        <Field label="그룹명" error={errors.name} isLocked={isDefault}>
+        <Field label={t('groupName')} error={errors.name} isLocked={isDefault}>
           <input
             className="input"
-            aria-label="그룹명"
-            value={name}
+            aria-label={t('groupName')}
+            value={isDefault ? groupLabel(name) : name}
             readOnly={isDefault}
             onChange={(e) => setName(e.target.value)}
           />
         </Field>
-        <Field label="정원" error={errors.capacity}>
+        <Field label={t('capacity')} error={errors.capacity}>
           <Segment
             name="edit-capacity"
             value={capacity}
-            options={CAPACITY_OPTIONS}
-            onChange={setCapacity}
+            options={CAPACITY_OPTIONS.map((o) => ({ ...o, label: t(o.label) }))}
+            onChange={(value) => {
+              setCapacity(value);
+              setErrors({});
+            }}
           />
         </Field>
         <div className="field">
-          <span className="field-label">참석자 ({group.attendees.length}명)</span>
+          <span className="field-label">{t('attendeesCount', { n: group.attendees.length })}</span>
           <ul className="attendee-list">
             {group.attendees.map((member) => (
               <li key={member.memberId}>
@@ -105,11 +108,12 @@ function EditForm({ date, group, onClose }: FormProps) {
                   onClick={() =>
                     removeAttendee.mutate(
                       { groupId: group.id, memberId: member.memberId },
-                      { onError: showError },
+                      // 인원이 줄면 정원 오류는 더 이상 맞지 않는다
+                      { onSuccess: () => setErrors({}), onError: showError },
                     )
                   }
                 >
-                  빼기
+                  {t('remove')}
                 </button>
               </li>
             ))}

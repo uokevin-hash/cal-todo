@@ -14,8 +14,13 @@ router.post('/:id/attendance', async (req, res) => {
   res.status(201).json(await attendanceService.attendGroup(req.member.id, groupId));
 });
 
+// ?deleteIfEmpty=true: 마지막 참석자면 그룹도 지운다(채팅은 보관). 응답 200 {groupDeleted}
 router.delete('/:id/attendance', async (req, res) => {
-  await attendanceService.cancel(req.member.id, validate.id(req.params.id));
+  const groupId = validate.id(req.params.id);
+  if (req.query.deleteIfEmpty === 'true') {
+    return res.json(await groupsService.leaveAndDeleteIfEmpty(groupId, req.member.id));
+  }
+  await attendanceService.cancel(req.member.id, groupId);
   res.status(204).end();
 });
 

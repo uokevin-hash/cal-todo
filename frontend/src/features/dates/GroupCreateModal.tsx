@@ -7,10 +7,11 @@ import { errorField, errorMessage } from '../../lib/errors';
 import { checkName } from '../../lib/validate';
 import { useStore } from '../../store';
 import { useAttendDefault, useCreateGroup } from './api';
+import { groupLabel, useT, type Key } from '../../lib/i18n';
 
-export const CAPACITY_OPTIONS = [
-  { value: 2, label: '2명 단식' },
-  { value: 4, label: '4명 복식/혼복' },
+export const CAPACITY_OPTIONS: { value: number; label: Key }[] = [
+  { value: 2, label: 'capacity2Long' },
+  { value: 4, label: 'capacity4Long' },
 ];
 const DEFAULT_NAME = '기본';
 
@@ -23,11 +24,14 @@ type Props = {
 
 // SCR-05, WF-05
 export function GroupCreateModal({ date, isDefaultMode, isAttending, onClose }: Props) {
+  const t = useT();
   const createGroup = useCreateGroup(date);
   const attendDefault = useAttendDefault(date);
   const [name, setName] = useState(isDefaultMode ? DEFAULT_NAME : '');
   const [capacity, setCapacity] = useState(4);
   const [attend, setAttend] = useState(!isAttending);
+  // 창을 연 사이 다른 탭에서 참석했으면 참석 없이 그룹만 만든다(R-2, S-4)
+  const willAttend = attend && !isAttending;
   const [error, setError] = useState<{ field: string; message: string } | null>(null);
   const isPending = createGroup.isPending || attendDefault.isPending;
 
@@ -48,54 +52,54 @@ export function GroupCreateModal({ date, isDefaultMode, isAttending, onClose }: 
     const message =
       checkName(name) ??
       // R-2: 기본은 참석 API로만 만든다
-      (name.trim() === DEFAULT_NAME ? "'기본'은 그룹 이름으로 쓸 수 없습니다" : undefined);
+      (name.trim() === DEFAULT_NAME ? t('errReservedName') : undefined);
     if (message) return setError({ field: 'name', message });
     setError(null);
-    createGroup.mutate({ name: name.trim(), capacity, attend }, { onSuccess: onClose, onError });
+    createGroup.mutate({ name: name.trim(), capacity, attend: willAttend }, { onSuccess: onClose, onError });
   };
 
   return (
     <Modal
-      title={`그룹 만들기 · ${formatMonthDay(date)}`}
+      title={t('createGroupTitle', { date: formatMonthDay(date) })}
       onClose={onClose}
       footer={
         <>
           <button className="btn primary" form="group-create" disabled={isPending}>
-            {isPending ? '만드는 중…' : '만들기'}
+            {isPending ? t('creating') : t('create')}
           </button>
           <button className="btn" onClick={onClose}>
-            취소
+            {t('cancel')}
           </button>
         </>
       }
     >
       <form id="group-create" className="stack" onSubmit={submit} noValidate>
-        <Field label="그룹명" error={error?.message} isLocked={isDefaultMode}>
+        <Field label={t('groupName')} error={error?.message} isLocked={isDefaultMode}>
           <input
             className="input"
-            aria-label="그룹명"
-            value={name}
+            aria-label={t('groupName')}
+            value={isDefaultMode ? groupLabel(name) : name}
             readOnly={isDefaultMode}
             onChange={(e) => setName(e.target.value)}
           />
         </Field>
-        <Field label="정원">
+        <Field label={t('capacity')}>
           <Segment
             name="capacity"
             value={capacity}
-            options={CAPACITY_OPTIONS}
+            options={CAPACITY_OPTIONS.map((o) => ({ ...o, label: t(o.label) }))}
             onChange={setCapacity}
           />
         </Field>
         <label className="check">
           <input
             type="checkbox"
-            checked={isDefaultMode || attend}
+            checked={isDefaultMode || willAttend}
             disabled={isDefaultMode || isAttending}
             onChange={(e) => setAttend(e.target.checked)}
           />
-          만든 뒤 바로 참석
-          {(isDefaultMode || isAttending) && <span className="muted">(잠김)</span>}
+          {t('attendAfterCreate')}
+          {(isDefaultMode || isAttending) && <span className="muted">{t('locked')}</span>}
         </label>
       </form>
     </Modal>

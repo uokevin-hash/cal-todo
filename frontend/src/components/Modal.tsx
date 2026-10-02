@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useT } from '../lib/i18n';
 
 type Props = {
   title: string;
@@ -10,6 +11,7 @@ type Props = {
 
 // 데스크톱 가운데 모달 / 모바일 하단 시트(WF-05, WF-10)
 export function Modal({ title, onClose, footer, children, isFullOnMobile }: Props) {
+  const t = useT();
   return (
     <div className="overlay modal-overlay" onClick={onClose}>
       <div
@@ -19,11 +21,11 @@ export function Modal({ title, onClose, footer, children, isFullOnMobile }: Prop
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-head">
-          <button className="btn icon modal-back" aria-label="뒤로" onClick={onClose}>
+          <button className="btn icon modal-back" aria-label={t('back')} onClick={onClose}>
             ←
           </button>
           <h2>{title}</h2>
-          <button className="btn icon modal-close" aria-label="닫기" onClick={onClose}>
+          <button className="btn icon modal-close" aria-label={t('close')} onClick={onClose}>
             ✕
           </button>
         </div>

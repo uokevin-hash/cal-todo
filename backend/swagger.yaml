@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: cal-todo API
+  title: Badminatics API
   version: 0.3.0
   description: '배드민턴 동호회 일별 참석 관리 웹앱 API. 근거: docs/2-PRD.md v0.13 9장(API 개요·핵심 응답 형식, 계약의 단일 출처 L-14), 6.1(인증), 8장 D-4, NFR-10; docs/5-project-principle.md v0.10 C-8(오류 형식·HTTP 상태↔code), N-8~N-11; docs/1-definition.md v0.14 4장·R-n. JSON 필드는 camelCase, 날짜는 "YYYY-MM-DD". 경로 id가 정수가 아니면 404 NOT_FOUND(없는 대상과 같게 취급). PATCH는 부분 갱신(보낸 필드만 변경, 빈 본문 {}은 200 변경 없음). 성공 상태 코드(201/200/204) 중 PRD 9장에 없는 것은 docs/8-plan.md 완료 조건을 따랐다. 경로 날짜(:date)가 YYYY-MM-DD 형식의 실제 날짜가 아니면 400 VALIDATION_ERROR(field: date). /groups/*·/admin/* 아래 없는 경로는 인증·권한 확인이 먼저라 401·403, 그 밖의 /api 아래 없는 경로는 404 NOT_FOUND. 개발 환경(NODE_ENV≠production)에서는 /api-docs에 이 명세의 Swagger UI를 띄운다. CORS는 기본 꺼짐이며 환경 변수 CORS_ORIGINS에 적은 출처만 쿠키 포함으로 허용한다(C-18).'
 servers:

@@ -11,6 +11,13 @@ const { app } = await import('../src/app.js');
 
 export { pool };
 
+// 지난 날짜 참석은 API로 만들 수 없으므로(R-6) 미래에 만든 뒤 날짜를 옮긴다
+export const FUTURE = '2099-01-01';
+export async function backdate(groupId, date) {
+  await pool.query('UPDATE groups SET date = $2 WHERE id = $1', [groupId, date]);
+  await pool.query('UPDATE attendances SET date = $2 WHERE group_id = $1', [groupId, date]);
+}
+
 export async function resetDb() {
   await migrate();
   await pool.query(

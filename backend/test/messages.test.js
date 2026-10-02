@@ -1,6 +1,6 @@
 import { test, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { createMember, json, pool, resetDb, startServer } from './helpers.js';
+import { backdate, createMember, FUTURE, json, pool, resetDb, startServer } from './helpers.js';
 
 // 그룹 채팅: 참석자만 읽고 쓴다
 let server;
@@ -61,9 +61,10 @@ test('채팅: 탈퇴 회원 이름은 비관리자에게 가린다, 그룹 삭�
   const choi = await createMember(url, { name: '최민호' });
   const admin = await createMember(url, { role: 'ADMIN' });
   const { body: group } = await json(
-    await minsu.call('POST', `/dates/2026-09-20/groups`, { name: '지난모임', capacity: 4 }),
+    await minsu.call('POST', `/dates/${FUTURE}/groups`, { name: '지난모임', capacity: 4 }),
   );
   await choi.call('POST', `/groups/${group.id}/attendance`);
+  await backdate(group.id, '2026-09-20');
   await choi.call('POST', `/groups/${group.id}/messages`, { body: '저 나가요' });
   await pool.query('UPDATE members SET deleted_at = now() WHERE id = $1', [choi.id]);
 
@@ -170,4 +171,34 @@ test('채팅 보관함 삭제: 관리자만, 메시지도 함께, 없으면 404'
   assert.deepEqual((await json(await admin.call('GET', '/admin/chats'))).body, []);
   assert.equal((await pool.query('SELECT 1 FROM archived_messages')).rowCount, 0);
   assert.equal((await admin.call('DELETE', `/admin/chats/${archive.id}`)).status, 404);
+});
+
+test('참석 취소 + 빈 그룹 삭제: 마지막 참석자면 누구나, 남은 참석자가 있으면 남김, 채팅은 보관', async () => {
+  const minsu = await createMember(url);
+  const jieun = await createMember(url);
+  const outsider = await createMember(url);
+  const admin = await createMember(url, { role: 'ADMIN' });
+  const { body: group } = await json(
+    await minsu.call('POST', `/dates/${DATE}/groups`, { name: '둘이서', capacity: 4 }),
+  );
+  await jieun.call('POST', `/groups/${group.id}/attendance`);
+  await jieun.call('POST', `/groups/${group.id}/messages`, { body: '먼저 갈게요' });
+  const leave = async (member) =>
+    json(await member.call('DELETE', `/groups/${group.id}/attendance?deleteIfEmpty=true`));
+
+  // 참석하지 않은 회원은 지울 수 없다
+  assert.deepEqual((await leave(outsider)).body, { groupDeleted: false });
+  // 다른 참석자가 남으면 취소만
+  assert.deepEqual((await leave(minsu)).body, { groupDeleted: false });
+  assert.equal((await pool.query('SELECT 1 FROM groups')).rowCount, 1);
+  // 만들지 않은 회원도 마지막 참석자면 삭제
+  const last = await leave(jieun);
+  assert.deepEqual([last.status, last.body], [200, { groupDeleted: true }]);
+  assert.equal((await pool.query('SELECT 1 FROM groups')).rowCount, 0);
+  const archives = (await json(await admin.call('GET', '/admin/chats'))).body;
+  assert.deepEqual(
+    archives.map((a) => [a.name, a.messageCount]),
+    [['둘이서', 1]],
+  );
+  assert.equal((await leave(jieun)).status, 404);
 });

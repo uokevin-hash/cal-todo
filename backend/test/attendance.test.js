@@ -1,6 +1,6 @@
 import { test, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { createMember, json, pool, resetDb, startServer } from './helpers.js';
+import { backdate, createMember, FUTURE, json, pool, resetDb, startServer } from './helpers.js';
 
 // T-5 원자성·동시성, R-2 ~ R-6
 let server;
@@ -54,7 +54,7 @@ test('그룹 생성: attend 기본 true, 날짜 상세에 상태·인원·참석
   ]);
 });
 
-test('그룹 생성: attend=false는 0명, 중복 이름 409, 정원 3은 400, 지난 날짜도 201', async () => {
+test('그룹 생성: attend=false는 0명, 중복 이름 409, 정원 3은 400, 지난 날짜는 attend와 상관없이 409', async () => {
   const minsu = await createMember(url);
   const g = await json(
     await minsu.call('POST', `/dates/${DATE}/groups`, {
@@ -77,8 +77,15 @@ test('그룹 생성: attend=false는 0명, 중복 이름 409, 정원 3은 400, �
   );
   assert.deepEqual([bad.status, bad.body.error.field], [400, 'capacity']);
 
-  const past = await minsu.call('POST', '/dates/2026-09-01/groups', { name: '지난', capacity: 4 });
-  assert.equal(past.status, 201); // R-6
+  const past = await json(
+    await minsu.call('POST', '/dates/2026-09-01/groups', { name: '지난', capacity: 4 }),
+  );
+  assert.deepEqual([past.status, past.body.error.code], [409, 'PAST_DATE']); // R-6
+  const pastNoAttend = await json(
+    await minsu.call('POST', '/dates/2026-09-01/groups', { name: '지난', capacity: 4, attend: false }),
+  );
+  assert.deepEqual([pastNoAttend.status, pastNoAttend.body.error.code], [409, 'PAST_DATE']);
+  assert.equal(await count("SELECT 1 FROM groups WHERE date = '2026-09-01'"), 0);
 });
 
 test('원자성: attend=true인데 그날 참석 중이면 409, 그룹도 생기지 않음', async () => {
@@ -100,7 +107,7 @@ test('R-2: 이름 `기본`으로 그룹 생성 → 400 field name, 그룹 없음
     [res.status, res.body.error.code, res.body.error.field],
     [400, 'VALIDATION_ERROR', 'name'],
   );
-  assert.equal(await count('SELECT 1 FROM groups'), 0);
+  assert.equal(await count("SELECT 1 FROM groups WHERE date = '2026-09-01'"), 0);
 });
 
 test('캘린더: 그룹 수·그룹명(인원)과 내 참석, month 없으면 이번 달, 형식 오류 400', async () => {
@@ -148,11 +155,19 @@ test('그룹 없이 참석: 기본 그룹 없고 capacity 없으면 400, 있으�
 test('참석 취소: 204, 반복해도 204, 지난 날짜도 204, 없는 그룹·숫자 아닌 id는 404', async () => {
   const minsu = await createMember(url);
   const { body } = await json(
-    await minsu.call('POST', '/dates/2026-09-01/groups', { name: 'A', capacity: 4 }),
+    await minsu.call('POST', `/dates/${FUTURE}/groups`, { name: 'A', capacity: 4 }),
   );
+  await backdate(body.id, '2026-09-01');
   assert.equal((await minsu.call('DELETE', `/groups/${body.id}/attendance`)).status, 204);
   assert.equal(await count('SELECT 1 FROM attendances'), 0);
   assert.equal((await minsu.call('DELETE', `/groups/${body.id}/attendance`)).status, 204);
+  const again = await json(await minsu.call('POST', `/groups/${body.id}/attendance`));
+  assert.deepEqual([again.status, again.body.error.code], [409, 'PAST_DATE']); // R-6
+  // 지난 날짜 그룹은 자리가 남아도 참석가능 필터에 나오지 않는다
+  const past = async (query) =>
+    (await json(await minsu.call('GET', `/attendance?from=2026-09-01&to=2026-09-01${query}`))).body;
+  assert.equal((await past('')).length, 1);
+  assert.deepEqual(await past('&status=AVAILABLE'), []);
   assert.equal((await minsu.call('DELETE', '/groups/9999/attendance')).status, 404);
   assert.equal((await minsu.call('DELETE', '/groups/abc/attendance')).status, 404);
   assert.equal((await minsu.call('POST', '/groups/9999/attendance')).status, 404);

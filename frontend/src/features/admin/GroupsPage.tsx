@@ -10,6 +10,7 @@ import type { AdminGroup } from '../../types';
 import { useDeleteGroup } from '../dates/api';
 import { GroupEditModal } from '../dates/GroupEditModal';
 import { useAdminGroups } from './api';
+import { groupLabel, useT } from '../../lib/i18n';
 
 // SCR-09, WF-09 (P1, FR-17). 기간은 URL에 담는다(ST-4)
 export function GroupsPage() {
@@ -18,6 +19,7 @@ export function GroupsPage() {
 }
 
 function Groups() {
+  const t = useT();
   const [params, setParams] = useSearchParams();
   const showToast = useStore((s) => s.showToast);
   const range = currentMonthRange();
@@ -37,12 +39,12 @@ function Groups() {
   return (
     <>
       <form className="toolbar" onSubmit={submit} noValidate>
-        <h1 className="page-title desktop-only">그룹 관리</h1>
+        <h1 className="page-title desktop-only">{t('menuGroups')}</h1>
         <span className="range">
           <input
             className="input date"
             type="date"
-            aria-label="시작일"
+            aria-label={t('startDate')}
             value={form.from}
             onChange={(e) => setForm({ ...form, from: e.target.value })}
           />
@@ -50,38 +52,38 @@ function Groups() {
           <input
             className="input date"
             type="date"
-            aria-label="종료일"
+            aria-label={t('endDate')}
             value={form.to}
             onChange={(e) => setForm({ ...form, to: e.target.value })}
           />
         </span>
-        <button className="btn primary">조회</button>
+        <button className="btn primary">{t('query')}</button>
         {isRangeError && <span className="field-error">! {errorMessage(error)}</span>}
       </form>
 
       {isPending && <Loading />}
       {error && !isRangeError && <p className="empty">{errorMessage(error)}</p>}
-      {groups?.length === 0 && <p className="empty">이 기간에 그룹이 없습니다</p>}
+      {groups?.length === 0 && <p className="empty">{t('noGroupsInRange')}</p>}
       {!!groups?.length && (
         <div className="table groups-table">
           <div className="tr th">
-            <span>날짜</span>
-            <span>그룹명</span>
-            <span>정원</span>
-            <span>인원</span>
-            <span>만든 사람</span>
+            <span>{t('date')}</span>
+            <span>{t('groupName')}</span>
+            <span>{t('capacity')}</span>
+            <span>{t('attendeeCount')}</span>
+            <span>{t('createdBy')}</span>
             <span />
           </div>
           {groups.map((group) => (
             <div key={group.id} className="tr">
               <span className="c-date">{formatShort(group.date)}</span>
-              <strong className="c-title">{group.name}</strong>
+              <strong className="c-title">{groupLabel(group.name)}</strong>
               <span className="c-meta">
-                <span className="mobile-only">정원 </span>
+                <span className="mobile-only">{t('capacity')} </span>
                 {group.capacity}
               </span>
               <span className="c-meta">
-                <span className="mobile-only">인원 </span>
+                <span className="mobile-only">{t('attendeeCount')} </span>
                 {group.count}
               </span>
               <span className="c-meta">
@@ -89,10 +91,10 @@ function Groups() {
               </span>
               <span className="c-actions">
                 <button className="btn small" onClick={() => setEditing(group)}>
-                  편집
+                  {t('edit')}
                 </button>
                 <button className="btn small danger" onClick={() => setDeleting(group)}>
-                  삭제
+                  {t('delete')}
                 </button>
               </span>
             </div>
@@ -105,8 +107,8 @@ function Groups() {
       )}
       {deleting && (
         <ConfirmDialog
-          title="그룹 삭제"
-          message={`그룹을 삭제하면 참석자 ${deleting.count}명의 참석 기록이 모두 삭제됩니다. 채팅 내용은 채팅 보관함에 남습니다`}
+          title={t('deleteGroupTitle')}
+          message={t('deleteGroupMessage', { n: deleting.count })}
           isPending={deleteGroup.isPending}
           onCancel={() => setDeleting(null)}
           onConfirm={() =>

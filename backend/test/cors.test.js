@@ -50,3 +50,23 @@ test('CORS_ORIGINS 파싱: 쉼표 구분·공백 제거, 없으면 빈 목록', 
     ['http://a.com', 'https://b.com'],
   );
 });
+
+test('쿠키 인증 경로 출처 확인: 허용 목록·같은 출처·Origin 없음만 통과', async () => {
+  const { requireAllowedOrigin } = await import('../src/cors.js');
+  const app = express();
+  app.post('/refresh', requireAllowedOrigin([ALLOWED]), (req, res) => res.json({ ok: true }));
+  app.use((err, req, res, next) => res.status(err.status).json({ code: err.code })); // eslint-disable-line no-unused-vars
+  const s = app.listen(0);
+  await once(s, 'listening');
+  const target = `http://localhost:${s.address().port}/refresh`;
+  const post = (headers) => fetch(target, { method: 'POST', headers });
+  try {
+    assert.equal((await post({ Origin: ALLOWED })).status, 200);
+    assert.equal((await post({ Origin: `http://localhost:${s.address().port}` })).status, 200);
+    assert.equal((await post({})).status, 200);
+    const evil = await post({ Origin: 'https://evil.example.com' });
+    assert.deepEqual([evil.status, (await evil.json()).code], [403, 'FORBIDDEN']);
+  } finally {
+    await new Promise((resolve) => s.close(resolve));
+  }
+});

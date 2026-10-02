@@ -8,7 +8,7 @@ async function start() {
 
   await migrate();
   await ensurePermanentAdmin(config);
-  app.listen(config.port, () => console.log(`cal-todo backend: http://localhost:${config.port}`));
+  app.listen(config.port, () => console.log(`Badminatics backend: http://localhost:${config.port}`));
 }
 
 start().catch((err) => {

@@ -40,6 +40,7 @@ export async function createGroup(memberId, { date, name, capacity, attend }) {
       .catch((err) => {
         throw duplicateNameOr(err);
       });
+    if (!id) throw new AppError(409, 'PAST_DATE', '지난 날짜에는 그룹을 만들 수 없습니다'); // R-6
     if (attend) await insertAttendance(client, { memberId, groupId: id, date }); // R-2, R-4
     return { id };
   });
@@ -81,8 +82,24 @@ export function updateGroup(id, { name, capacity }) {
 export function deleteGroup(id) {
   return withTx(async (client) => {
     if (!(await groups.lockById(client, id))) throw notFound();
-    await messages.archiveGroupChat(client, id);
-    await groups.deleteGroup(client, id);
+    await removeGroup(client, id);
+  });
+}
+
+async function removeGroup(client, id) {
+  await messages.archiveGroupChat(client, id);
+  await groups.deleteGroup(client, id);
+}
+
+// 참석 취소 + 마지막 참석자였으면 그룹 삭제. 참석 중인 회원만 그룹을 지울 수 있다
+// 그룹 행 잠금으로 참석 등록(같은 행 FOR UPDATE)과 겹치지 않게 한다
+export function leaveAndDeleteIfEmpty(groupId, memberId) {
+  return withTx(async (client) => {
+    if (!(await groups.lockById(client, groupId))) throw notFound();
+    const wasAttending = await attendances.deleteAttendance(client, { groupId, memberId });
+    const isEmpty = (await attendances.countByGroup(client, groupId)) === 0;
+    if (wasAttending && isEmpty) await removeGroup(client, groupId);
+    return { groupDeleted: wasAttending && isEmpty };
   });
 }
 

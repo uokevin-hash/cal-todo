@@ -37,3 +37,10 @@ test('영구 관리자 확인을 두 번 해도 1명', async () => {
   const { rows } = await pool.query('SELECT count(*)::int AS n FROM members WHERE is_permanent');
   assert.equal(rows[0].n, 1);
 });
+
+test('COOKIE_SAME_SITE: 기본 strict, none·lax 허용, 그 밖의 값은 기동 실패', () => {
+  assert.equal(loadConfig(base).cookieSameSite, 'strict');
+  assert.equal(loadConfig({ ...base, COOKIE_SAME_SITE: 'None' }).cookieSameSite, 'none');
+  assert.equal(loadConfig({ ...base, COOKIE_SAME_SITE: 'lax' }).cookieSameSite, 'lax');
+  assert.throws(() => loadConfig({ ...base, COOKIE_SAME_SITE: 'off' }), /COOKIE_SAME_SITE/);
+});

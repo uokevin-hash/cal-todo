@@ -4,7 +4,7 @@ import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Loading } from '../../components/Loading';
 import { MemberNames } from '../../components/MemberName';
 import { StatusBadge } from '../../components/StatusBadge';
-import { formatLong } from '../../lib/date';
+import { formatLong, todaySeoul } from '../../lib/date';
 import { errorField, errorMessage } from '../../lib/errors';
 import { useStore } from '../../store';
 import type { DateGroup } from '../../types';
@@ -14,13 +14,13 @@ import {
   useCancelAttendance,
   useDateGroups,
   useDeleteGroup,
+  useLeaveAndDeleteIfEmpty,
 } from './api';
 import { GroupCreateModal } from './GroupCreateModal';
 import { GroupEditModal } from './GroupEditModal';
+import { groupLabel, useT } from '../../lib/i18n';
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-const ALREADY_ATTENDING = '해당 날짜에 이미 참석한 그룹이 있습니다';
-const CAPACITY_FULL = '정원이 가득 찼습니다';
 
 // SCR-04, WF-04. 참석 판단은 서버 응답의 mine·status를 따른다(P-5)
 export function DateDetailPage() {
@@ -30,6 +30,7 @@ export function DateDetailPage() {
 }
 
 function DateDetail({ date }: { date: string }) {
+  const t = useT();
   const isAdmin = useStore((s) => s.me?.role === 'ADMIN');
   const showToast = useStore((s) => s.showToast);
   const { data: groups, isPending, isError, error } = useDateGroups(date);
@@ -37,19 +38,24 @@ function DateDetail({ date }: { date: string }) {
   const attendDefault = useAttendDefault(date);
   const cancel = useCancelAttendance();
   const deleteGroup = useDeleteGroup();
+  const leave = useLeaveAndDeleteIfEmpty();
   const [createMode, setCreateMode] = useState<'normal' | 'default' | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState<DateGroup | null>(null);
+  // 마지막 참석자가 취소하려는 그룹(삭제할지 남길지 묻는다)
+  const [emptied, setEmptied] = useState<DateGroup | null>(null);
 
   const isAttending = !!groups?.some((g) => g.mine);
   const defaultGroup = groups?.find((g) => g.name === '기본');
-  const isDefaultDim = isAttending || defaultGroup?.status === 'FULL';
+  const isPast = date < todaySeoul(); // R-6: 지난 날짜는 참석 불가
+  const isDefaultDim = isPast || isAttending || defaultGroup?.status === 'FULL';
   const toastError = (e: unknown) => showToast(errorMessage(e));
 
   const attendWithoutGroup = () => {
-    // R-4, R-3: 흐린 버튼은 눌러도 이유만 알린다
-    if (isAttending) return showToast(ALREADY_ATTENDING);
-    if (defaultGroup?.status === 'FULL') return showToast(CAPACITY_FULL);
+    // R-6, R-4, R-3: 흐린 버튼은 눌러도 이유만 알린다
+    if (isPast) return showToast(t('errPastDate'));
+    if (isAttending) return showToast(t('errAlreadyAttending'));
+    if (defaultGroup?.status === 'FULL') return showToast(t('errCapacityFull'));
     if (!defaultGroup) return setCreateMode('default');
     attendDefault.mutate(undefined, {
       onError: (e) => {
@@ -66,24 +72,29 @@ function DateDetail({ date }: { date: string }) {
         <button
           className="btn"
           disabled={cancel.isPending}
-          onClick={() => cancel.mutate(group.id, { onError: toastError })}
+          onClick={() =>
+            // 내가 마지막 참석자면 취소 전에 그룹을 지울지 남길지 묻는다
+            group.count === 1 ? setEmptied(group) : cancel.mutate(group.id, { onError: toastError })
+          }
         >
-          참석 취소
+          {t('cancelAttendance')}
         </button>
       );
     }
-    if (group.status === 'FULL') return <span className="muted">(마감)</span>;
+    if (group.status === 'FULL') return <span className="muted">{t('closed')}</span>;
     return (
       <button
-        className={`btn primary${isAttending ? ' dim' : ''}`}
+        className={`btn primary${isPast || isAttending ? ' dim' : ''}`}
         disabled={attend.isPending}
         onClick={() =>
-          isAttending
-            ? showToast(ALREADY_ATTENDING)
-            : attend.mutate(group.id, { onError: toastError })
+          isPast
+            ? showToast(t('errPastDate'))
+            : isAttending
+              ? showToast(t('errAlreadyAttending'))
+              : attend.mutate(group.id, { onError: toastError })
         }
       >
-        참석
+        {t('attend')}
       </button>
     );
   };
@@ -93,31 +104,39 @@ function DateDetail({ date }: { date: string }) {
       <div className="date-head">
         <h1 className="page-title">{formatLong(date)}</h1>
         <div className="date-actions">
-          <button className="btn primary" onClick={() => setCreateMode('normal')}>
-            + 그룹 만들기
+          <button
+            className={`btn primary${isPast ? ' dim' : ''}`}
+            onClick={() => (isPast ? showToast(t('errPastCreate')) : setCreateMode('normal'))}
+          >
+            {t('createGroup')}
           </button>
           <button
             className={`btn${isDefaultDim ? ' dim' : ''}`}
             disabled={attendDefault.isPending}
             onClick={attendWithoutGroup}
           >
-            그룹 없이 참석
+            {t('attendWithoutGroup')}
           </button>
         </div>
       </div>
 
       {isPending && <Loading />}
       {isError && <p className="empty">{errorMessage(error)}</p>}
-      {groups?.length === 0 && <p className="empty">이 날짜에는 아직 그룹이 없습니다</p>}
+      {groups?.length === 0 && <p className="empty">{t('noGroupsOnDate')}</p>}
       <ul className="cards">
         {groups?.map((group) => (
           <li key={group.id} className={`card group-card${group.mine ? ' mine' : ''}`}>
             <div className="card-top">
               <strong className="card-title">
-                {group.name}
+                {groupLabel(group.name)}
                 {group.mine && <span className="check-mark"> ✔</span>}
               </strong>
-              <StatusBadge status={group.status} count={group.count} capacity={group.capacity} />
+              <StatusBadge
+                status={group.status}
+                count={group.count}
+                capacity={group.capacity}
+                date={date}
+              />
             </div>
             <p className="sub">
               <MemberNames members={group.attendees} />
@@ -127,10 +146,10 @@ function DateDetail({ date }: { date: string }) {
               {isAdmin && (
                 <span className="admin-actions">
                   <button className="btn small" onClick={() => setEditingId(group.id)}>
-                    편집
+                    {t('edit')}
                   </button>
                   <button className="btn small danger" onClick={() => setDeleting(group)}>
-                    삭제
+                    {t('delete')}
                   </button>
                 </span>
               )}
@@ -151,10 +170,35 @@ function DateDetail({ date }: { date: string }) {
       {editingId !== null && (
         <GroupEditModal date={date} groupId={editingId} onClose={() => setEditingId(null)} />
       )}
+      {emptied && (
+        <ConfirmDialog
+          title={t('leaveTitle')}
+          message={t('leaveMessage', { name: groupLabel(emptied.name) })}
+          confirmLabel={t('delete')}
+          cancelLabel={t('keep')}
+          isPending={leave.isPending || cancel.isPending}
+          onConfirm={() =>
+            // 서버가 참석 취소와 그룹 삭제를 한 번에. 그 사이 누가 참석했으면 그룹은 남는다
+            leave.mutate(emptied.id, {
+              onSuccess: ({ groupDeleted }) =>
+                showToast(groupDeleted ? t('groupDeleted') : t('groupKeptOthers')),
+              onSettled: () => setEmptied(null),
+              onError: toastError,
+            })
+          }
+          onCancel={() =>
+            cancel.mutate(emptied.id, {
+              onSuccess: () => showToast(isAdmin ? t('groupKeptAdmin') : t('groupKeptMember')),
+              onSettled: () => setEmptied(null),
+              onError: toastError,
+            })
+          }
+        />
+      )}
       {deleting && (
         <ConfirmDialog
-          title="그룹 삭제"
-          message={`그룹을 삭제하면 참석자 ${deleting.count}명의 참석 기록이 모두 삭제됩니다. 채팅 내용은 채팅 보관함에 남습니다`}
+          title={t('deleteGroupTitle')}
+          message={t('deleteGroupMessage', { n: deleting.count })}
           isPending={deleteGroup.isPending}
           onCancel={() => setDeleting(null)}
           onConfirm={() =>

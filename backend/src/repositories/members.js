@@ -39,11 +39,11 @@ export async function findLoginByEmail(db, email) {
   return rows[0];
 }
 
-// 토큰 검증·관리자 수정 대상 판단용. password_changed_at은 초 단위 내림(6.1 흐름 2)
+// 토큰 검증·관리자 수정 대상 판단용. password_changed_at은 밀리초(6.1 흐름 2)
 export async function findAuthById(db, id) {
   const { rows } = await db.query(
     `SELECT id, role, is_permanent AS "isPermanent", deleted_at IS NOT NULL AS "isDeleted",
-            floor(extract(epoch FROM password_changed_at))::int AS "passwordChangedAt"
+            (extract(epoch FROM password_changed_at) * 1000)::float8 AS "passwordChangedAt"
      FROM members WHERE id = $1`,
     [id],
   );

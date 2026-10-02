@@ -1,8 +1,10 @@
 import { test, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  backdate,
   createMember,
   createPermanentAdmin,
+  FUTURE,
   json,
   login,
   pool,
@@ -103,7 +105,7 @@ test('회원 삭제: 오늘 이후 참석 삭제, 어제 참석·만든 그룹 �
   const minsu = await createMember(url);
   const { today, yesterday } = await seoulDays();
   await createGroup(minsu, { date: today });
-  await createGroup(minsu, { date: yesterday });
+  await backdate(await createGroup(minsu, { date: FUTURE }), yesterday);
 
   assert.equal((await admin.call('DELETE', `/admin/members/${minsu.id}`)).status, 204);
   const dates = (await pool.query('SELECT date FROM attendances WHERE member_id = $1', [minsu.id]))
@@ -156,7 +158,6 @@ test('역할 변경은 즉시 반영, Refresh는 유지. 관리자 비밀번호 
   assert.equal((await post(`${url}/auth/refresh`, {}, { Cookie: minsu.cookie })).status, 200);
 
   const again = await login(url, minsu);
-  await new Promise((r) => setTimeout(r, 1000)); // iat와 password_changed_at이 다른 초가 되도록
   assert.equal((await admin.call('PATCH', path, { newPassword: 'newpass123' })).status, 200);
   assert.deepEqual(
     await codeOf(
@@ -249,7 +250,8 @@ test('탈퇴 회원: 비관리자에게 "탈퇴 회원"(memberId 유지), 관리
   const admin = await createMember(url, { role: 'ADMIN' });
   const viewer = await createMember(url, { name: '구경꾼' });
   const jieun = await createMember(url, { name: '이지은' });
-  const groupId = await createGroup(jieun, { date: '2026-09-15' }); // 지난 참석은 남는다
+  const groupId = await createGroup(jieun, { date: FUTURE });
+  await backdate(groupId, '2026-09-15'); // 지난 참석은 남는다
   await admin.call('DELETE', `/admin/members/${jieun.id}`);
 
   const hidden = { memberId: jieun.id, name: '탈퇴 회원' };
@@ -321,8 +323,9 @@ test('관리자 그룹 목록: 기간 안만, 탈퇴 회원이 만든 그룹은 
   const admin = await createMember(url, { role: 'ADMIN' });
   const jieun = await createMember(url, { name: '이지은' });
   // 지난 날짜라 탈퇴 뒤에도 참석이 남는다(R-9)
-  const inRange = await createGroup(jieun, { name: '안', date: '2026-01-15' });
-  await createGroup(jieun, { name: '밖', date: '2026-02-01', attend: false });
+  const inRange = await createGroup(jieun, { name: '안', date: FUTURE });
+  await backdate(inRange, '2026-01-15');
+  await backdate(await createGroup(jieun, { name: '밖', date: FUTURE, attend: false }), '2026-02-01');
   await admin.call('DELETE', `/admin/members/${jieun.id}`);
 
   const list = await json(await admin.call('GET', '/admin/groups?from=2026-01-01&to=2026-01-31'));

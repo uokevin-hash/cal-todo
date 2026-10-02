@@ -14,8 +14,9 @@ import {
 import { useStore } from '../../store';
 import type { Me } from '../../types';
 import { useUpdateMe, type MeInput } from './api';
+import { useT } from '../../lib/i18n';
 
-const ROLE_LABELS = { MEMBER: '회원', ADMIN: '관리자' };
+const ROLE_LABELS = { MEMBER: 'roleMember', ADMIN: 'roleAdmin' } as const;
 
 // SCR-07, WF-07
 export function MePage() {
@@ -25,6 +26,7 @@ export function MePage() {
 }
 
 function MeForm({ me }: { me: Me }) {
+  const t = useT();
   const updateMe = useUpdateMe();
   const showToast = useStore((s) => s.showToast);
   const [form, setForm] = useState({
@@ -49,7 +51,7 @@ function MeForm({ me }: { me: Me }) {
       birthDate: checkBirthDate(form.birthDate),
       newPassword: isChangingPassword ? checkPassword(form.newPassword) : undefined,
       currentPassword:
-        isChangingPassword && !form.currentPassword ? '비밀번호를 입력해 주세요' : undefined,
+        isChangingPassword && !form.currentPassword ? t('errPasswordRequired') : undefined,
     });
     setErrors(found);
     if (Object.keys(found).length) return;
@@ -67,7 +69,7 @@ function MeForm({ me }: { me: Me }) {
     updateMe.mutate(input, {
       onSuccess: () => {
         setForm((f) => ({ ...f, currentPassword: '', newPassword: '' }));
-        showToast(isChangingPassword ? '다른 기기에서는 로그아웃됩니다' : '저장했습니다');
+        showToast(isChangingPassword ? t('otherDevicesLoggedOut') : t('saved'));
       },
       onError: (error) => {
         const field = errorField(error);
@@ -80,61 +82,63 @@ function MeForm({ me }: { me: Me }) {
   return (
     <form className="form-page" onSubmit={submit} noValidate>
       <div className="form-head">
-        <h1 className="page-title">내 정보</h1>
+        <h1 className="page-title">{t('menuMe')}</h1>
         {/* R-10: 역할은 글자로만 */}
-        <span>역할: {me.isPermanent ? '영구 관리자' : ROLE_LABELS[me.role]}</span>
+        <span>
+          {t('roleLabel', { role: t(me.isPermanent ? 'rolePermanent' : ROLE_LABELS[me.role]) })}
+        </span>
       </div>
-      <Field label="이름" error={errors.name}>
-        <input className="input" aria-label="이름" value={form.name} onChange={set('name')} />
+      <Field label={t('name')} error={errors.name}>
+        <input className="input" aria-label={t('name')} value={form.name} onChange={set('name')} />
       </Field>
-      <Field label="이메일" error={errors.email}>
+      <Field label={t('email')} error={errors.email}>
         <input
           className="input"
           type="email"
-          aria-label="이메일"
+          aria-label={t('email')}
           value={form.email}
           onChange={set('email')}
         />
       </Field>
-      <Field label="전화번호" error={errors.phone}>
+      <Field label={t('phone')} error={errors.phone}>
         <input
           className="input"
           type="tel"
-          aria-label="전화번호"
+          aria-label={t('phone')}
           value={form.phone}
           onChange={set('phone')}
         />
       </Field>
       <Field
-        label="생년월일"
+        label={t('birthDate')}
         error={errors.birthDate}
         aside={form.birthDate && formatBirth(form.birthDate)}
       >
         <input
           className="input date"
           type="date"
-          aria-label="생년월일"
+          aria-label={t('birthDate')}
           max={todaySeoul()}
           value={form.birthDate}
           onChange={set('birthDate')}
         />
       </Field>
-      <h2 className="section-title">비밀번호 변경 (바꿀 때만 입력)</h2>
-      <Field label="현재 비밀번호" error={errors.currentPassword}>
+      <h2 className="section-title">{t('passwordSection')}</h2>
+      <Field label={t('currentPassword')} error={errors.currentPassword}>
         <input
           className="input"
           type="password"
-          aria-label="현재 비밀번호"
+          aria-label={t('currentPassword')}
           autoComplete="current-password"
           value={form.currentPassword}
           onChange={set('currentPassword')}
         />
       </Field>
-      <Field label="새 비밀번호" error={errors.newPassword}>
+      <Field label={t('newPassword')} error={errors.newPassword}>
         <input
           className="input"
           type="password"
-          aria-label="새 비밀번호"
+          aria-label={t('newPassword')}
           autoComplete="new-password"
           value={form.newPassword}
           onChange={set('newPassword')}
@@ -142,7 +146,7 @@ function MeForm({ me }: { me: Me }) {
       </Field>
       <div className="form-foot">
         <button className="btn primary" disabled={updateMe.isPending}>
-          {updateMe.isPending ? '저장 중…' : '저장'}
+          {updateMe.isPending ? t('saving') : t('save')}
         </button>
       </div>
     </form>

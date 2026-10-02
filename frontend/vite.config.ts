@@ -1,8 +1,7 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
-// C-18: 개발은 같은 출처로 쓰도록 /api를 백엔드로 넘긴다
+// 프록시 없이 백엔드를 직접 부른다(배포와 같은 다른 출처 + CORS). 주소는 VITE_API_URL(.env.development, src/lib/client.ts)
 export default defineConfig({
   plugins: [react()],
-  server: { proxy: { '/api': 'http://localhost:3000' } },
 });

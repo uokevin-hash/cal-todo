@@ -1,6 +1,7 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   addMonths,
+  weekdayNames,
   currentMonth,
   daysInMonth,
   formatMonth,
@@ -9,12 +10,13 @@ import {
 } from '../../lib/date';
 import { GroupChat } from '../chat/GroupChat';
 import { useCalendar } from './api';
+import { groupLabel, useT } from '../../lib/i18n';
 
-const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
 const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 // SCR-03, WF-03. 월은 URL(?month)에 담는다(ST-4). 캘린더 라이브러리 없이 손 그리드(L-16)
 export function CalendarPage() {
+  const t = useT();
   const [params, setParams] = useSearchParams();
   const raw = params.get('month') ?? '';
   const month = MONTH_RE.test(raw) ? raw : currentMonth();
@@ -36,7 +38,7 @@ export function CalendarPage() {
       <div className="month-bar">
         <button
           className="btn icon"
-          aria-label="이전 달"
+          aria-label={t('prevMonth')}
           onClick={() => setParams({ month: addMonths(month, -1) })}
         >
           ◀
@@ -44,17 +46,17 @@ export function CalendarPage() {
         <h1 className="page-title">{formatMonth(month)}</h1>
         <button
           className="btn icon"
-          aria-label="다음 달"
+          aria-label={t('nextMonth')}
           onClick={() => setParams({ month: addMonths(month, 1) })}
         >
           ▶
         </button>
         <button className="btn push-right" onClick={() => setParams({ month: currentMonth() })}>
-          오늘
+          {t('today')}
         </button>
       </div>
       <div className="calendar">
-        {WEEK.map((w, i) => (
+        {weekdayNames().map((w, i) => (
           <div key={w} className={`weekday dow-${i}`}>
             {w}
           </div>
@@ -70,22 +72,29 @@ export function CalendarPage() {
               style={day === 1 ? { gridColumnStart: first + 1 } : undefined}
               data-date={date}
             >
-              <span className="day-num">{day}</span>
+              {/* ✔는 날짜 옆에 둔다. 그룹이 많아 칸이 넘쳐도 가려지지 않게 */}
+              <span className="day-num">
+                {day}
+                {info?.attending && (
+                  <b className="day-check" aria-label={t('attendingMark')}>
+                    ✔
+                  </b>
+                )}
+              </span>
               {info && (
                 <span className="day-marks">
                   {info.groups.map((group) => (
                     <span key={group.name} className="day-group">
-                      {group.name}({group.count})
+                      {groupLabel(group.name)}({group.count})
                     </span>
                   ))}
-                  {info.attending && <b aria-label="참석">✔</b>}
                 </span>
               )}
             </Link>
           );
         })}
       </div>
-      <p className="muted small">그룹명(n) = 그룹과 참여 인원 · ✔ = 내가 참석한 날</p>
+      <p className="muted small">{t('calendarLegend')}</p>
       <GroupChat groups={myGroups} />
     </>
   );

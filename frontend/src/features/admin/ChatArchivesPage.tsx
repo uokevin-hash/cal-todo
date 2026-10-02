@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Loading } from '../../components/Loading';
 import { MemberName } from '../../components/MemberName';
-import { formatShort } from '../../lib/date';
+import { formatDateTime, formatShort } from '../../lib/date';
 import { errorMessage } from '../../lib/errors';
 import { useStore } from '../../store';
 import type { ChatArchive } from '../../types';
 import { ChatImage } from '../chat/ChatImage';
-import { CHAT_TIME } from '../chat/GroupChat';
 import { useArchivedMessages, useChatArchives, useDeleteChatArchive } from './api';
+import { groupLabel, useT } from '../../lib/i18n';
 
 // 삭제된 그룹의 채팅 보관함. 관리자만, 읽기와 삭제
 export function ChatArchivesPage() {
+  const t = useT();
   const showToast = useStore((s) => s.showToast);
   const { data: archives, isPending, error } = useChatArchives();
   const deleteArchive = useDeleteChatArchive();
@@ -20,18 +21,18 @@ export function ChatArchivesPage() {
 
   return (
     <>
-      <h1 className="page-title">채팅 보관함</h1>
-      <p className="muted">삭제된 그룹의 채팅 내용입니다. 관리자만 볼 수 있습니다</p>
+      <h1 className="page-title">{t('menuChats')}</h1>
+      <p className="muted">{t('archivesIntro')}</p>
       {isPending && <Loading />}
       {error && <p className="empty">{errorMessage(error)}</p>}
-      {archives?.length === 0 && <p className="empty">보관된 채팅이 없습니다</p>}
+      {archives?.length === 0 && <p className="empty">{t('noArchives')}</p>}
       {!!archives?.length && (
         <div className="table archives-table">
           <div className="tr th">
-            <span>날짜</span>
-            <span>그룹명</span>
-            <span>메시지</span>
-            <span>삭제 시각</span>
+            <span>{t('date')}</span>
+            <span>{t('groupName')}</span>
+            <span>{t('messages')}</span>
+            <span>{t('deletedAt')}</span>
             <span />
           </div>
           {archives.map((a) => (
@@ -44,9 +45,11 @@ export function ChatArchivesPage() {
               onKeyDown={(e) => e.key === 'Enter' && setSelected(a)}
             >
               <span className="c-date">{formatShort(a.date)}</span>
-              <strong className="c-title">{a.name}</strong>
-              <span className="c-meta">메시지 {a.messageCount}개</span>
-              <span className="c-meta">삭제 {CHAT_TIME.format(new Date(a.deletedAt))}</span>
+              <strong className="c-title">{groupLabel(a.name)}</strong>
+              <span className="c-meta">{t('messageCount', { n: a.messageCount })}</span>
+              <span className="c-meta">
+                {t('deletedAtValue', { time: formatDateTime(a.deletedAt) })}
+              </span>
               <span className="c-actions">
                 <button
                   className="btn small danger"
@@ -55,7 +58,7 @@ export function ChatArchivesPage() {
                     setDeleting(a);
                   }}
                 >
-                  삭제
+                  {t('delete')}
                 </button>
               </span>
             </div>
@@ -65,8 +68,11 @@ export function ChatArchivesPage() {
       {selected && <ArchivedMessages key={selected.id} archive={selected} />}
       {deleting && (
         <ConfirmDialog
-          title="보관된 채팅 삭제"
-          message={`${formatShort(deleting.date)} ${deleting.name}의 메시지 ${deleting.messageCount}개를 삭제합니다. 되돌릴 수 없습니다`}
+          title={t('deleteArchiveTitle')}
+          message={t('deleteArchiveMessage', {
+            group: `${formatShort(deleting.date)} ${groupLabel(deleting.name)}`,
+            n: deleting.messageCount,
+          })}
           isPending={deleteArchive.isPending}
           onCancel={() => setDeleting(null)}
           onConfirm={() =>
@@ -85,19 +91,20 @@ export function ChatArchivesPage() {
 }
 
 function ArchivedMessages({ archive }: { archive: ChatArchive }) {
+  const t = useT();
   const { data: messages, error } = useArchivedMessages(archive.id);
   return (
     <section className="chat">
       <h2 className="section-title">
-        {formatShort(archive.date)} {archive.name}
+        {formatShort(archive.date)} {groupLabel(archive.name)}
       </h2>
       <div className="chat-room">
-        <ol className="chat-list" aria-label="보관된 메시지">
+        <ol className="chat-list" aria-label={t('archivedMessages')}>
           {error && <li className="empty">{errorMessage(error)}</li>}
           {messages?.map((m) => (
             <li key={m.id} className="chat-message">
               <span className="chat-meta">
-                <MemberName member={m.author} /> · {CHAT_TIME.format(new Date(m.createdAt))}
+                <MemberName member={m.author} /> · {formatDateTime(m.createdAt)}
               </span>
               <span className="chat-bubble">
                 {m.hasImage ? (

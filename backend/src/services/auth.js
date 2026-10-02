@@ -21,19 +21,22 @@ export function verifyToken(token, type) {
   return payload;
 }
 
-// 6.1 흐름 2·4: 비밀번호 변경 전에 발급된 토큰 거부
+// 6.1 흐름 2·4: 비밀번호 변경 전에 발급된 토큰 거부. iat는 초 단위라 같은 초를 못 가르므로
+// 밀리초 발급 시각(iatMs)으로 비교한다. iatMs가 없는 옛 토큰은 iat로 본다
 export const isIssuedBeforePasswordChange = (payload, member) =>
-  member.passwordChangedAt !== null && payload.iat < member.passwordChangedAt;
+  member.passwordChangedAt !== null &&
+  (payload.iatMs ?? payload.iat * 1000) < member.passwordChangedAt;
 
 export async function issueTokens(db, memberId) {
   const jti = randomUUID();
+  const iatMs = Date.now();
   await refreshTokens.insertToken(db, { memberId, tokenHash: hashJti(jti) });
   return {
-    accessToken: jwt.sign({ sub: memberId, type: 'access' }, config.accessSecret, {
+    accessToken: jwt.sign({ sub: memberId, type: 'access', iatMs }, config.accessSecret, {
       algorithm: 'HS256',
       expiresIn: config.accessTokenTtl,
     }),
-    refreshToken: jwt.sign({ sub: memberId, jti, type: 'refresh' }, config.refreshSecret, {
+    refreshToken: jwt.sign({ sub: memberId, jti, type: 'refresh', iatMs }, config.refreshSecret, {
       algorithm: 'HS256',
       expiresIn: REFRESH_TOKEN_TTL,
     }),

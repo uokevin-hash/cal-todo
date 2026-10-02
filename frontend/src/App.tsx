@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
@@ -20,6 +21,17 @@ import type { Me } from './types';
 function RequireAuth() {
   const me = useStore((s) => s.me);
   const logout = useLogout();
+  // R-10: 다른 관리자가 바꾼 역할을 메뉴·표기에 반영한다(30초마다, 창으로 돌아올 때)
+  useQuery({
+    queryKey: ['me'],
+    queryFn: async () => {
+      const fresh = await api<Me>('/me');
+      useStore.getState().setMe(fresh);
+      return fresh;
+    },
+    enabled: !!me,
+    refetchInterval: 30_000,
+  });
   if (!me) return <Navigate to="/login" replace />;
   return <Layout onLogout={() => logout.mutate()} />;
 }
@@ -36,9 +48,10 @@ function GuestOnly() {
 }
 
 // 6.1 흐름 6: 새로고침하면 메모리의 토큰이 사라지므로 Refresh 쿠키로 되살린다
+// 백엔드에 닿지 못해도(다른 서버가 꺼짐·CORS 설정 누락) 로그인 화면으로 넘어간다
 async function restoreLogin() {
-  if (!(await refresh())) return;
   try {
+    if (!(await refresh())) return;
     useStore.getState().setMe(await api<Me>('/me'));
   } catch (error) {
     if (import.meta.env.DEV) console.error(error);
@@ -54,7 +67,7 @@ export default function App() {
   }, []);
 
   // WF 2.4: 복원 중에는 로고만. 로그인 화면을 잠깐도 보여 주지 않는다
-  if (isRestoring) return <div className="splash">cal-todo</div>;
+  if (isRestoring) return <div className="splash">Badminatics</div>;
 
   return (
     <>

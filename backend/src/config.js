@@ -10,6 +10,12 @@ export function loadConfig(env = process.env) {
     return value;
   };
 
+  // 프론트·백엔드를 다른 사이트(도메인)로 나눠 배포하면 none이어야 Refresh 쿠키가 오간다
+  const cookieSameSite = (env.COOKIE_SAME_SITE || 'strict').toLowerCase();
+  if (!['strict', 'lax', 'none'].includes(cookieSameSite)) {
+    throw new Error('COOKIE_SAME_SITE는 strict, lax, none 중 하나여야 합니다');
+  }
+
   const accessSecret = secret('JWT_ACCESS_SECRET');
   const refreshSecret = secret('JWT_REFRESH_SECRET');
   if (accessSecret === refreshSecret) {
@@ -32,6 +38,7 @@ export function loadConfig(env = process.env) {
       .split(',')
       .map((origin) => origin.trim())
       .filter(Boolean),
+    cookieSameSite,
   };
 }
 

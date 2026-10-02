@@ -16,16 +16,18 @@ import {
 import { useStore } from '../../store';
 import type { AdminMember, Role } from '../../types';
 import { useUpdateMember, type MemberInput } from './api';
+import { useT, type Key } from '../../lib/i18n';
 
-const ROLE_OPTIONS: { value: Role; label: string }[] = [
-  { value: 'MEMBER', label: '회원' },
-  { value: 'ADMIN', label: '관리자' },
+const ROLE_OPTIONS: { value: Role; label: Key }[] = [
+  { value: 'MEMBER', label: 'roleMember' },
+  { value: 'ADMIN', label: 'roleAdmin' },
 ];
 
 type Props = { member: AdminMember; onClose: () => void };
 
 // SCR-08 [편집]·[보기], WF-08. 잠금은 화면 편의이고 판단은 서버가 한다(P-5)
 export function MemberEditModal({ member, onClose }: Props) {
+  const t = useT();
   const meId = useStore((s) => s.me?.id);
   const showToast = useStore((s) => s.showToast);
   const updateMember = useUpdateMember();
@@ -76,61 +78,61 @@ export function MemberEditModal({ member, onClose }: Props) {
     });
   };
 
-  const name = `${member.name}${member.isDeleted ? '(탈퇴)' : ''}`;
+  const name = `${member.name}${member.isDeleted ? t('deletedSuffix') : ''}`;
   return (
     <Modal
-      title={`${isReadOnly ? '회원 보기' : '회원 편집'} · ${name}`}
+      title={t(isReadOnly ? 'viewMemberTitle' : 'editMemberTitle', { name })}
       onClose={onClose}
       isFullOnMobile
       footer={
         isReadOnly ? (
           <button className="btn" onClick={onClose}>
-            닫기
+            {t('close')}
           </button>
         ) : (
           <>
             <button className="btn primary" form="member-edit" disabled={updateMember.isPending}>
-              {updateMember.isPending ? '저장 중…' : '저장'}
+              {updateMember.isPending ? t('saving') : t('save')}
             </button>
             <button className="btn" onClick={onClose}>
-              취소
+              {t('cancel')}
             </button>
           </>
         )
       }
     >
       <form id="member-edit" className="stack" onSubmit={submit} noValidate>
-        <Field label="이름" error={errors.name} isLocked={isReadOnly}>
+        <Field label={t('name')} error={errors.name} isLocked={isReadOnly}>
           <input
             className="input"
-            aria-label="이름"
+            aria-label={t('name')}
             readOnly={isReadOnly}
             value={form.name}
             onChange={set('name')}
           />
         </Field>
-        <Field label="이메일" error={errors.email} isLocked={isEmailLocked}>
+        <Field label={t('email')} error={errors.email} isLocked={isEmailLocked}>
           <input
             className="input"
             type="email"
-            aria-label="이메일"
+            aria-label={t('email')}
             readOnly={isEmailLocked}
             value={form.email}
             onChange={set('email')}
           />
         </Field>
-        <Field label="전화번호" error={errors.phone} isLocked={isReadOnly}>
+        <Field label={t('phone')} error={errors.phone} isLocked={isReadOnly}>
           <input
             className="input"
             type="tel"
-            aria-label="전화번호"
+            aria-label={t('phone')}
             readOnly={isReadOnly}
             value={form.phone}
             onChange={set('phone')}
           />
         </Field>
         <Field
-          label="생년월일"
+          label={t('birthDate')}
           error={errors.birthDate}
           isLocked={isReadOnly}
           aside={form.birthDate && formatBirth(form.birthDate)}
@@ -138,7 +140,7 @@ export function MemberEditModal({ member, onClose }: Props) {
           <input
             className="input date"
             type="date"
-            aria-label="생년월일"
+            aria-label={t('birthDate')}
             max={todaySeoul()}
             readOnly={isReadOnly}
             value={form.birthDate}
@@ -146,33 +148,33 @@ export function MemberEditModal({ member, onClose }: Props) {
           />
         </Field>
         <Field
-          label="새 비밀번호"
+          label={t('newPassword')}
           error={errors.newPassword}
           isLocked={isPasswordLocked}
-          aside={isPasswordLocked ? undefined : '비워 두면 바꾸지 않음'}
+          aside={isPasswordLocked ? undefined : t('keepPasswordHint')}
         >
           <input
             className="input"
             type="password"
-            aria-label="새 비밀번호"
+            aria-label={t('newPassword')}
             autoComplete="new-password"
             readOnly={isPasswordLocked}
             value={form.newPassword}
             onChange={set('newPassword')}
           />
         </Field>
-        <Field label="역할" isLocked={isRoleLocked}>
+        <Field label={t('role')} isLocked={isRoleLocked}>
           {isRoleLocked ? (
             <span>
               {member.isPermanent
-                ? '영구 관리자'
-                : ROLE_OPTIONS.find((o) => o.value === member.role)?.label}
+                ? t('rolePermanent')
+                : t(member.role === 'ADMIN' ? 'roleAdmin' : 'roleMember')}
             </span>
           ) : (
             <Segment
               name="role"
               value={form.role}
-              options={ROLE_OPTIONS}
+              options={ROLE_OPTIONS.map((o) => ({ ...o, label: t(o.label) }))}
               onChange={(role) => setForm({ ...form, role })}
             />
           )}

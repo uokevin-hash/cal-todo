@@ -13,7 +13,7 @@ const PAGE = `<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>cal-todo API</title>
+  <title>Badminatics API</title>
   <link rel="stylesheet" href="${CDN}/swagger-ui.css">
 </head>
 <body>

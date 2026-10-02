@@ -74,12 +74,14 @@ export async function findAdminRows(db, { id = null, from = null, to = null }) {
 }
 
 // 같은 이름은 groups_date_name_key 위반(23505)
+// 오늘 이전 날짜면 만들지 않고 undefined(R-6)
 export async function insertGroup(db, { date, name, capacity, createdBy }) {
   const { rows } = await db.query(
-    `INSERT INTO groups (date, name, capacity, created_by) VALUES ($1, $2, $3, $4) RETURNING id`,
+    `INSERT INTO groups (date, name, capacity, created_by)
+     SELECT $1, $2, $3, $4 WHERE $1::date >= ${TODAY_SQL} RETURNING id`,
     [date, name, capacity, createdBy],
   );
-  return rows[0].id;
+  return rows[0]?.id;
 }
 
 export const DEFAULT_GROUP_NAME = '기본';
@@ -148,7 +150,9 @@ export async function search(db, { from, to, group, name, status, capacity, isAd
       WHERE a2.group_id = g.id AND m2.name ILIKE $${params.length - 1}
         AND (m2.deleted_at IS NULL OR $${params.length}))`);
   }
-  const having = status ? `HAVING ${STATUS_SQL} = $${params.push(status)}` : '';
+  // R-6: 지난 날짜 그룹은 참석불가로 보이므로 참석가능 필터에서 뺀다
+  if (status === 'AVAILABLE') conditions.push(`g.date >= ${TODAY_SQL}`);
+  const having = status ?`HAVING ${STATUS_SQL} = $${params.push(status)}` : '';
 
   const { rows } = await db.query(
     `SELECT g.date, g.id AS "groupId", g.name AS "groupName", g.capacity,
