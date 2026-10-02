@@ -144,3 +144,6 @@ vite.config.ts.timestamp-*
 
 # Playwright MCP 로그
 .playwright-mcp/
+
+# Vercel CLI 연결 정보
+.vercel
