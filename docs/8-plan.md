@@ -1,23 +1,25 @@
 # cal-todo 작업 실행 계획
 
-> 근거: [1-definition.md](1-definition.md) **v0.14**, [2-user-scenarios.md](2-user-scenarios.md) **v0.17**, [2-PRD.md](2-PRD.md) **v0.12**, [3-screen-design.md](3-screen-design.md) **v0.16**, [4-wireframes.md](4-wireframes.md) **v0.7**, [5-project-principle.md](5-project-principle.md) **v0.8**, [6-arch-diagram.md](6-arch-diagram.md) **v0.8**, [7-erd.md](7-erd.md) **v0.6**, [schema.sql](schema.sql). `REQ-n`·`R-n`·`UC-n`은 정의서, `S-n`은 시나리오, `M-n`·`FR-n`·`NFR-n`·`D-n`과 "6.1 흐름 n"은 PRD, `SCR-n`은 화면 설계서, `WF-n`은 와이어프레임, `P-n`·`L-n`·`N-n`·`T-n`·`C-n`·`ST-n`은 프로젝트 원칙, `AD-n`은 아키텍처 다이어그램 번호다. 이 문서가 정의하는 ID는 작업 단위 `OPS-n`(공통·셋업·배포), `DB-n`(데이터베이스), `BE-n`(백엔드), `FE-n`(프론트엔드), `QA-n`(통합·검증)이다. 규칙·API·화면은 다시 정의하지 않고 ID로 참조한다.
+> 근거: [1-definition.md](1-definition.md) **v0.15**, [2-user-scenarios.md](2-user-scenarios.md) **v0.18**, [2-PRD.md](2-PRD.md) **v0.14**, [3-screen-design.md](3-screen-design.md) **v0.17**, [4-wireframes.md](4-wireframes.md) **v0.8**, [5-project-principle.md](5-project-principle.md) **v0.11**, [6-arch-diagram.md](6-arch-diagram.md) **v0.10**, [7-erd.md](7-erd.md) **v0.7**, [schema.sql](schema.sql). `REQ-n`·`R-n`·`UC-n`은 정의서, `S-n`은 시나리오, `M-n`·`FR-n`·`NFR-n`·`D-n`과 "6.1 흐름 n"은 PRD, `SCR-n`은 화면 설계서, `WF-n`은 와이어프레임, `P-n`·`L-n`·`N-n`·`T-n`·`C-n`·`ST-n`은 프로젝트 원칙, `AD-n`은 아키텍처 다이어그램 번호다. 이 문서가 정의하는 ID는 작업 단위 `OPS-n`(공통·셋업·배포), `DB-n`(데이터베이스), `BE-n`(백엔드), `FE-n`(프론트엔드), `QA-n`(통합·검증)이다. 규칙·API·화면은 다시 정의하지 않고 ID로 참조한다.
 
 - **상태**: 초안
-- **버전**: 0.7
+- **버전**: 0.9
 
 ## 변경 이력
 
 > 문서를 바꿀 때마다 표 맨 아래에 한 줄을 추가한다. 버전은 내용 추가·변경 시 소수점 자리(0.1 → 0.2), 구조가 크게 바뀌면 정수 자리(→ 1.0)를 올린다.
 
-| 버전 | 날짜 | 변경자 | 변경내용 |
-|------|------|--------|----------|
-| 0.1 | 2026-09-30 | uokevin | 초안 작성 |
-| 0.2 | 2026-09-30 | uokevin | 계획 빈틈 결정 반영: 7장 1 ~ 10에 결정 기록(결정 완료), 결정으로 생긴 작업을 기존 Task에 추가(`.env.test.example` OPS-1, `revoked_reason` DB-1·BE-2·BE-5·BE-6, PRD 9장 응답 형식 BE-2·BE-3·BE-8·FE-1·FE-4·FE-7·FE-8, `기본` 이름 400 BE-3·BE-7·FE-4·FE-7, 관리자 자기 비밀번호 403 BE-6·FE-6, 비밀번호·이름·생년월일 문구 BE-1·FE-2·FE-5, 기간 기본값·93일 BE-8·FE-8, FR-18 명세 BE-11), 3.1 PRD 10장과의 관계와 6장 일정 리스크 대응 갱신, 5장 DoD에 `.env.test.example`·M-5 축소 조건, 예상 시간·P0 합계 19.5h·임계 경로는 그대로, 머리말 기준 버전 갱신 |
-| 0.3 | 2026-09-30 | uokevin | 잔여 빈틈 결정 반영: 7.1절 추가(M-5·T-6 축소 조건, 93일·72바이트 문구, 생년월일 미래 판정 위치, `LOGOUT` 토큰 재사용), 머리말 기준 버전 갱신 |
-| 0.4 | 2026-09-30 | uokevin | 정합성 점검 반영: BE-1 생년월일 미래 판정을 `validate.js`에서 service(`TODAY_SQL`)로(C-9, 7.1절 4번), FE-2·FE-5에 72바이트 검증·문구, FE-8에 93일 초과 문구, BE-2 재사용 테스트에 `FORCED` 폐기 토큰(T-5), QA-1에 M-5 모바일 축소 조건, DB-1의 없는 참조 "7장 E-2 결정"을 PRD 근거로, 3.1 여유 시 시간 5h → 6h(1.2 표 합계), 7.1절 5번에 `FORCED`(PRD 6.1 흐름 5), 머리말 기준 버전 갱신 |
-| 0.5 | 2026-09-30 | uokevin | 머리말 기준 버전 갱신 |
-| 0.6 | 2026-09-30 | uokevin | API 빈틈 결정 반영(PRD v0.12 9장): BE-1 숫자가 아닌 경로 id 404, BE-2 로그인 입력 400 `VALIDATION_ERROR`, BE-3 `GET /calendar` 본문·`month` 기본값과 그룹 생성 `attend` 기본값 `true`·201 `{id}`, BE-4 참석 201 `{groupId}`·참석 취소 멱등 204, BE-5·BE-6 `newPassword`·부분 갱신, BE-6 `GET /admin/members` 본문·PATCH 200 행 객체, BE-7 PATCH 200 행 객체·부분 갱신, BE-8 `group` 부분 일치, BE-9 `GET /admin/groups` 본문·기간 규칙, 머리말 기준 버전 갱신 |
-| 0.7 | 2026-09-30 | uokevin | FE-2 완료 조건에 SCR-01 입력 검증 문구 추가(화면 설계서 v0.16), 머리말 기준 버전 갱신 |
+| 버전 | 날짜       | 변경자  | 변경내용                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ---- | ---------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.1  | 2026-09-30 | uokevin | 초안 작성                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 0.2  | 2026-09-30 | uokevin | 계획 빈틈 결정 반영: 7장 1 ~ 10에 결정 기록(결정 완료), 결정으로 생긴 작업을 기존 Task에 추가(`.env.test.example` OPS-1, `revoked_reason` DB-1·BE-2·BE-5·BE-6, PRD 9장 응답 형식 BE-2·BE-3·BE-8·FE-1·FE-4·FE-7·FE-8, `기본` 이름 400 BE-3·BE-7·FE-4·FE-7, 관리자 자기 비밀번호 403 BE-6·FE-6, 비밀번호·이름·생년월일 문구 BE-1·FE-2·FE-5, 기간 기본값·93일 BE-8·FE-8, FR-18 명세 BE-11), 3.1 PRD 10장과의 관계와 6장 일정 리스크 대응 갱신, 5장 DoD에 `.env.test.example`·M-5 축소 조건, 예상 시간·P0 합계 19.5h·임계 경로는 그대로, 머리말 기준 버전 갱신 |
+| 0.3  | 2026-09-30 | uokevin | 잔여 빈틈 결정 반영: 7.1절 추가(M-5·T-6 축소 조건, 93일·72바이트 문구, 생년월일 미래 판정 위치, `LOGOUT` 토큰 재사용), 머리말 기준 버전 갱신                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 0.4  | 2026-09-30 | uokevin | 정합성 점검 반영: BE-1 생년월일 미래 판정을 `validate.js`에서 service(`TODAY_SQL`)로(C-9, 7.1절 4번), FE-2·FE-5에 72바이트 검증·문구, FE-8에 93일 초과 문구, BE-2 재사용 테스트에 `FORCED` 폐기 토큰(T-5), QA-1에 M-5 모바일 축소 조건, DB-1의 없는 참조 "7장 E-2 결정"을 PRD 근거로, 3.1 여유 시 시간 5h → 6h(1.2 표 합계), 7.1절 5번에 `FORCED`(PRD 6.1 흐름 5), 머리말 기준 버전 갱신                                                                                                                                                                   |
+| 0.5  | 2026-09-30 | uokevin | 머리말 기준 버전 갱신                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 0.6  | 2026-09-30 | uokevin | API 빈틈 결정 반영(PRD v0.12 9장): BE-1 숫자가 아닌 경로 id 404, BE-2 로그인 입력 400 `VALIDATION_ERROR`, BE-3 `GET /calendar` 본문·`month` 기본값과 그룹 생성 `attend` 기본값 `true`·201 `{id}`, BE-4 참석 201 `{groupId}`·참석 취소 멱등 204, BE-5·BE-6 `newPassword`·부분 갱신, BE-6 `GET /admin/members` 본문·PATCH 200 행 객체, BE-7 PATCH 200 행 객체·부분 갱신, BE-8 `group` 부분 일치, BE-9 `GET /admin/groups` 본문·기간 규칙, 머리말 기준 버전 갱신                                                                                              |
+| 0.7  | 2026-09-30 | uokevin | FE-2 완료 조건에 SCR-01 입력 검증 문구 추가(화면 설계서 v0.16), 머리말 기준 버전 갱신                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 0.8  | 2026-10-01 | uokevin | 백엔드 구현 반영: DB-1·DB-2·BE-1 ~ BE-11 완료 조건 체크(BE-11의 SCR-01 문구는 프론트엔드 미착수로 남김), 7.2절에 진행 현황(OPS-1 미완 항목)과 구현 중 정한 사항 기록, 머리말 기준 버전 갱신                                                                                                                                                                                                                                                                                                                                                                |
+| 0.9  | 2026-10-02 | uokevin | 코드 기준 최신화: BE-3 지난 날짜 그룹 생성 201 → 409 `PAST_DATE`(R-6), BE-4 지난 날짜 참석 409, DB-2 테이블 7개, OPS-1·FE-1 Vite 프록시 → `VITE_API_URL` 직접 호출, FE-1 localStorage는 언어(`lang`)만·그룹 관리 메뉴 표시, FE-3 캘린더 칸 `그룹명(n)`, FE-5 `useMe` 대신 스토어 `me`, FE-6 검색 칸 있음, FE-7 그룹 삭제 문구, FE-9·FE-10 구현 완료, 1.3절과 4장에 완료 Task DB-4·BE-12·FE-11·FE-12·FE-13 추가, 확인 가능한 완료 조건 체크, 6장 리스크에 테스트 날짜 고정(2026-10-03), 7.2절 진행 현황(테스트 51개, 프론트엔드 구현)과 결정 4·5번 해소, 머리말 기준 버전 갱신 |
 
 ## 번호 정책
 
@@ -36,44 +38,56 @@
 
 ### 1.1 P0 (2일 일정 안)
 
-| ID | 이름 | 영역 | 우선순위 | 예상(h) | 선행 Task |
-|----|------|------|----------|---------|-----------|
-| OPS-1 | 저장소 골격과 로컬 환경 | 공통 | P0 | 0.5 | 없음 |
-| DB-1 | 초기 스키마 마이그레이션 파일 | DB | P0 | 0.5 | OPS-1 |
-| DB-2 | DB 접속·마이그레이션 적용기 | DB | P0 | 0.5 | DB-1 |
-| BE-1 | 서버 기반과 영구 관리자 기동 | BE | P0 | 1 | DB-2 |
-| BE-2 | 인증 API와 인증 미들웨어 | BE | P0 | 2 | BE-1 |
-| BE-3 | 캘린더·날짜 상세 조회와 그룹 생성 API | BE | P0 | 1 | BE-2 |
-| BE-4 | 참석 등록·취소 API와 동시성 | BE | P0 | 1.5 | BE-3 |
-| BE-5 | 내 정보 수정 API | BE | P0 | 0.5 | BE-2 |
-| BE-6 | 관리자 회원 API | BE | P0 | 1 | BE-4, BE-5 |
-| BE-7 | 관리자 그룹 API | BE | P0 | 0.5 | BE-4 |
-| BE-8 | 참석 현황 조회 API와 탈퇴 회원 가림 검증 | BE | P0 | 1 | BE-3, BE-6 |
-| FE-1 | 앱 골격과 인증 클라이언트 | FE | P0 | 1.5 | OPS-1, BE-2 |
-| FE-2 | 로그인·회원가입 화면 | FE | P0 | 1 | FE-1 |
-| FE-3 | 캘린더 화면 | FE | P0 | 0.5 | FE-1, BE-3 |
-| FE-4 | 날짜 상세와 그룹 만들기 화면 | FE | P0 | 1.5 | FE-3, BE-4 |
-| FE-5 | 내 정보 화면 | FE | P0 | 0.5 | FE-2, BE-5 |
-| FE-6 | 회원 관리 화면 | FE | P0 | 1 | FE-1, BE-6 |
-| FE-7 | 날짜 상세 관리자 버튼(그룹 편집·삭제) | FE | P0 | 1 | FE-4, FE-6, BE-7 |
-| FE-8 | 참석 현황 조회 화면 | FE | P0 | 0.5 | FE-4, BE-8 |
-| OPS-2 | 운영 빌드 서빙과 배포 | 배포 | P0 | 1 | FE-5, FE-7, FE-8 |
-| QA-1 | 전체 시나리오 점검(M-4, M-5) | 검증 | P0 | 1 | OPS-2 |
-| | **P0 합계** | | | **19.5** | |
+| ID    | 이름                                     | 영역 | 우선순위 | 예상(h)  | 선행 Task        |
+| ----- | ---------------------------------------- | ---- | -------- | -------- | ---------------- |
+| OPS-1 | 저장소 골격과 로컬 환경                  | 공통 | P0       | 0.5      | 없음             |
+| DB-1  | 초기 스키마 마이그레이션 파일            | DB   | P0       | 0.5      | OPS-1            |
+| DB-2  | DB 접속·마이그레이션 적용기              | DB   | P0       | 0.5      | DB-1             |
+| BE-1  | 서버 기반과 영구 관리자 기동             | BE   | P0       | 1        | DB-2             |
+| BE-2  | 인증 API와 인증 미들웨어                 | BE   | P0       | 2        | BE-1             |
+| BE-3  | 캘린더·날짜 상세 조회와 그룹 생성 API    | BE   | P0       | 1        | BE-2             |
+| BE-4  | 참석 등록·취소 API와 동시성              | BE   | P0       | 1.5      | BE-3             |
+| BE-5  | 내 정보 수정 API                         | BE   | P0       | 0.5      | BE-2             |
+| BE-6  | 관리자 회원 API                          | BE   | P0       | 1        | BE-4, BE-5       |
+| BE-7  | 관리자 그룹 API                          | BE   | P0       | 0.5      | BE-4             |
+| BE-8  | 참석 현황 조회 API와 탈퇴 회원 가림 검증 | BE   | P0       | 1        | BE-3, BE-6       |
+| FE-1  | 앱 골격과 인증 클라이언트                | FE   | P0       | 1.5      | OPS-1, BE-2      |
+| FE-2  | 로그인·회원가입 화면                     | FE   | P0       | 1        | FE-1             |
+| FE-3  | 캘린더 화면                              | FE   | P0       | 0.5      | FE-1, BE-3       |
+| FE-4  | 날짜 상세와 그룹 만들기 화면             | FE   | P0       | 1.5      | FE-3, BE-4       |
+| FE-5  | 내 정보 화면                             | FE   | P0       | 0.5      | FE-2, BE-5       |
+| FE-6  | 회원 관리 화면                           | FE   | P0       | 1        | FE-1, BE-6       |
+| FE-7  | 날짜 상세 관리자 버튼(그룹 편집·삭제)    | FE   | P0       | 1        | FE-4, FE-6, BE-7 |
+| FE-8  | 참석 현황 조회 화면                      | FE   | P0       | 0.5      | FE-4, BE-8       |
+| OPS-2 | 운영 빌드 서빙과 배포                    | 배포 | P0       | 1        | FE-5, FE-7, FE-8 |
+| QA-1  | 전체 시나리오 점검(M-4, M-5)             | 검증 | P0       | 1        | OPS-2            |
+|       | **P0 합계**                              |      |          | **19.5** |                  |
 
 영역별 P0: 공통·배포 1.5h(OPS 2개), DB 1h(2개), BE 8.5h(8개), FE 7.5h(8개), 검증 1h(1개).
 
 ### 1.2 P1·P2 (일정 밖, 여유 시)
 
-| ID | 이름 | 영역 | 우선순위 | 예상(h) | 선행 Task |
-|----|------|------|----------|---------|-----------|
-| BE-9 | 관리자 그룹 기간 목록 API | BE | P1 | 0.5 | BE-7 |
-| FE-9 | 그룹 관리 화면 | FE | P1 | 1 | FE-7, BE-9 |
-| BE-10 | 회원 관리 검색 API | BE | P1 | 0.5 | BE-6 |
-| FE-10 | 회원 관리 검색 칸 | FE | P1 | 0.5 | FE-6, BE-10 |
-| DB-3 | 부하 테스트 초기 데이터 | DB | P1 | 1 | DB-2 |
-| QA-2 | 부하 테스트(M-1 ~ M-3) | 검증 | P1 | 1.5 | DB-3, OPS-2 |
-| BE-11 | 로그인 시도 횟수 제한 | BE | P2 | 1 | BE-2 |
+| ID    | 이름                      | 영역 | 우선순위 | 예상(h) | 선행 Task   |
+| ----- | ------------------------- | ---- | -------- | ------- | ----------- |
+| BE-9  | 관리자 그룹 기간 목록 API | BE   | P1       | 0.5     | BE-7        |
+| FE-9  | 그룹 관리 화면            | FE   | P1       | 1       | FE-7, BE-9  |
+| BE-10 | 회원 관리 검색 API        | BE   | P1       | 0.5     | BE-6        |
+| FE-10 | 회원 관리 검색 칸         | FE   | P1       | 0.5     | FE-6, BE-10 |
+| DB-3  | 부하 테스트 초기 데이터   | DB   | P1       | 1       | DB-2        |
+| QA-2  | 부하 테스트(M-1 ~ M-3)    | 검증 | P1       | 1.5     | DB-3, OPS-2 |
+| BE-11 | 로그인 시도 횟수 제한     | BE   | P2       | 1       | BE-2        |
+
+### 1.3 계획 후 추가 Task (구현 완료, v0.9)
+
+일정 계획에 없던 기능(REQ-18 ~ REQ-21)을 구현하며 생긴 Task다. 모두 완료했고 예상 시간은 적지 않는다.
+
+| ID    | 이름                                              | 영역 | 우선순위 | 예상(h) | 선행 Task    |
+| ----- | ------------------------------------------------- | ---- | -------- | ------- | ------------ |
+| DB-4  | 채팅 마이그레이션(002 ~ 004)                      | DB   | 추가     | -       | DB-2         |
+| BE-12 | 그룹 채팅·이미지·채팅 보관함·빈 그룹 삭제 API     | BE   | 추가     | -       | DB-4, BE-7   |
+| FE-11 | 그룹 채팅                                         | FE   | 추가     | -       | FE-3, BE-12  |
+| FE-12 | 채팅 보관함 화면                                  | FE   | 추가     | -       | FE-9, BE-12  |
+| FE-13 | 다국어(한국어/English/中文)                       | FE   | 추가     | -       | FE-1         |
 
 ## 2. 의존성 그래프
 
@@ -138,13 +152,13 @@ flowchart LR
 
 ### 3.1 일정 배치
 
-| 시점 | Task (순서대로) | 시간 | 마감 확인 |
-|------|-----------------|------|-----------|
-| Day1 오전 | OPS-1 → DB-1 → DB-2 → BE-1 → BE-2 | 4.5h | `test/config.test.js`·`test/auth.test.js` 통과, curl로 가입·로그인·재발급·로그아웃 확인(FR-1 ~ FR-3) |
-| Day1 오후 | FE-1 → FE-2 → BE-3 → BE-4 → FE-3 | 5.5h | S-1·S-2·S-14(1·3·5단계) 수동 통과, `test/attendance.test.js` 통과, 캘린더에 ●n·✔ 표시(FR-4, API 수준 FR-5 ~ FR-7) |
-| Day2 오전 | FE-4 → BE-5 → FE-5 → BE-6 → BE-7 → FE-6 | 5h | S-3 ~ S-6·S-9 ~ S-12·S-15 수동 통과, `test/admin.test.js`(회원·그룹 부분) 통과 |
-| Day2 오후 | FE-7 → BE-8 → FE-8 → OPS-2 → QA-1 | 4.5h | S-7·S-8·S-13 통과, M-4, M-5(S-1 ~ S-15 데스크톱·360px) 통과, 배포 URL에서 S-2·S-11 재확인(T-9) |
-| 여유 시 | BE-9·FE-9, BE-10·FE-10, DB-3·QA-2, (P2) BE-11 | 6h | FR-17·FR-19, M-1 ~ M-3 측정 |
+| 시점      | Task (순서대로)                               | 시간 | 마감 확인                                                                                                         |
+| --------- | --------------------------------------------- | ---- | ----------------------------------------------------------------------------------------------------------------- |
+| Day1 오전 | OPS-1 → DB-1 → DB-2 → BE-1 → BE-2             | 4.5h | `test/config.test.js`·`test/auth.test.js` 통과, curl로 가입·로그인·재발급·로그아웃 확인(FR-1 ~ FR-3)              |
+| Day1 오후 | FE-1 → FE-2 → BE-3 → BE-4 → FE-3              | 5.5h | S-1·S-2·S-14(1·3·5단계) 수동 통과, `test/attendance.test.js` 통과, 캘린더에 `그룹명(n)`·✔ 표시(FR-4, API 수준 FR-5 ~ FR-7) |
+| Day2 오전 | FE-4 → BE-5 → FE-5 → BE-6 → BE-7 → FE-6       | 5h   | S-3 ~ S-6·S-9 ~ S-12·S-15 수동 통과, `test/admin.test.js`(회원·그룹 부분) 통과                                    |
+| Day2 오후 | FE-7 → BE-8 → FE-8 → OPS-2 → QA-1             | 4.5h | S-7·S-8·S-13 통과, M-4, M-5(S-1 ~ S-15 데스크톱·360px) 통과, 배포 URL에서 S-2·S-11 재확인(T-9)                    |
+| 여유 시   | BE-9·FE-9, BE-10·FE-10, DB-3·QA-2, (P2) BE-11 | 6h   | FR-17·FR-19, M-1 ~ M-3 측정                                                                                       |
 
 **PRD 10장과의 관계** (PRD v0.7 10장에서 아래처럼 옮겼고, PRD v0.8 10장이 이 배치로 고쳐졌다. 7장 1번 결정)
 
@@ -172,11 +186,11 @@ flowchart LR
 - **수행 작업**
   - 루트: `.prettierrc`(`{ "singleQuote": true, "printWidth": 100 }`), `.gitignore`(`node_modules`, `dist`, `.env`, `.env.test`).
   - `backend/package.json`: `"type": "module"`, 의존성은 L-16 표의 backend 행만, scripts `dev`(`node --watch --env-file=.env src/server.js`), `start`, `test`(`node --env-file=.env.test --test --test-concurrency=1 test/*.test.js`), `lint`. `backend/eslint.config.js`(`@eslint/js` recommended + Node globals). `backend/.env.example`(C-3 표의 키, 값 비움), `backend/.env.test.example`(같은 키, `DATABASE_URL` 예시는 `cal_todo_test`, C-3·T-2).
-  - `frontend/`: Vite React-TS 템플릿으로 생성 후 L-16 표 밖 파일·의존성 정리. `tsconfig.json` `strict: true`, scripts `dev`·`build`·`lint`·`typecheck`(`tsc --noEmit`). `vite.config.ts`에 `server.proxy: { '/api': 'http://localhost:3000' }`.
+  - `frontend/`: Vite React-TS 템플릿으로 생성 후 L-16 표 밖 파일·의존성 정리. `tsconfig.json` `strict: true`, scripts `dev`·`build`·`lint`·`typecheck`(`tsc --noEmit`). `vite.config.ts`는 react 플러그인만(프록시 없음). 개발 API 주소는 `frontend/.env.development`의 `VITE_API_URL=http://localhost:3000/api`(형식은 커밋한 `frontend/.env.example`), 백엔드 `CORS_ORIGINS`에 `http://localhost:5173`(C-18).
   - 로컬 PostgreSQL 17에 `cal_todo`, `cal_todo_test` DB 생성. `backend/.env`, `backend/.env.test` 작성(비밀키는 C-3 명령으로 생성).
 - **완료 조건**
   - [ ] `backend`에서 `npm install && npm run lint` 오류 0
-  - [ ] `frontend`에서 `npm install && npm run typecheck && npm run lint && npm run build` 오류 0
+  - [x] `frontend`에서 `npm install && npm run typecheck && npm run lint && npm run build` 오류 0
   - [ ] `psql "$DATABASE_URL" -c "select version()"`가 두 DB 모두 `PostgreSQL 17` 출력
   - [ ] `git status`에 `.env`, `.env.test`, `node_modules`가 보이지 않고, `.env.example`·`.env.test.example`은 보임
   - [ ] 두 `package.json`의 의존성이 L-16 표와 일치(표 밖 패키지 0)
@@ -187,13 +201,13 @@ flowchart LR
 - **선행 Task**: OPS-1
 - **관련 문서 ID**: PRD 7장, D-2, D-3, NFR-3 ~ NFR-5, N-7, C-14, C-15, 7-erd.md, schema.sql
 - **수행 작업**
-  - `docs/schema.sql` 내용을 `backend/db/migrations/001_init.sql`로 옮긴다. 테이블 4개(`members`, `groups`, `attendances`, `refresh_tokens`), 제약·인덱스 이름은 N-7 그대로. `refresh_tokens.revoked_reason`과 `refresh_tokens_revoked_reason_check` 포함(PRD 6.1 흐름 5·7장). `BEGIN/COMMIT`은 넣지 않는다(C-14에서 적용기가 감쌈).
+  - `docs/schema.sql` 내용을 `backend/db/migrations/001_init.sql`로 옮긴다. 테이블 4개(`members`, `groups`, `attendances`, `refresh_tokens`, 채팅 테이블 3개는 DB-4), 제약·인덱스 이름은 N-7 그대로. `refresh_tokens.revoked_reason`과 `refresh_tokens_revoked_reason_check` 포함(PRD 6.1 흐름 5·7장). `BEGIN/COMMIT`은 넣지 않는다(C-14에서 적용기가 감쌈).
 - **완료 조건**
-  - [ ] `psql cal_todo_test -v ON_ERROR_STOP=1 -1 -f db/migrations/001_init.sql` 성공
-  - [ ] `\d attendances`에 `attendances_member_id_date_key`, `attendances_group_id_idx`, `group_id` FK `ON DELETE CASCADE`가 보임
-  - [ ] 수동 SQL로 제약 확인: 같은 `(member_id, date)` 두 번 INSERT → `23505`, `capacity = 3` → `groups_capacity_check` 위반, `is_permanent = true` 두 행 → `members_is_permanent_key` 위반
-  - [ ] 수동 SQL로 확인: `revoked_at`만 있고 `revoked_reason`이 NULL인 행, `revoked_reason = 'X'`인 행 → 각각 `refresh_tokens_revoked_reason_check` 위반
-  - [ ] 확인 후 `DROP SCHEMA public CASCADE; CREATE SCHEMA public;`로 테스트 DB 원복
+  - [x] `psql cal_todo_test -v ON_ERROR_STOP=1 -1 -f db/migrations/001_init.sql` 성공(psql 미설치 환경이라 `migrate.js`로 같은 파일을 트랜잭션 하나로 적용해 확인)
+  - [x] `\d attendances`에 `attendances_member_id_date_key`, `attendances_group_id_idx`, `group_id` FK `ON DELETE CASCADE`가 보임
+  - [x] 수동 SQL로 제약 확인: 같은 `(member_id, date)` 두 번 INSERT → `23505`, `capacity = 3` → `groups_capacity_check` 위반, `is_permanent = true` 두 행 → `members_is_permanent_key` 위반
+  - [x] 수동 SQL로 확인: `revoked_at`만 있고 `revoked_reason`이 NULL인 행, `revoked_reason = 'X'`인 행 → 각각 `refresh_tokens_revoked_reason_check` 위반
+  - [x] 확인 후 `DROP SCHEMA public CASCADE; CREATE SCHEMA public;`로 테스트 DB 원복
 
 ### DB-2. DB 접속·마이그레이션 적용기
 
@@ -204,9 +218,9 @@ flowchart LR
   - `backend/src/db.js`: `pg.Pool`(max 20) 하나, `withTx(fn)`(BEGIN/COMMIT/ROLLBACK, `finally`에서 `release`), `DATE`(OID 1082) 타입 파서를 문자열 반환으로, `TODAY_SQL` 상수.
   - `backend/src/migrate.js`: `schema_migrations(filename PRIMARY KEY, applied_at)` 생성, `pg_advisory_lock` 획득, `db/migrations/*.sql` 중 미적용 파일을 번호 순으로 파일당 트랜잭션 하나로 적용.
 - **완료 조건**
-  - [ ] 빈 `cal_todo_test`에 `node --env-file=.env.test -e "import('./src/migrate.js').then(m => m.migrate())"`(내보내는 함수 이름은 구현에 맞춤) 실행 → 테이블 4개 + `schema_migrations` 1행
-  - [ ] 같은 명령을 한 번 더 실행해도 오류 없이 `schema_migrations`가 1행 그대로
-  - [ ] `select date from groups` 결과가 JS에서 `"YYYY-MM-DD"` 문자열(Date 객체 아님)임을 한 줄 스크립트로 확인
+  - [x] 빈 `cal_todo_test`에 `node --env-file=.env.test -e "import('./src/migrate.js').then(m => m.migrate())"`(내보내는 함수 이름은 구현에 맞춤) 실행 → 테이블 7개 + `schema_migrations` 4행(001 ~ 004, DB-4 뒤 기준)
+  - [x] 같은 명령을 한 번 더 실행해도 오류 없이 `schema_migrations`가 4행 그대로
+  - [x] `select date from groups` 결과가 JS에서 `"YYYY-MM-DD"` 문자열(Date 객체 아님)임을 한 줄 스크립트로 확인
 
 ### BE-1. 서버 기반과 영구 관리자 기동
 
@@ -222,11 +236,11 @@ flowchart LR
   - 영구 관리자 확인: `services/members.js`·`repositories/members.js`에 `ensurePermanentAdmin`(`ON CONFLICT DO NOTHING`, C-16). 영구 관리자 없음 + `ADMIN_EMAIL`/`ADMIN_PASSWORD` 없음이면 예외.
   - `test/helpers.js`: `DATABASE_URL`에 `_test` 없으면 즉시 실패, 마이그레이션 적용, `TRUNCATE … RESTART IDENTITY CASCADE`, `app.listen(0)` 기동. `test/config.test.js`.
 - **완료 조건**
-  - [ ] `node --env-file=.env.test --test test/config.test.js` 통과: 비밀키 없음, 31바이트 비밀키, 영구 관리자 없음 + `ADMIN_EMAIL` 없음 → 각각 예외(T-5 기동)
-  - [ ] `npm run dev` 두 번 연속 기동 후 `select count(*) from members where is_permanent` = 1 (S-11 1단계, 재기동 중복 없음)
-  - [ ] `backend/.env`에서 `ADMIN_EMAIL`을 지우고 빈 DB로 기동 → listen 전에 오류 메시지 출력 후 종료
-  - [ ] `curl -i localhost:3000/api/nope` → `404`, 본문 `{"error":{"code":"NOT_FOUND",...}}`
-  - [ ] `DATABASE_URL`을 `cal_todo`로 바꿔 `npm test` → DB를 건드리지 않고 즉시 실패(T-2)
+  - [x] `node --env-file=.env.test --test test/config.test.js` 통과: 비밀키 없음, 31바이트 비밀키, 영구 관리자 없음 + `ADMIN_EMAIL` 없음 → 각각 예외(T-5 기동)
+  - [x] `npm run dev` 두 번 연속 기동 후 `select count(*) from members where is_permanent` = 1 (S-11 1단계, 재기동 중복 없음)
+  - [x] `backend/.env`에서 `ADMIN_EMAIL`을 지우고 빈 DB로 기동 → listen 전에 오류 메시지 출력 후 종료
+  - [x] `curl -i localhost:3000/api/nope` → `404`, 본문 `{"error":{"code":"NOT_FOUND",...}}`
+  - [x] `DATABASE_URL`을 `cal_todo`로 바꿔 `npm test` → DB를 건드리지 않고 즉시 실패(T-2)
 
 ### BE-2. 인증 API와 인증 미들웨어
 
@@ -235,17 +249,17 @@ flowchart LR
 - **관련 문서 ID**: FR-1, FR-2, R-1, R-9, REQ-1, REQ-4, UC-1, UC-2, 6.1 흐름 1 ~ 7·9, D-1, D-4, PRD 7장·9장(응답 형식), NFR-6, NFR-8, NFR-9, L-5, L-6, C-6, C-7, AD-4, AD-5, T-5(인증·응답)
 - **수행 작업**
   - `routes/auth.js`, `services/auth.js`, `repositories/refreshTokens.js`, `repositories/members.js`(가입·로그인 조회): `POST /auth/signup`(활성 이메일 중복 → 409 `EMAIL_TAKEN`, 삭제된 회원 이메일 재사용 허용), `POST /auth/login`(`email`·`password` 누락·형식 오류는 400 `VALIDATION_ERROR`(`field`), 형식이 맞는 인증 실패는 전부 400 `INVALID_CREDENTIALS`, 만료 행 정리, 행 추가, 본문 `{accessToken}` + 쿠키 발급), `POST /auth/refresh`(AD-5 판정 순서 그대로, rotation은 `withTx`, 본문 `{accessToken}`), `POST /auth/logout`(멱등 204). 폐기할 때마다 `revoked_reason`을 함께 기록한다: 교체 `ROTATED`, 로그아웃 `LOGOUT`, 탈취 판단·탈퇴 회원 `FORCED`. 30초 유예(`REFRESH_RACE`)는 `ROTATED`에만(6.1 흐름 5).
-  - `src/middleware.js`: `requireAuth`(Bearer 검증 `algorithms: ['HS256']` + `type` 확인, 만료 → 401 `TOKEN_EXPIRED`, 회원 행 재조회, 탈퇴·`iat` < `password_changed_at` → 401 `UNAUTHENTICATED`), `requireAdmin`(403 `FORBIDDEN`).
+  - `src/middleware.js`: `requireAuth`(Bearer 검증 `algorithms: ['HS256']` + `type` 확인, 만료 → 401 `TOKEN_EXPIRED`, 회원 행 재조회, 탈퇴·`(iatMs ?? iat*1000) < password_changed_at`(밀리초) → 401 `UNAUTHENTICATED`), `requireAdmin`(403 `FORBIDDEN`).
   - `routes/me.js`: `GET /me`(`{id, name, email, phone, birthDate, age, role, isPermanent}`, 나이 SQL 계산, 해시 제외, PRD 9장). FE-1의 로그인 복원에 필요해서 여기서 만든다.
   - `test/auth.test.js`: T-5 인증 행 중 로그인·만료·교체·재사용(`ROTATED` 30초 이내/경과, `LOGOUT`·`FORCED` 폐기 토큰 30초 이내)·로그아웃 멱등·`alg: none`/다른 비밀키/`type` 불일치, 응답 해시 없음.
 - **완료 조건**
-  - [ ] `node --env-file=.env.test --test test/auth.test.js` 통과
-  - [ ] curl: `POST /api/auth/signup` → 201(본문 없음), 같은 이메일 재가입 → 409 `EMAIL_TAKEN`, 잘못된 전화번호 → 400 `VALIDATION_ERROR`(`field: phone`)
-  - [ ] curl: 틀린 비밀번호 로그인 → 400 `INVALID_CREDENTIALS`, `password` 없이 로그인 → 400 `VALIDATION_ERROR`(`field: password`), 성공 로그인 → 본문 `accessToken` + `Set-Cookie: refresh_token=…; Path=/api/auth; HttpOnly; SameSite=Strict`
-  - [ ] curl: 쿠키로 `POST /api/auth/refresh` → 200 + 새 쿠키, 이전 쿠키로 다시 → 401 `REFRESH_RACE`
-  - [ ] curl: 로그아웃한 쿠키로 곧바로 `POST /api/auth/refresh` → 401 `UNAUTHENTICATED`(30초 이내라도 `REFRESH_RACE` 아님), DB 행의 `revoked_reason`이 교체 `ROTATED`·로그아웃 `LOGOUT`
-  - [ ] curl: 쿠키 없이 `POST /api/auth/logout` → 204, 토큰 없이 `GET /api/me` → 401 `UNAUTHENTICATED`
-  - [ ] `GET /api/me` 응답 키가 `id, name, email, phone, birthDate, age, role, isPermanent`뿐이고 `passwordHash`·`password_hash` 없음, `age`가 `2026 - 출생연도`
+  - [x] `node --env-file=.env.test --test test/auth.test.js` 통과
+  - [x] curl: `POST /api/auth/signup` → 201(본문 없음), 같은 이메일 재가입 → 409 `EMAIL_TAKEN`, 잘못된 전화번호 → 400 `VALIDATION_ERROR`(`field: phone`)
+  - [x] curl: 틀린 비밀번호 로그인 → 400 `INVALID_CREDENTIALS`, `password` 없이 로그인 → 400 `VALIDATION_ERROR`(`field: password`), 성공 로그인 → 본문 `accessToken` + `Set-Cookie: refresh_token=…; Path=/api/auth; HttpOnly; SameSite=Strict`
+  - [x] curl: 쿠키로 `POST /api/auth/refresh` → 200 + 새 쿠키, 이전 쿠키로 다시 → 401 `REFRESH_RACE`
+  - [x] curl: 로그아웃한 쿠키로 곧바로 `POST /api/auth/refresh` → 401 `UNAUTHENTICATED`(30초 이내라도 `REFRESH_RACE` 아님), DB 행의 `revoked_reason`이 교체 `ROTATED`·로그아웃 `LOGOUT`
+  - [x] curl: 쿠키 없이 `POST /api/auth/logout` → 204, 토큰 없이 `GET /api/me` → 401 `UNAUTHENTICATED`
+  - [x] `GET /api/me` 응답 키가 `id, name, email, phone, birthDate, age, role, isPermanent`뿐이고 `passwordHash`·`password_hash` 없음, `age`가 `2026 - 출생연도`
 
 ### BE-3. 캘린더·날짜 상세 조회와 그룹 생성 API
 
@@ -253,18 +267,18 @@ flowchart LR
 - **선행 Task**: BE-2
 - **관련 문서 ID**: FR-4, FR-5, FR-7, FR-15, R-2, R-4, R-5, R-6, R-9, R-12, UC-4, UC-6, NFR-2, NFR-7, PRD 9장, L-3, C-10, AD-6(E3), T-5(원자성)
 - **수행 작업**
-  - `routes/dates.js`: `GET /calendar?month=YYYY-MM`(`{month, days: [{date, groupCount, attending}]}`, 그룹이 있거나 내가 참석한 날짜만, `month` 없으면 이번 달(Asia/Seoul), 형식 오류 400 `VALIDATION_ERROR`(`field: month`), 쿼리 1~2개, PRD 9장), `GET /dates/:date/groups`(그룹·정원·인원·상태·참석자 목록을 JOIN/집계 한 쿼리로, NFR-2), `POST /dates/:date/groups` `{name, capacity, attend?}`(`attend` 없으면 `true`, 201 `{id}`, 한 트랜잭션, 이름 중복 409 `DUPLICATE_GROUP_NAME`, 이름 `기본` 400 `VALIDATION_ERROR`(`field: name`, R-2), `attend=true`인데 그날 참석 중이면 409 `ALREADY_ATTENDING`이고 그룹도 롤백).
+  - `routes/dates.js`: `GET /calendar?month=YYYY-MM`(`{month, days: [{date, groupCount, groups: [{id, name, count, mine}], attending}]}`, 그룹이 있거나 내가 참석한 날짜만, `month` 없으면 이번 달(Asia/Seoul), 형식 오류 400 `VALIDATION_ERROR`(`field: month`), 쿼리 1~2개, PRD 9장), `GET /dates/:date/groups`(그룹·정원·인원·상태·참석자 목록을 JOIN/집계 한 쿼리로, NFR-2), `POST /dates/:date/groups` `{name, capacity, attend?}`(`attend` 없으면 `true`, 201 `{id}`, 한 트랜잭션, 이름 중복 409 `DUPLICATE_GROUP_NAME`, 이름 `기본` 400 `VALIDATION_ERROR`(`field: name`, R-2), `attend=true`인데 그날 참석 중이면 409 `ALREADY_ATTENDING`이고 그룹도 롤백).
   - `services/groups.js`, `repositories/groups.js`, `services/display.js`(탈퇴 회원 이름 가림 함수 하나, C-10). 응답은 PRD 9장 형식 `[{id, name, capacity, count, status, createdBy: {memberId, name}, attendees: [{memberId, name}], mine}]`, `status`는 `AVAILABLE`/`FULL`(R-5). 가림 함수는 비관리자에게 탈퇴 회원을 `name: "탈퇴 회원"`(memberId 유지), 관리자에게 실명 + `isDeleted: true`로 만든다.
   - `test/attendance.test.js`에 그룹 생성 원자성 테스트(T-5 원자성) 추가.
 - **완료 조건**
-  - [ ] `node --env-file=.env.test --test test/attendance.test.js` 중 원자성 테스트 통과: 409 후 `select count(*) from groups where date=…` = 0
-  - [ ] curl: `POST /api/dates/2026-10-03/groups {"name":"토요복식","capacity":4,"attend":true}` → 201 `{id}`, 이어서 `GET /api/dates/2026-10-03/groups`에 `status: "AVAILABLE"`, `count: 1`, `capacity: 4`, `mine: true`, `attendees`에 `{memberId, name}` 1개
-  - [ ] curl: 같은 이름 다시 → 409 `DUPLICATE_GROUP_NAME`, `capacity: 3` → 400 `VALIDATION_ERROR`(`field: capacity`)
-  - [ ] `test/attendance.test.js` 통과: 이름 `기본`으로 그룹 생성 → 400 `VALIDATION_ERROR`(`field: name`), 그룹 생기지 않음(T-5 권한, R-2)
-  - [ ] curl: `attend:false`로 만든 그룹 → 인원 0/4(S-12)
-  - [ ] curl: `GET /api/calendar?month=2026-10` → `days`에 `{date: "2026-10-03", groupCount: 1, attending: true}` 포함, `month` 없이 → 이번 달, `month=2026-13` → 400 `VALIDATION_ERROR`(`field: month`)
-  - [ ] curl: `attend` 없이 그룹 생성 → 만든 사람이 참석(`mine: true`)
-  - [ ] 지난 날짜(`2026-09-01`)에도 그룹 생성 201(R-6)
+  - [x] `node --env-file=.env.test --test test/attendance.test.js` 중 원자성 테스트 통과: 409 후 `select count(*) from groups where date=…` = 0
+  - [x] curl: `POST /api/dates/2026-10-03/groups {"name":"토요복식","capacity":4,"attend":true}` → 201 `{id}`, 이어서 `GET /api/dates/2026-10-03/groups`에 `status: "AVAILABLE"`, `count: 1`, `capacity: 4`, `mine: true`, `attendees`에 `{memberId, name}` 1개
+  - [x] curl: 같은 이름 다시 → 409 `DUPLICATE_GROUP_NAME`, `capacity: 3` → 400 `VALIDATION_ERROR`(`field: capacity`)
+  - [x] `test/attendance.test.js` 통과: 이름 `기본`으로 그룹 생성 → 400 `VALIDATION_ERROR`(`field: name`), 그룹 생기지 않음(T-5 권한, R-2)
+  - [x] curl: `attend:false`로 만든 그룹 → 인원 0/4(S-12)
+  - [x] curl: `GET /api/calendar?month=2026-10` → `days`에 `{date: "2026-10-03", groupCount: 1, attending: true}` 포함, `month` 없이 → 이번 달, `month=2026-13` → 400 `VALIDATION_ERROR`(`field: month`)
+  - [x] curl: `attend` 없이 그룹 생성 → 만든 사람이 참석(`mine: true`)
+  - [x] 지난 날짜(`2026-09-01`) 그룹 생성은 `attend`와 관계없이 409 `PAST_DATE`, 그룹 생기지 않음(R-6)
 
 ### BE-4. 참석 등록·취소 API와 동시성
 
@@ -276,11 +290,12 @@ flowchart LR
   - `routes/dates.js`: `POST /dates/:date/attendance` `{capacity?}`(201 `{groupId}`(들어간 `기본` 그룹 id), `기본` 그룹 `INSERT … ON CONFLICT (date, name) DO NOTHING` 후 재조회 → 같은 잠금 경로, `기본` 없음 + `capacity` 없음 → 400 `VALIDATION_ERROR`(`field: capacity`)).
   - `services/attendance.js`, `repositories/attendances.js`. `test/attendance.test.js`에 T-5 동시성 3종 추가.
 - **완료 조건**
-  - [ ] `node --env-file=.env.test --test test/attendance.test.js` 통과: 정원 4에 10명 `Promise.all` → 성공 4·409 6, 같은 회원 두 그룹 동시 → 1건 성공, 그룹 없이 참석 동시 → `기본` 그룹 1개
-  - [ ] 위 테스트 끝에 M-4 검증 쿼리 두 개가 0행: `select g.id from groups g join attendances a on a.group_id=g.id group by g.id, g.capacity having count(*) > g.capacity`, `select member_id, date from attendances group by 1,2 having count(*) > 1`
-  - [ ] curl: `기본` 없는 날 `POST /api/dates/2026-10-05/attendance {}` → 400 `VALIDATION_ERROR`(`field: capacity`), `{"capacity":2}` → 201 `{groupId}`
-  - [ ] curl: 정원 찬 `기본`에 다른 회원 참석 → 409 `CAPACITY_FULL`(S-5 예외)
-  - [ ] curl: `DELETE /api/groups/:id/attendance` → 204, 이어서 조회 시 인원 1 감소(S-6), 지난 날짜 취소도 204, 같은 요청 반복 → 204(멱등), 없는 그룹 → 404 `NOT_FOUND`, `/api/groups/abc/attendance` → 404
+  - [x] `node --env-file=.env.test --test test/attendance.test.js` 통과: 정원 4에 10명 `Promise.all` → 성공 4·409 6, 같은 회원 두 그룹 동시 → 1건 성공, 그룹 없이 참석 동시 → `기본` 그룹 1개
+  - [x] 위 테스트 끝에 M-4 검증 쿼리 두 개가 0행: `select g.id from groups g join attendances a on a.group_id=g.id group by g.id, g.capacity having count(*) > g.capacity`, `select member_id, date from attendances group by 1,2 having count(*) > 1`
+  - [x] curl: `기본` 없는 날 `POST /api/dates/2026-10-05/attendance {}` → 400 `VALIDATION_ERROR`(`field: capacity`), `{"capacity":2}` → 201 `{groupId}`
+  - [x] curl: 정원 찬 `기본`에 다른 회원 참석 → 409 `CAPACITY_FULL`(S-5 예외)
+  - [x] `test/attendance.test.js`: 지난 날짜 참석 등록 → 409 `PAST_DATE`(R-6)
+  - [x] curl: `DELETE /api/groups/:id/attendance` → 204, 이어서 조회 시 인원 1 감소(S-6), 지난 날짜 취소도 204, 같은 요청 반복 → 204(멱등), 없는 그룹 → 404 `NOT_FOUND`, `/api/groups/abc/attendance` → 404
 
 ### BE-5. 내 정보 수정 API
 
@@ -291,10 +306,10 @@ flowchart LR
   - `PATCH /me`: 이름·이메일·전화번호·생년월일 수정(부분 갱신: 보낸 필드만, `{}`은 200 변경 없음, 활성 이메일 중복 409 `EMAIL_TAKEN`). 비밀번호 변경은 `newPassword` + `currentPassword` 필수(틀리면 400 `WRONG_PASSWORD`), 한 트랜잭션에서 해시 갱신 + `password_changed_at` 갱신 + 다른 기기 Refresh 폐기(`FORCED`) + 현재 세션 새 토큰 발급. `role`·`isPermanent`는 본문에서 읽지 않는다(C-9).
   - `services/members.js`에 비밀번호 변경·토큰 폐기 함수(BE-6가 재사용). `test/auth.test.js`에 "비밀번호 변경 뒤 이전 Access 401" 추가.
 - **완료 조건**
-  - [ ] `node --env-file=.env.test --test test/auth.test.js` 통과(비밀번호 변경 케이스 포함)
-  - [ ] curl: 기기 A·B 두 번 로그인 → A에서 비밀번호 변경 → A의 새 Access로 `GET /api/me` 200, B의 Access로 401 `UNAUTHENTICATED`, B의 쿠키로 refresh 401 `UNAUTHENTICATED`(`REFRESH_RACE` 아님, S-15 1단계)
-  - [ ] curl: 틀린 `currentPassword` → 400 `WRONG_PASSWORD`, B는 계속 200(S-15 예외)
-  - [ ] curl: 본문에 `"role":"ADMIN"` 넣어 저장 → `GET /api/me`의 `role`이 그대로 `MEMBER`(S-3)
+  - [x] `node --env-file=.env.test --test test/auth.test.js` 통과(비밀번호 변경 케이스 포함)
+  - [x] curl: 기기 A·B 두 번 로그인 → A에서 비밀번호 변경 → A의 새 Access로 `GET /api/me` 200, B의 Access로 401 `UNAUTHENTICATED`, B의 쿠키로 refresh 401 `UNAUTHENTICATED`(`REFRESH_RACE` 아님, S-15 1단계)
+  - [x] curl: 틀린 `currentPassword` → 400 `WRONG_PASSWORD`, B는 계속 200(S-15 예외)
+  - [x] curl: 본문에 `"role":"ADMIN"` 넣어 저장 → `GET /api/me`의 `role`이 그대로 `MEMBER`(S-3)
 
 ### BE-6. 관리자 회원 API
 
@@ -306,13 +321,13 @@ flowchart LR
   - service 판단: 영구 관리자 이메일·비밀번호·역할 변경과 삭제 → 409 `PERMANENT_ADMIN_LOCKED`, 삭제된 회원 수정·삭제 → 409 `MEMBER_DELETED`, 자기 삭제 → 403 `FORBIDDEN`, 대상이 자기 자신인데 새 비밀번호가 있음 → 403 `FORBIDDEN`(6.1 흐름 8).
   - `test/admin.test.js`: T-5 권한 행, 회원 삭제 행.
 - **완료 조건**
-  - [ ] `node --env-file=.env.test --test test/admin.test.js` 통과: 회원이 `/admin/*` → 403, 영구 관리자 삭제·역할 해제·이메일 변경 → 409, 삭제된 회원 수정 → 409 `MEMBER_DELETED`
-  - [ ] 같은 파일: 관리자 자기 삭제 → 403 `FORBIDDEN`(T-5 권한)
-  - [ ] 같은 파일: 관리자가 자기 `PATCH /admin/members/:id`에 `newPassword` → 403 `FORBIDDEN`, 비밀번호·`password_changed_at` 그대로(T-5 권한). 새 비밀번호 없이 이름만 바꾸면 200 + `GET /admin/members` 한 행과 같은 객체, 빈 본문 `{}` → 200(변경 없음)
-  - [ ] 같은 파일: 회원 삭제 후 오늘 날짜 참석 0행, 어제 참석 1행 유지, 그 회원이 만든 그룹 유지, 그 회원 Access 401·로그인 400 `INVALID_CREDENTIALS`
-  - [ ] 같은 파일: 삭제된 회원 이메일로 재가입 → 201
-  - [ ] curl: 관리자가 회원 `role`을 `ADMIN`으로 → 그 회원 토큰으로 `GET /api/admin/members` 200, 다시 `MEMBER`로 → 즉시 403(S-10 3단계), 그 회원 Refresh는 계속 유효
-  - [ ] curl: 관리자가 새 비밀번호 지정 → 그 회원의 기존 Access 401, 기존 쿠키 refresh 401 `UNAUTHENTICATED`(곧바로 보내도 `REFRESH_RACE` 아님, S-15 2단계)
+  - [x] `node --env-file=.env.test --test test/admin.test.js` 통과: 회원이 `/admin/*` → 403, 영구 관리자 삭제·역할 해제·이메일 변경 → 409, 삭제된 회원 수정 → 409 `MEMBER_DELETED`
+  - [x] 같은 파일: 관리자 자기 삭제 → 403 `FORBIDDEN`(T-5 권한)
+  - [x] 같은 파일: 관리자가 자기 `PATCH /admin/members/:id`에 `newPassword` → 403 `FORBIDDEN`, 비밀번호·`password_changed_at` 그대로(T-5 권한). 새 비밀번호 없이 이름만 바꾸면 200 + `GET /admin/members` 한 행과 같은 객체, 빈 본문 `{}` → 200(변경 없음)
+  - [x] 같은 파일: 회원 삭제 후 오늘 날짜 참석 0행, 어제 참석 1행 유지, 그 회원이 만든 그룹 유지, 그 회원 Access 401·로그인 400 `INVALID_CREDENTIALS`
+  - [x] 같은 파일: 삭제된 회원 이메일로 재가입 → 201
+  - [x] curl: 관리자가 회원 `role`을 `ADMIN`으로 → 그 회원 토큰으로 `GET /api/admin/members` 200, 다시 `MEMBER`로 → 즉시 403(S-10 3단계), 그 회원 Refresh는 계속 유효
+  - [x] curl: 관리자가 새 비밀번호 지정 → 그 회원의 기존 Access 401, 기존 쿠키 refresh 401 `UNAUTHENTICATED`(곧바로 보내도 `REFRESH_RACE` 아님, S-15 2단계)
 
 ### BE-7. 관리자 그룹 API
 
@@ -320,14 +335,14 @@ flowchart LR
 - **선행 Task**: BE-4
 - **관련 문서 ID**: FR-12, FR-13, R-3, R-8, R-13, UC-9, UC-11, S-8, S-13, NFR-3, NFR-5, AD-6(정원 변경 주석), T-5(정원·그룹 삭제)
 - **수행 작업**
-  - `routes/admin.js`: `PATCH /admin/groups/:id` `{name?, capacity?}`(부분 갱신, 200 + `GET /admin/groups` 한 행과 같은 객체(PRD 9장), `FOR UPDATE` 후 인원 비교 → 409 `CAPACITY_BELOW_COUNT`, 이름 중복 → 409 `DUPLICATE_GROUP_NAME`, 새 이름 `기본` 또는 `기본` 그룹 이름 변경 → 400 `VALIDATION_ERROR`(`field: name`, R-2), 날짜는 받지 않음), `DELETE /admin/groups/:id/attendance/:memberId`(204), `DELETE /admin/groups/:id`(한 문장 DELETE, CASCADE로 참석 삭제, 204).
+  - `routes/admin.js`: `PATCH /admin/groups/:id` `{name?, capacity?}`(부분 갱신, 200 + `GET /admin/groups` 한 행과 같은 객체(PRD 9장), `FOR UPDATE` 후 인원 비교 → 409 `CAPACITY_BELOW_COUNT`, 이름 중복 → 409 `DUPLICATE_GROUP_NAME`, 새 이름 `기본` 또는 `기본` 그룹 이름 변경 → 400 `VALIDATION_ERROR`(`field: name`, R-2), 날짜는 받지 않음), `DELETE /admin/groups/:id/attendance/:memberId`(204), `DELETE /admin/groups/:id`(CASCADE로 참석 삭제, 204. BE-12에서 그룹 행 잠금 → 채팅 보관 → DELETE로 바뀜, AD-6).
   - `services/groups.js`에 추가. `test/admin.test.js`에 정원·그룹 삭제 케이스.
 - **완료 조건**
-  - [ ] `node --env-file=.env.test --test test/admin.test.js` 통과: 인원 3인 그룹 정원 2로 변경 → 409 `CAPACITY_BELOW_COUNT`, 1명 빼고 다시 → 200
-  - [ ] 같은 파일: 그룹 삭제 후 참석자가 같은 날짜 다른 그룹에 참석 201(R-13)
-  - [ ] 같은 파일: 다른 그룹 이름을 `기본`으로 변경 → 400, `기본` 그룹 이름 변경 → 400(둘 다 `field: name`), `기본` 그룹 정원 변경은 200(T-5 권한, R-2)
-  - [ ] curl: `기본` 그룹 삭제 → 그 날짜 `POST /api/dates/:date/attendance {"capacity":4}` → 201, `기본` 그룹 새로 생김(S-13 예외)
-  - [ ] curl: 회원 토큰으로 `DELETE /api/admin/groups/:id` → 403(S-8·S-13 예외)
+  - [x] `node --env-file=.env.test --test test/admin.test.js` 통과: 인원 3인 그룹 정원 2로 변경 → 409 `CAPACITY_BELOW_COUNT`, 1명 빼고 다시 → 200
+  - [x] 같은 파일: 그룹 삭제 후 참석자가 같은 날짜 다른 그룹에 참석 201(R-13)
+  - [x] 같은 파일: 다른 그룹 이름을 `기본`으로 변경 → 400, `기본` 그룹 이름 변경 → 400(둘 다 `field: name`), `기본` 그룹 정원 변경은 200(T-5 권한, R-2)
+  - [x] curl: `기본` 그룹 삭제 → 그 날짜 `POST /api/dates/:date/attendance {"capacity":4}` → 201, `기본` 그룹 새로 생김(S-13 예외)
+  - [x] curl: 회원 토큰으로 `DELETE /api/admin/groups/:id` → 403(S-8·S-13 예외)
 
 ### BE-8. 참석 현황 조회 API와 탈퇴 회원 가림 검증
 
@@ -338,12 +353,12 @@ flowchart LR
   - `routes/attendance.js`, `services/attendance.js`: `GET /attendance?from&to&group&name&status&capacity`. `group`은 그룹명 부분 일치(대소문자 무시, `name`과 같은 방식). 조건 조각 + `params` 배열로 조립(C-5), 그룹 단위 행 `{date, groupId, groupName, capacity, count, status, attendees}`(PRD 9장), 상태는 SQL 계산(R-5, `AVAILABLE`/`FULL`). `from`·`to`가 없으면 이번 달(Asia/Seoul, C-11) 1일~말일, 93일 초과 → 400 `VALIDATION_ERROR`(`field: to`), 페이지네이션 없음. 이름 검색은 `m.deleted_at IS NULL OR $isAdmin` 조건(C-10). 응답 이름은 `display.js`를 거친다.
   - `test/admin.test.js`에 T-5 탈퇴 회원 행: 비관리자 응답(`/dates/:date/groups`, `/attendance`)에 실명 없음·`name: "탈퇴 회원"`(memberId는 있음), 관리자 응답 실명 + `isDeleted: true`, 비관리자 이름 검색 0건. 만든 사람(`createdBy`) 가림은 같은 함수를 쓰므로 P0에서는 참석자 가림으로 검증하고, 화면 확인은 BE-9(7장 9번 결정).
 - **완료 조건**
-  - [ ] `node --env-file=.env.test --test test/admin.test.js` 탈퇴 회원 케이스 통과
-  - [ ] curl: `GET /api/attendance?from=2026-10-01&to=2026-10-07&name=이지` → 이지은이 참석한 그룹만(S-7 2단계)
-  - [ ] curl: `status=AVAILABLE&capacity=4` → 자리 남은 4인 그룹만, `status=FULL` → 정원 찬 그룹과 참석자 목록(S-7 3·4단계)
-  - [ ] curl: `name=' OR 1=1 --` → 400 또는 빈 결과, 5xx 없음(NFR-7)
-  - [ ] 지난달 기간 조회에 그때 기록이 나옴(S-7 5단계)
-  - [ ] curl: `from`·`to` 없이 → 이번 달 1일~말일 행만, `from=2026-10-01&to=2027-01-02`(94일) → 400 `VALIDATION_ERROR`(`field: to`), `to=2027-01-01`(93일) → 200
+  - [x] `node --env-file=.env.test --test test/admin.test.js` 탈퇴 회원 케이스 통과
+  - [x] curl: `GET /api/attendance?from=2026-10-01&to=2026-10-07&name=이지` → 이지은이 참석한 그룹만(S-7 2단계)
+  - [x] curl: `status=AVAILABLE&capacity=4` → 자리 남은 4인 그룹만, `status=FULL` → 정원 찬 그룹과 참석자 목록(S-7 3·4단계)
+  - [x] curl: `name=' OR 1=1 --` → 400 또는 빈 결과, 5xx 없음(NFR-7)
+  - [x] 지난달 기간 조회에 그때 기록이 나옴(S-7 5단계)
+  - [x] curl: `from`·`to` 없이 → 이번 달 1일~말일 행만, `from=2026-10-01&to=2027-01-02`(94일) → 400 `VALIDATION_ERROR`(`field: to`), `to=2027-01-01`(93일) → 200
 
 ### FE-1. 앱 골격과 인증 클라이언트
 
@@ -351,16 +366,16 @@ flowchart LR
 - **선행 Task**: OPS-1, BE-2
 - **관련 문서 ID**: FR-2, R-1, 6.1 흐름 3·5·6, D-4, NFR-8, NFR-12, NFR-14, L-8 ~ L-11, L-13, N-15, ST-4 ~ ST-6, WF 2.1 ~ 2.4, AD-4, S-14
 - **수행 작업**
-  - `src/main.tsx`(QueryClient, Router), `src/App.tsx`(ST-4 라우트 표, 앱 시작 시 `/auth/refresh` → `/me` 복원, 복원 중 로고만 표시, 로그인 가드·관리자 가드), `src/store.ts`(`accessToken`, `me`, 토스트), `src/types.ts`(PRD 9장 핵심 응답 형식 그대로, 회원 표시 객체 `{memberId, name, isDeleted?}`).
-  - `src/lib/client.ts`: Bearer 부착, 401 `TOKEN_EXPIRED` → single-flight 재발급 후 재시도, `REFRESH_RACE` 1회 재시도, `UNAUTHENTICATED` → 스토어 비우고 `/login` + "다시 로그인해 주세요"(L-11). `src/lib/errors.ts`(C-8 코드 → SCR 문구, `VALIDATION_ERROR`는 `field`별 문구).
-  - `src/components/Layout.tsx`(데스크톱 상단 메뉴, 모바일 햄버거 서랍, 관리자 메뉴는 `me.role === 'ADMIN'`일 때만, P0에서는 `그룹 관리` 숨김), `Toast.tsx`, `src/styles.css`(768px 미디어 쿼리).
+  - `src/main.tsx`(QueryClient, Router), `src/App.tsx`(ST-4 라우트 표, 앱 시작 시 `/auth/refresh` → `/me` 복원, 복원 중 로고만 표시, 로그인 가드·관리자 가드), `src/store.ts`(`accessToken`, `me`, `isForcedOut`, `lang`, 토스트, L-9), `src/types.ts`(PRD 9장 핵심 응답 형식 그대로, 회원 표시 객체 `{memberId, name, isDeleted?}`).
+  - `src/lib/client.ts`: API 주소 `VITE_API_URL`(비면 같은 출처 `/api`), 모든 요청 `credentials: 'include'`, Bearer 부착, 401 `TOKEN_EXPIRED` → single-flight 재발급 후 재시도, `REFRESH_RACE` 1회 재시도, `UNAUTHENTICATED` → 스토어 비우고 `/login` + "다시 로그인해 주세요"(L-11). `src/lib/errors.ts`(C-8 코드 → SCR 문구, `VALIDATION_ERROR`는 `field`별 문구).
+  - `src/components/Layout.tsx`(데스크톱 상단 메뉴, 모바일 햄버거 서랍, 관리자 메뉴는 `me.role === 'ADMIN'`일 때만, `회원 관리`·`그룹 관리`·`채팅 보관함`), `Toast.tsx`, `src/styles.css`(768px 미디어 쿼리).
 - **완료 조건**
-  - [ ] `npm run typecheck && npm run lint && npm run build` 오류 0
+  - [x] `npm run typecheck && npm run lint && npm run build` 오류 0
   - [ ] 로그인 전 `http://localhost:5173/dates/2026-10-03` 직접 접속 → `/login`으로 이동(S-2 예외)
   - [ ] (FE-2 뒤 확인) `ACCESS_TOKEN_TTL=20s`로 서버 기동 → 로그인 → 30초 뒤 화면 조작 시 개발자 도구 Network에 `/api/auth/refresh` 1건 후 원래 요청 200(S-14 2단계)
   - [ ] 새로고침 후 로그인 유지, 로그인 화면이 잠깐도 보이지 않음(S-14 1단계, WF 2.4 로딩)
-  - [ ] `grep -rn "localStorage\|sessionStorage" frontend/src` 결과 0건(6.1)
-  - [ ] `grep -rn "fetch(" frontend/src --include=*.tsx` 결과 0건(L-8)
+  - [x] `grep -rn "localStorage\|sessionStorage" frontend/src` 결과가 언어 설정(`store.ts`의 `lang`)뿐이고 토큰 저장 0건(6.1, FR-23)
+  - [x] `grep -rn "fetch(" frontend/src --include=*.tsx` 결과 0건(L-8)
   - [ ] 360px 폭에서 서랍 열기·닫기 동작, 가로 스크롤 없음
 
 ### FE-2. 로그인·회원가입 화면
@@ -384,12 +399,12 @@ flowchart LR
 - **선행 Task**: FE-1, BE-3
 - **관련 문서 ID**: FR-4, R-6, R-12, REQ-5, REQ-13, SCR-03, WF-03, ST-4, L-16(캘린더 라이브러리 금지)
 - **수행 작업**
-  - `features/calendar/CalendarPage.tsx`, `api.ts`(`useCalendar(month)`). 손으로 만든 7열 그리드, `?month=YYYY-MM` URL 상태, ◀ ▶ [오늘], 날짜 칸 ●n·✔, 서울 기준 오늘 강조, 칸 클릭 → `/dates/:date`.
+  - `features/calendar/CalendarPage.tsx`, `api.ts`(`useCalendar(month)`). 손으로 만든 7열 그리드, `?month=YYYY-MM` URL 상태, ◀ ▶ [오늘], 날짜 칸 `그룹명(인원)` 한 줄씩·✔(날짜 숫자 옆), 서울 기준 오늘 강조, 칸 클릭 → `/dates/:date`, 3초마다 다시 읽음.
 - **완료 조건**
   - [ ] 2026년 10월 1일이 목요일 칸에 표시(SCR-03 v0.9)
-  - [ ] BE-3 curl로 만든 10/3 그룹이 ●1, 참석한 날 ✔
+  - [ ] BE-3 curl로 만든 10/3 그룹이 `토요복식(1)`, 참석한 날 ✔
   - [ ] ◀ 누른 뒤 새로고침 → 같은 달 유지(`?month`), 뒤로 가기로 이전 달 복귀(ST-4)
-  - [ ] 지난 날짜 칸 클릭 → `/dates/2026-09-01` 이동(R-6)
+  - [ ] 지난 날짜 칸 클릭 → `/dates/2026-09-01` 이동, 조회만 가능(참석·그룹 만들기 버튼은 흐림, R-6)
   - [ ] 360px에서 7열이 가로 스크롤 없이 들어감(NFR-12)
 
 ### FE-4. 날짜 상세와 그룹 만들기 화면
@@ -415,7 +430,7 @@ flowchart LR
 - **선행 Task**: FE-2, BE-5
 - **관련 문서 ID**: FR-8, R-8, R-10, R-11, UC-3, SCR-07, WF-07, S-3, S-11, S-15
 - **수행 작업**
-  - `features/me/MePage.tsx`, `api.ts`(`useMe`, `useUpdateMe`). 역할 보기 전용, 비밀번호 변경 칸(현재·새), 저장 후 새 Access Token을 스토어에 반영, 비밀번호 변경 시 토스트 "다른 기기에서는 로그아웃됩니다". 칸 오류 `WRONG_PASSWORD`·`EMAIL_TAKEN`과 SCR-07 형식 오류 문구(비밀번호 8자·72바이트 초과·이름·생년월일).
+  - `features/me/MePage.tsx`, `api.ts`(`useUpdateMe`). 내 정보는 따로 훅을 두지 않고 스토어 `me`(앱 시작 시·30초마다 `App.tsx`가 `GET /me`로 채움)를 쓴다. 역할 보기 전용, 비밀번호 변경 칸(현재·새), 저장 후 새 Access Token을 스토어에 반영, 비밀번호 변경 시 토스트 "다른 기기에서는 로그아웃됩니다". 칸 오류 `WRONG_PASSWORD`·`EMAIL_TAKEN`과 SCR-07 형식 오류 문구(비밀번호 8자·72바이트 초과·이름·생년월일).
 - **완료 조건**
   - [ ] S-3 수동 통과: 전화번호 수정 저장, `1974년11월14일(52세)` 표시, 역할 칸 수정 불가
   - [ ] S-15 1단계 수동 통과: 브라우저 두 개 로그인 → A에서 비밀번호 변경 → A 유지, B는 다음 조작 시 `/login` + "다시 로그인해 주세요"
@@ -429,7 +444,7 @@ flowchart LR
 - **관련 문서 ID**: FR-9, FR-10, FR-11, FR-15, FR-16, R-8 ~ R-11, UC-7, UC-8, SCR-08, WF-08, WF-11, S-9, S-10, S-11, S-15
 - **수행 작업**
   - `features/admin/MembersPage.tsx`, `MemberEditModal.tsx`(영구 관리자: 이메일·새 비밀번호·역할 `(잠김)`, 관리자 본인: 새 비밀번호 `(잠김)`, 삭제된 회원: 모든 칸 잠김 + [닫기]), `api.ts`. `components/ConfirmDialog.tsx`(WF-11, FE-7에서 재사용).
-  - [삭제된 회원 보기] 토글(`includeDeleted`), 영구 관리자 행·본인 행은 [삭제] 없음, 검색 칸은 자리째 뺌(WF-08, FR-19 P1). 모바일 카드 + 전체 화면 패널.
+  - [삭제된 회원 보기] 토글(`includeDeleted`), 영구 관리자 행·본인 행은 [삭제] 없음, 검색 칸·[검색](FE-10에서 구현, FR-19). 모바일 카드 + 전체 화면 패널.
 - **완료 조건**
   - [ ] S-9 수동 통과: 전화번호 수정, 새 비밀번호 지정 후 그 회원 기존 세션 `/login`(S-15 2단계), 삭제 확인 창 문구, 삭제 뒤 목록에서 숨김, 토글 켜면 `이름(탈퇴)` + [보기]만
   - [ ] S-9 예외: 영구 관리자 행·본인 행에 [삭제] 없음, 영구 관리자 편집 시 이메일·비밀번호 `(잠김)`, 본인 행 편집 시 새 비밀번호 `(잠김)`(SCR-08, WF-08)
@@ -445,7 +460,7 @@ flowchart LR
 - **선행 Task**: FE-4, FE-6, BE-7
 - **관련 문서 ID**: FR-12, FR-13, D-7, R-3, R-8, R-13, UC-9, UC-11, SCR-04, SCR-09(편집 패널·확인 창), WF-04, WF-10, WF-11, ST-5, S-8, S-13
 - **수행 작업**
-  - `features/dates/GroupEditModal.tsx`(그룹명, 정원, 참석자 [빼기] 즉시 반영(`attendees[].memberId` 사용), 날짜는 제목에만, `기본` 그룹이면 그룹명 `(잠김)`, 다른 그룹을 `기본`으로 바꾸면 칸 오류 "'기본'은 그룹 이름으로 쓸 수 없습니다"). SCR-04 그룹 행에 관리자 전용 [편집]·[삭제], [삭제]는 `ConfirmDialog`("그룹을 삭제하면 참석자 n명의 참석 기록이 모두 삭제됩니다").
+  - `features/dates/GroupEditModal.tsx`(그룹명, 정원, 참석자 [빼기] 즉시 반영(`attendees[].memberId` 사용), 날짜는 제목에만, `기본` 그룹이면 그룹명 `(잠김)`, 다른 그룹을 `기본`으로 바꾸면 칸 오류 "'기본'은 그룹 이름으로 쓸 수 없습니다"). SCR-04 그룹 행에 관리자 전용 [편집]·[삭제], [삭제]는 `ConfirmDialog`("그룹을 삭제하면 참석자 n명의 참석 기록이 모두 삭제됩니다. 채팅 내용은 채팅 보관함에 남습니다").
   - `features/dates/api.ts`에 `useUpdateGroup`, `useRemoveAttendee`, `useDeleteGroup` 추가, 성공 시 L-10 무효화.
 - **완료 조건**
   - [ ] S-8 수동 통과: [편집]에서 정원 2로 저장 → 칸 아래 "현재 참석 인원보다 정원을 작게 할 수 없습니다", [빼기] 즉시 이름 사라짐, 다시 저장 → 반영
@@ -460,7 +475,7 @@ flowchart LR
 - **선행 Task**: FE-4, BE-8
 - **관련 문서 ID**: FR-14, FR-15, R-5, R-7, R-9, REQ-7, REQ-8, SCR-06, WF-06, ST-4, L-13, S-7, S-9
 - **수행 작업**
-  - `features/attendance/AttendancePage.tsx`, `api.ts`(`useAttendance(filters)`). 필터 값은 URL 쿼리에 담는다(ST-4). 처음 열면 기간에 이번 달 1일~말일(서울 기준, `lib/date.ts`)을 채운다(SCR-06). 400 `VALIDATION_ERROR`(`field: to`)면 기간 칸 아래 "조회 기간은 최대 93일입니다"(SCR-06). 기간·그룹명·참석자 이름·상태·정원, [조회], 결과 행 클릭 → `/dates/:date`. 빈 상태 문구. 모바일은 접는 필터 + 카드(같은 컴포넌트, CSS만, L-13).
+  - `features/attendance/AttendancePage.tsx`, `api.ts`(`useAttendance(filters)`). 필터 값은 URL 쿼리에 담는다(ST-4). 처음 열면 기간에 이번 달 1일~말일(서울 기준, `lib/date.ts`)을 채운다(SCR-06). 400 `VALIDATION_ERROR`(`field: to`)면 기간 칸 아래 "조회 기간은 최대 93일입니다"(시작일 > 종료일이면 "종료일은 시작일보다 앞설 수 없습니다", SCR-06). 기간·그룹명·참석자 이름·상태·정원, [조회], 결과 행 클릭 → `/dates/:date`. 빈 상태 문구. 모바일은 접는 필터 + 카드(같은 컴포넌트, CSS만, L-13).
 - **완료 조건**
   - [ ] S-7 수동 통과: 기간 10/1~10/7, 이름 `이지`, 참석가능+4인, 참석완료, 지난달 조회 5단계
   - [ ] 행 클릭 → 그 날짜 SCR-04, ← 뒤로 → 같은 필터 그대로(URL 유지)
@@ -505,10 +520,10 @@ flowchart LR
 - **관련 문서 ID**: FR-17, UC-9, SCR-09, R-9
 - **수행 작업**: `GET /admin/groups?from&to`(`[{id, date, name, capacity, count, status, createdBy: {memberId, name, isDeleted?}}]`, 탈퇴 회원이면 실명 + `isDeleted: true`. `from`·`to`는 `GET /attendance`와 같은 규칙: 없으면 이번 달 1일~말일, 최대 93일, 넘으면 400 `VALIDATION_ERROR`(`field: to`), PRD 9장), `test/admin.test.js`에 케이스 추가.
 - **완료 조건**
-  - [ ] `node --env-file=.env.test --test test/admin.test.js` 통과(기간 밖 그룹 제외, 탈퇴 회원이 만든 그룹의 `createdBy.isDeleted: true`, 7장 9번 결정)
-  - [ ] curl: 회원 토큰 → 403, 94일 기간 → 400 `VALIDATION_ERROR`(`field: to`)
+  - [x] `node --env-file=.env.test --test test/admin.test.js` 통과(기간 밖 그룹 제외, 탈퇴 회원이 만든 그룹의 `createdBy.isDeleted: true`, 7장 9번 결정)
+  - [x] curl: 회원 토큰 → 403, 94일 기간 → 400 `VALIDATION_ERROR`(`field: to`)
 
-### FE-9. (P1) 그룹 관리 화면
+### FE-9. (P1) 그룹 관리 화면 — 구현 완료
 
 - **우선순위·시간**: P1 · 1h
 - **선행 Task**: FE-7, BE-9
@@ -516,7 +531,7 @@ flowchart LR
 - **수행 작업**: `features/admin/GroupsPage.tsx`(기간 필터, 표/카드, [편집]은 `GroupEditModal` import, [삭제]는 `ConfirmDialog`), 셸에 `그룹 관리` 메뉴 표시, `/admin/groups` 라우트.
 - **완료 조건**
   - [ ] S-8·S-13을 그룹 관리 화면 경로로 수동 통과
-  - [ ] 빈 기간 → "이 기간에 그룹이 없습니다"
+  - [x] 빈 기간 → "이 기간에 그룹이 없습니다"
   - [ ] 360px 카드 목록
 
 ### BE-10. (P1) 회원 관리 검색 API
@@ -526,17 +541,17 @@ flowchart LR
 - **관련 문서 ID**: FR-19, UC-7, SCR-08, C-5
 - **수행 작업**: `GET /admin/members?q`(이름·이메일 부분 일치, 파라미터 쿼리), 테스트 추가.
 - **완료 조건**
-  - [ ] `node --env-file=.env.test --test test/admin.test.js` 통과(`q=min` → 이메일 일치 회원, `includeDeleted`와 조합)
-  - [ ] curl: `q=%27%20OR%201%3D1` → 5xx 없음
+  - [x] `node --env-file=.env.test --test test/admin.test.js` 통과(`q=min` → 이메일 일치 회원, `includeDeleted`와 조합)
+  - [x] curl: `q=%27%20OR%201%3D1` → 5xx 없음
 
-### FE-10. (P1) 회원 관리 검색 칸
+### FE-10. (P1) 회원 관리 검색 칸 — 구현 완료
 
 - **우선순위·시간**: P1 · 0.5h
 - **선행 Task**: FE-6, BE-10
 - **관련 문서 ID**: FR-19, SCR-08, WF-08
 - **수행 작업**: `MembersPage.tsx`에 검색 칸·버튼 추가(WF-08 배치).
 - **완료 조건**
-  - [ ] 이름 일부 입력 → 해당 회원만 표시, 비우면 전체
+  - [x] 이름 일부 입력 → 해당 회원만 표시, 비우면 전체
   - [ ] 360px에서 검색 칸이 가로 스크롤 없이 들어감
 
 ### DB-3. (P1) 부하 테스트 초기 데이터
@@ -568,9 +583,61 @@ flowchart LR
 - **관련 문서 ID**: FR-18, D-4, C-8, UC-2, SCR-01
 - **수행 작업**: `services/auth.js`에 이메일(소문자) 키의 실패 기록 `Map`(서버 메모리, 서버 1대라 충분, 재시작 시 초기화 허용). 같은 이메일로 15분 안에 5회 실패하면 15분 동안 비밀번호 확인 전에 429 `TOO_MANY_ATTEMPTS`. 프론트 `lib/errors.ts`에 SCR-01 문구 "로그인 시도가 너무 많습니다. 15분 후 다시 시도해 주세요" 추가. 2일 일정에서는 하지 않는다.
 - **완료 조건**
-  - [ ] `test/auth.test.js` 통과: 같은 이메일 5회 실패 → 6번째는 맞는 비밀번호여도 429 `TOO_MANY_ATTEMPTS`, 다른 이메일은 영향 없음
-  - [ ] 같은 파일: 잠금 시각을 15분 지난 것으로 흉내 내면(테스트용 시각 주입 또는 Map 조작) 다시 로그인 200
-  - [ ] SCR-01에서 429 → "로그인 시도가 너무 많습니다. 15분 후 다시 시도해 주세요"
+  - [x] `test/auth.test.js` 통과: 같은 이메일 5회 실패 → 6번째는 맞는 비밀번호여도 429 `TOO_MANY_ATTEMPTS`, 다른 이메일은 영향 없음
+  - [x] 같은 파일: 잠금 시각을 15분 지난 것으로 흉내 내면(테스트용 시각 주입 또는 Map 조작) 다시 로그인 200
+  - [x] SCR-01에서 429 → "로그인 시도가 너무 많습니다. 15분 후 다시 시도해 주세요"(`lib/errors.ts` → i18n `errTooManyAttempts`)
+
+### DB-4. (추가) 채팅 마이그레이션 — 완료
+
+- **우선순위·시간**: 추가 · -
+- **선행 Task**: DB-2
+- **관련 문서 ID**: R-14, R-15, PRD 7장, N-7, C-14, 7-erd.md, schema.sql
+- **수행 작업**: `002_group_messages.sql`(`group_messages`, `group_id` FK `ON DELETE CASCADE`, `group_messages_group_id_idx`), `003_chat_archives.sql`(`chat_archives`(그룹 FK 없음), `archived_messages`(`archive_id` FK `ON DELETE CASCADE`), `archived_messages_archive_id_idx`), `004_chat_images.sql`(두 메시지 테이블에 `image BYTEA`, `image_type`, `group_messages_body_check` 재정의). `docs/schema.sql`을 누적 결과로 갱신(C-14).
+- **완료 조건**
+  - [x] 빈 테스트 DB에 마이그레이션 적용 → 테이블 7개 + `schema_migrations` 4행(`npm test`가 매번 확인)
+  - [x] `docs/schema.sql`이 001 ~ 004 누적 결과와 일치
+
+### BE-12. (추가) 그룹 채팅·이미지·채팅 보관함·빈 그룹 삭제 API — 완료
+
+- **우선순위·시간**: 추가 · -
+- **선행 Task**: DB-4, BE-7
+- **관련 문서 ID**: R-13 ~ R-16, FR-20 ~ FR-22, FR-24, UC-12, UC-13, PRD 9장, L-5, C-9, C-10, AD-6, AD-8, T-5(채팅·보관·빈 그룹 삭제)
+- **수행 작업**
+  - `routes/groups.js`: `GET`·`POST /groups/:id/messages`(참석자만, 그 밖 403, 글 1 ~ 500자), `POST /groups/:id/images`(원시 바이트, PNG·JPEG·GIF·WEBP, `CHAT_IMAGE_MAX_BYTES`), `GET /groups/:id/messages/:messageId/image`(nosniff), `DELETE /groups/:id/attendance?deleteIfEmpty=true`(200 `{groupDeleted}`).
+  - `routes/admin.js`: `GET /admin/chats`, `GET /admin/chats/:id/messages`, `GET /admin/chats/:id/messages/:messageId/image`, `DELETE /admin/chats/:id`.
+  - `services/groups.js`: 그룹 삭제를 그룹 행 잠금 → 채팅 보관 → DELETE로(R-15), `leaveAndDeleteIfEmpty`(R-16). `repositories/messages.js`. `test/messages.test.js`.
+- **완료 조건**
+  - [x] `node --env-file=.env.test --test test/messages.test.js` 통과(6개: 참석자만 읽고 쓰기, 탈퇴 회원 가림·삭제 시 보관, 메시지 없는 그룹 보관 안 함, 이미지 형식·크기, 보관함 삭제, 빈 그룹 삭제)
+
+### FE-11. (추가) 그룹 채팅 — 완료
+
+- **우선순위·시간**: 추가 · -
+- **선행 Task**: FE-3, BE-12
+- **관련 문서 ID**: R-14, FR-20, FR-21, UC-12, SCR-03, WF-12, S-16
+- **수행 작업**: `features/chat/GroupChat.tsx`(캘린더 아래, 이번 달 참석 그룹마다 탭, 3초마다 다시 읽음, 붙여넣기 이미지 미리보기, 글 복사), `ChatImage.tsx`(Blob → object URL, 크게 보기, 내려받기 확인), `api.ts`.
+- **완료 조건**
+  - [x] `npm run typecheck && npm run lint && npm run build` 오류 0
+  - [ ] S-16 수동 통과(데스크톱·360px)
+
+### FE-12. (추가) 채팅 보관함 화면 — 완료
+
+- **우선순위·시간**: 추가 · -
+- **선행 Task**: FE-9, BE-12
+- **관련 문서 ID**: R-15, FR-22, UC-13, SCR-10, WF-13, S-18, ST-4
+- **수행 작업**: `features/admin/ChatArchivesPage.tsx`(`/admin/chats`, 관리자 가드, 목록·대화 읽기 전용·삭제 확인), 셸 관리자 메뉴에 `채팅 보관함`.
+- **완료 조건**
+  - [x] `npm run typecheck && npm run lint && npm run build` 오류 0
+  - [ ] S-18 수동 통과(데스크톱·360px)
+
+### FE-13. (추가) 다국어 — 완료
+
+- **우선순위·시간**: 추가 · -
+- **선행 Task**: FE-1
+- **관련 문서 ID**: REQ-20, FR-23, N-15, L-9, S-19
+- **수행 작업**: `lib/i18n.ts`(ko 기준 사전, en·zh 같은 키), `components/LangSelect.tsx`(상단 바·로그인·가입 화면), 스토어 `lang`(처음 값 localStorage `lang` → 브라우저 언어 → 영어, 고르면 저장 + `<html lang>`), 날짜·요일은 `Intl`.
+- **완료 조건**
+  - [x] `npm run typecheck` 통과로 en·zh 사전이 ko의 키를 모두 가짐을 확인
+  - [ ] S-19 수동 통과
 
 ---
 
@@ -597,16 +664,17 @@ flowchart LR
 
 ## 6. 리스크와 대응
 
-| 리스크 | 연결(PRD 11장) | 이 계획에서의 대응 |
-|--------|----------------|--------------------|
-| P0 합계 19.5h로 하루 약 10h가 필요하다 | 1인 개발 일정 초과 | P1·P2는 손대지 않는다. 임계 경로(3.2)의 BE-2·BE-4가 30분 이상 밀리면 경로 밖 Task(FE-5, FE-8)를 뒤로 미루고 경로를 먼저 끝낸다. 그래도 Day2 오후에 넘치면 QA-1의 M-5 모바일(360px) 확인을 SCR-03·SCR-04로 좁힌다(PRD 11장, 7장 1번 결정) |
-| 1000 동시 접속 목표를 확인할 시간이 없다 | 1000 동시 접속과 2일 일정의 긴장 | 설계로 먼저 막는다: BE-3·BE-8 완료 전에 조회 쿼리가 요청당 1~2개인지 확인(NFR-2). 측정은 QA-2(P1) |
-| bcrypt로 로그인 지연 | bcrypt CPU | BE-2에서 비동기 `bcrypt.hash`/`compare`, cost 10 상수(C-6). QA-2 비율은 로그인 5% |
-| 정원·중복 참석 경합 | 정원·중복 참석 경합 | BE-4에 T-5 동시성 3종과 M-4 검증 쿼리를 완료 조건으로 묶었다. 동시성 테스트가 통과하기 전에는 FE-4를 시작하지 않는다 |
-| 탈퇴 회원 실명 누락 노출 | 탈퇴 회원 표시 규칙 누락 | `display.js`를 BE-3에서 처음부터 만들고 이후 조회 API가 모두 거친다. BE-8에서 전 조회 API에 대해 자동 테스트, QA-1에서 Network 응답 확인 |
-| 시간대 오류 | 시간대 오류(R-12) | DB-2에서 `TODAY_SQL`·DATE 타입 파서를 먼저 만든다. BE-6 테스트에 "오늘 포함, 어제 유지" 경계 케이스 |
-| 호스팅 미결로 배포 지연 | (PRD 12장 미결) | Day1 중 쉬는 시간에 호스팅을 정해 둔다. OPS-2가 막히면 운영 빌드를 로컬에서 서빙해 QA-1을 먼저 하고(T-6 허용), 배포 URL 재확인만 뒤로 미룬다 |
-| 로컬 PostgreSQL 17 준비 지연(Windows 개발 환경) | - | OPS-1의 완료 조건에 두 DB 접속 확인을 넣어 Day1 첫 30분 안에 드러나게 했다 |
+| 리스크                                          | 연결(PRD 11장)                   | 이 계획에서의 대응                                                                                                                                                                                                                       |
+| ----------------------------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0 합계 19.5h로 하루 약 10h가 필요하다          | 1인 개발 일정 초과               | P1·P2는 손대지 않는다. 임계 경로(3.2)의 BE-2·BE-4가 30분 이상 밀리면 경로 밖 Task(FE-5, FE-8)를 뒤로 미루고 경로를 먼저 끝낸다. 그래도 Day2 오후에 넘치면 QA-1의 M-5 모바일(360px) 확인을 SCR-03·SCR-04로 좁힌다(PRD 11장, 7장 1번 결정) |
+| 1000 동시 접속 목표를 확인할 시간이 없다        | 1000 동시 접속과 2일 일정의 긴장 | 설계로 먼저 막는다: BE-3·BE-8 완료 전에 조회 쿼리가 요청당 1~2개인지 확인(NFR-2). 측정은 QA-2(P1)                                                                                                                                        |
+| bcrypt로 로그인 지연                            | bcrypt CPU                       | BE-2에서 비동기 `bcrypt.hash`/`compare`, cost 10 상수(C-6). QA-2 비율은 로그인 5%                                                                                                                                                        |
+| 정원·중복 참석 경합                             | 정원·중복 참석 경합              | BE-4에 T-5 동시성 3종과 M-4 검증 쿼리를 완료 조건으로 묶었다. 동시성 테스트가 통과하기 전에는 FE-4를 시작하지 않는다                                                                                                                     |
+| 탈퇴 회원 실명 누락 노출                        | 탈퇴 회원 표시 규칙 누락         | `display.js`를 BE-3에서 처음부터 만들고 이후 조회 API가 모두 거친다. BE-8에서 전 조회 API에 대해 자동 테스트, QA-1에서 Network 응답 확인                                                                                                 |
+| 시간대 오류                                     | 시간대 오류(R-12)                | DB-2에서 `TODAY_SQL`·DATE 타입 파서를 먼저 만든다. BE-6 테스트에 "오늘 포함, 어제 유지" 경계 케이스                                                                                                                                      |
+| 호스팅 미결로 배포 지연                         | (PRD 12장 미결)                  | Day1 중 쉬는 시간에 호스팅을 정해 둔다. OPS-2가 막히면 운영 빌드를 로컬에서 서빙해 QA-1을 먼저 하고(T-6 허용), 배포 URL 재확인만 뒤로 미룬다                                                                                             |
+| 로컬 PostgreSQL 17 준비 지연(Windows 개발 환경) | -                                | OPS-1의 완료 조건에 두 DB 접속 확인을 넣어 Day1 첫 30분 안에 드러나게 했다                                                                                                                                                               |
+| 테스트 날짜 고정으로 테스트가 깨짐(알려진 위험) | -                                | 백엔드 테스트(`messages.test.js` 등)가 날짜 `2026-10-03`을 고정해 쓴다. 그날이 지나면 지난 날짜가 되어 참석·그룹 생성이 409 `PAST_DATE`로 실패하기 시작한다(R-6). 그 전에 테스트 날짜를 "오늘 이후"로 바꿔야 한다 |
 
 ## 7. 계획 단계에서 발견한 문서 간 모순·빈틈 (결정 완료)
 
@@ -614,6 +682,7 @@ v0.1에서 기록한 항목이다. v0.2에서 모두 결정되어 해당 문서�
 
 1. **PRD 10장 일정과 작업량**: PRD 10장 Day1 오후(인증 화면, fetch 래퍼, 참석 도메인 API, 캘린더, 날짜 상세)는 이 계획의 추정으로 약 7h다. P0 전체도 19.5h로 "2일 내 P0 완성"(PRD 1장 제약)보다 크다. 이 계획은 FE-4를 Day2 오전으로, FE-7을 Day2 오후로 옮겼다. 범위를 줄일지(예: 모바일 확인을 M-5에서 데스크톱만으로) 일정을 늘릴지 PRD에서 정해야 한다.
    - **결정(v0.2)**: 범위를 줄이지 않고 P0 19.5h를 2일(하루 약 10h)로 수행한다. PRD 10장을 3.1 배치에 맞추고 합계 19.5h를 적었으며, PRD 11장 일정 초과 대응에 "밀리면 M-5 모바일 확인을 SCR-03·SCR-04로 좁힌다"를 추가했다(PRD v0.8).
+
 2. **테스트 환경 변수 로딩**: T-2는 `DATABASE_URL`에 `_test`를 요구하지만, C-3은 `.env` 하나만 정하고 테스트용 설정 방법이 없다. ST 트리에도 없다. 이 계획은 `backend/.env.test`(git 제외) + `node --env-file=.env.test`로 가정했다. 원칙 문서 C-3·ST 트리 반영이 필요하다.
    - **결정(v0.2)**: `backend/.env.test`(git 제외) + `backend/.env.test.example` 커밋 + `node --env-file=.env.test --test`. C-3, T-2, ST 트리에 반영(원칙 v0.5). OPS-1에 반영.
 3. **API 응답 형식 미정**: PRD 9장은 설명만 있고 응답 필드가 없다(L-14는 PRD 9장을 계약의 단일 출처로 삼는다). 특히 `GET /dates/:date/groups`의 참석자 항목에 `memberId`가 있어야 FE-7의 [빼기](`DELETE /admin/groups/:id/attendance/:memberId`)와 "내가 참석한 그룹" 판단이 된다. 비관리자에게 탈퇴 회원의 `memberId`를 보내도 되는지도 정해져 있지 않다. 이 계획은 `{memberId, name}`, 가림은 `name`만으로 가정했다. `GET /attendance`의 `status` 값 표기(`AVAILABLE`/`FULL` 등)도 없다.
@@ -631,7 +700,8 @@ v0.1에서 기록한 항목이다. v0.2에서 모두 결정되어 해당 문서�
 9. **탈퇴 회원 "만든 사람" 표시의 P0 확인 지점 없음**: R-9·FR-15는 그룹의 만든 사람도 가리라고 하지만, 만든 사람은 SCR-09(관리자 전용, P1)에만 표시된다. P0 화면에는 비관리자에게 만든 사람이 보이는 곳이 없어, 이 부분은 BE-9(P1) 전까지 확인할 수 없다.
    - **결정(v0.2)**: 문서 변경 없이 수용한다. 가림은 C-10의 공통 함수 하나가 모든 응답에 적용하므로, P0에서는 참석자 이름 가림 테스트(T-5, BE-8)로 함수를 검증하고 만든 사람 표시는 BE-9(P1)에서 확인한다.
 10. **FR-18(P2) 명세 없음**: 로그인 시도 제한의 횟수·기간·응답 코드·문구가 PRD·C-8 표·SCR-01에 없다(BE-11).
-   - **결정(v0.2)**: 같은 이메일 기준 15분 안에 5회 실패하면 15분 동안 거부, 429 `TOO_MANY_ATTEMPTS`, 문구 "로그인 시도가 너무 많습니다. 15분 후 다시 시도해 주세요". 서버 메모리(`Map`), 재시작 시 초기화 허용. PRD FR-18·D-4, C-8, SCR-01에 반영. BE-11에 반영.
+
+- **결정(v0.2)**: 같은 이메일 기준 15분 안에 5회 실패하면 15분 동안 거부, 429 `TOO_MANY_ATTEMPTS`, 문구 "로그인 시도가 너무 많습니다. 15분 후 다시 시도해 주세요". 서버 메모리(`Map`), 재시작 시 초기화 허용. PRD FR-18·D-4, C-8, SCR-01에 반영. BE-11에 반영.
 
 ### 7.1 결정 반영 중 발견한 잔여 빈틈 (결정 완료, v0.3)
 
@@ -640,3 +710,26 @@ v0.1에서 기록한 항목이다. v0.2에서 모두 결정되어 해당 문서�
 3. 비밀번호 72바이트 초과 문구 없음 → **결정**: "비밀번호가 너무 깁니다"(SCR-02·SCR-07).
 4. 생년월일 미래 판정의 오늘 기준 → **결정**: route는 형식만, 미래 여부는 service가 `TODAY_SQL`로 판단(C-9, C-11). BE-1의 검증 작업에 포함한다.
 5. `LOGOUT`·`FORCED` 폐기 토큰 재사용 → **결정**: 즉시 401만 반환하고 다른 토큰은 추가 폐기하지 않는다(PRD 6.1 흐름 5).
+
+### 7.2 백엔드 구현 중 정한 사항과 진행 현황 (v0.8)
+
+**진행 현황(2026-10-02, v0.9)**
+
+- 완료: DB-1, DB-2, DB-4, BE-1 ~ BE-12. 프론트엔드는 FE-1 ~ FE-13 화면을 모두 구현했다(`npm run typecheck && npm run lint && npm run build` 오류 0). 화면 수동 확인(S-n, 360px)이 필요한 완료 조건은 체크하지 않았다.
+- 미완: OPS-1의 `.prettierrc`, `backend/eslint.config.js`(그래서 백엔드 `npm run lint`는 아직 동작하지 않는다), `backend/.env.test.example`(`backend/.env.example`은 2026-10-02 작성). OPS-2(Express 정적 서빙 C-20 미구현, 배포), QA-n은 착수 전이다.
+- 테스트: `backend`의 `npm test` 51개 통과(인증 14, 참석 10, 관리자 12, 기동 5, CORS 4, 채팅 6). 날짜 `2026-10-03` 고정 문제는 6장 리스크. 시간 경과가 필요한 Access 만료(15분)와 30초 뒤 재사용은 자동 테스트에서 시각을 조작해 확인한다.
+
+**진행 현황(2026-10-01, v0.8 기록)**
+
+- 완료: DB-1, DB-2, BE-1 ~ BE-10. BE-11은 서버 쪽만 완료했고, SCR-01 429 문구는 FE-2와 함께 한다.
+- 테스트: `backend`의 `npm test` 42개 통과(인증 13, 참석 10, 관리자 12, 기동 4, CORS 3). 유저 시나리오 S-1 ~ S-15는 curl로 101개 항목을 확인했다.
+
+**구현 중 정한 사항** (문서에 없던 것을 정하고 해당 문서에 반영함)
+
+1. API 세부 동작(PRD v0.13 9장): 경로 날짜 형식 오류 400 `field: date`, 기간 필터에서 한쪽만 보낸 경우와 `to < from`, 빈 필터 값, `PATCH /me`의 `currentPassword` 누락 400, `/groups/*`·`/admin/*` 아래 없는 경로의 401·403.
+2. 로그인 시도 제한(FR-18): 로그인에 성공하면 그 이메일의 실패 기록을 지운다(PRD v0.13).
+3. 개발용 Swagger UI `/api-docs`: 새 패키지 없이 CDN의 `swagger-ui-dist`가 `backend/swagger.yaml`을 읽는다. 운영에서는 열지 않는다(PRD 9장, 원칙 v0.10 2.4·6.2).
+4. CORS: 기본은 없음(같은 출처). 다른 출처에서 부를 때만 `CORS_ORIGINS` 허용 목록을 쿠키 포함으로 연다. 도메인이 다른 사이트(cross-site)에서는 Refresh 쿠키 `SameSite=Strict` 때문에 재발급이 되지 않으므로, 그런 배포가 생기면 쿠키 정책과 CSRF 대책을 다시 정한다(원칙 v0.9 C-18, AD-2).
+   - **해소(v0.9)**: 프론트가 `VITE_API_URL`로 백엔드를 직접 부르는 방식(다른 출처 + CORS)으로 바꿨다. 쿠키 `SameSite`는 `COOKIE_SAME_SITE`(strict 기본/lax/none, none이면 `Secure` 자동)로 정하고, CSRF 대책으로 `/auth/refresh`·`/auth/logout`은 `Origin`이 없거나 허용 목록·같은 출처일 때만 받고 아니면 403(원칙 v0.11 C-7·C-18, AD-2·AD-5).
+5. 비밀번호 변경 뒤 토큰 거부는 6.1 흐름 2대로 초 단위(내림) 비교다. 같은 초 안에 발급된 이전 토큰은 거부되지 않으므로, 자동 테스트는 1초를 기다린 뒤 비밀번호를 바꾼다.
+   - **해소(v0.9)**: 토큰 페이로드에 밀리초 발급 시각 `iatMs`를 넣고 `(iatMs ?? iat*1000) < password_changed_at`(밀리초)로 비교한다. 테스트의 1초 대기는 없앴다(원칙 v0.11 C-7, AD-5).
