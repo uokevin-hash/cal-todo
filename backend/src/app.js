@@ -31,3 +31,6 @@ app.use('/api', cors(config.corsOrigins), api, notFound);
 if (!config.production) app.use('/api-docs', docsRouter);
 
 app.use(errorHandler);
+
+// Vercel은 express를 import하고 앱을 default export하는 src/app.js를 함수로 실행한다
+export default app;
